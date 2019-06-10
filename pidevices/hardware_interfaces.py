@@ -14,11 +14,12 @@ class HardwareInterface(object):
 
     def read():
         """Read data from hardware"""
-        raise NotImplemented("This method has not been implemented.")
+        raise NotImplementedError("This method has not been implemented.")
 
     def write():
         """Write data to hardware"""
-        raise NotImplemented("This method has not been implemented.")
+        raise NotImplementedError("This method has not been implemented.")
 
     def close():
         """Free hardware resources."""
+        pass
