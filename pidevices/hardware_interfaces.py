@@ -1,3 +1,6 @@
+# TODO: Check pins global pins availability
+
+
 class HardwareInterface(object):
     """Abstract class representing a hardware interface
 
@@ -7,7 +10,7 @@ class HardwareInterface(object):
         write: Write to rhe hardware. Descendants should overwrite this method.
         close: Free hardware resources.
     """
-    
+
     def initialize():
         """Initialize hardware resources."""
         pass
@@ -32,11 +35,15 @@ class GPIOPin(HardwareInterface):
         pin_num: An integer indicating the bcm pin number.
         function: A string that could be input or output.
         pull: A string indicating the pull up state of the pin. It could be
-              up, down or floating.
+            up, down or floating.
         frequency: An integer indicating the frequency of the pin, if it is 
-                   a pwm pin. 
+                 a pwm pin. 
         pwm: A boolean that indicates if the pin is pwm or not.
     """
+
+    def __init__(self, number):
+        """Constructor"""
+        pin_num = number
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
@@ -93,3 +100,57 @@ class GPIOPin(HardwareInterface):
         return self._pwm
 
     pwm = property(_get_pwm, _set_pwm)
+
+
+class GPIO(HardwareInterface):
+    """GPIO
+
+    Attributes:
+        pins: A dictionary that has as keys the pin's name and as value the 
+            GPIOPin instance.
+    Methods:
+    """
+    
+    def __init__(self, **kwargs):
+        """Constructor
+
+        Args:
+            **kwargs: Keyword arguments pin_name: pin_number. For example 
+                    echo=1, trigger=2
+        """ 
+        
+        self._pins = {}
+        for key, value in kwargs.items():
+            self._pins[key] = GPIOPin(value)
+    
+    def _set_pins(self, pins):
+        self._pins = pins
+
+    def _get_pins(self):
+        return self._pins
+
+    pins = property(_get_pins, _set_pins)
+
+    def set_pin_function(self, pin, function):
+        pass
+
+    def get_pin_function(self, pin):
+        return self._pins[pin].function
+
+    def set_pin_pull(self, pin, pull):
+        pass
+
+    def get_pin_pull(self, pin):
+        return self._pins[pin].pull
+
+    def set_pin_frequency(self, pin, frequency):
+        pass
+
+    def get_pin_frequency(self, pin):
+        return self._pins[pin].frequency
+
+    def set_pin_pwm(self, pin, pwm):
+        pass
+
+    def get_pin_pwm(self, pin):
+        return self._pins[pin].pwm
