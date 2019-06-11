@@ -1,3 +1,3 @@
-from .hardware_interfaces import HardwareInterface
+from .hardware_interfaces import *
 
 name = 'pidevices'
