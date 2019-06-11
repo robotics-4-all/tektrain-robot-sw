@@ -26,7 +26,7 @@ class HardwareInterface(object):
 
 
 class GPIOPin(HardwareInterface):
-    """Abstract class representing a gpio pin.
+    """Class representing a gpio pin.
 
     Attributes:
         pin_num: An integer indicating the bcm pin number.
@@ -39,57 +39,57 @@ class GPIOPin(HardwareInterface):
     """
 
     def _set_pin_num(self, pin_num):
-        pass
+        self._pin_num = pin_num
     
     def _get_pin_num(self):
-        pass
+        return self._pin_num
 
     pin_num = property(_get_pin_num, _set_pin_num)
 
     def _set_function(self, function):
-        pass
+        self._function = function
 
     def _get_function(self):
-        pass
+        return self._function
 
     function = property(_get_function, _set_function)
 
     def _set_pull(self, pull):
-        pass
+        self._pull = pull
 
     def _get_pull(self):
-        pass
+        return pull
 
     pull = property(_get_pull, _set_pull)
 
     def _set_frequency(self, frequency):
-        pass
+        self._frequency = frequency
 
     def _get_frequency(self):
-        pass
+        return self._frequency
 
     frequency = property(_get_frequency, _set_frequency)
 
     def _set_bounce_time(self, bounce_time):
-        pass
+        self._bounce_time = bounce_time
 
     def _get_bounce_time(self):
-        pass
+        return self._bounce_time
 
     bounce_time = property(_get_bounce_time, _set_bounce_time)
 
     def _set_edges(self, edges):
-        pass
+        self._edges = edges
 
     def _get_edges(self):
-        pass
+        return self._edges
 
     edges = property(_get_edges, _set_edges)
     
     def _set_pwm(self, pwm):
-        pass
+        self._pwm = pwm
 
     def _get_pwm(self):
-        pass
+        return self._pwm
 
     pwm = property(_get_pwm, _set_pwm)
