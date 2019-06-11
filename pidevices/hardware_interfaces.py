@@ -101,6 +101,14 @@ class GPIOPin(HardwareInterface):
 
     pwm = property(_get_pwm, _set_pwm)
 
+    def _set_duty_cycle(self, duty_cycle):
+        self._duty_cycle = duty_cycle
+
+    def _get_duty_cycle(self):
+        return self._duty_cycle
+
+    pwm = property(_get_duty_cycle, _set_duty_cycle)
+
 
 class GPIO(HardwareInterface):
     """GPIO
@@ -154,3 +162,9 @@ class GPIO(HardwareInterface):
 
     def get_pin_pwm(self, pin):
         return self._pins[pin].pwm
+
+    def set_pin_duty_cycle(self, pin, duty_cycle):
+        pass
+
+    def get_pin_duty_cycle(self, pin):
+        return self._pins[pin].duty_cycle
