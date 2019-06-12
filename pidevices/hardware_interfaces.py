@@ -113,7 +113,6 @@ class GPIOPin(HardwareInterface):
 
     duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
 
-
 # TODO: catch exceptions if the pin for get functions if the pins has not that
 # attribute
 class GPIO(HardwareInterface):
@@ -137,6 +136,24 @@ class GPIO(HardwareInterface):
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
     
+    def initialize(self, pin, function, pull="floating", value=None):
+        """Initialize single pin.
+        
+        Args:
+            pin: A string representing the pin as the user has name it.
+            function: A string for the pin function.
+            pull: Initialize pull up if it is an input pin.
+            value: Initialize value if it is an output pin.
+        """
+        self.set_pin_function(pin, function)
+
+        # Write if the function is output and we want value on start
+        if function is 'output' and value is not None:
+            self.write(pin, value)
+
+        if function is 'input':
+            self.set_pin_pull(pin, pull)
+
     def write(self, pin, value):
         """Write a value to the specific pin
         
