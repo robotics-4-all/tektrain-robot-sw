@@ -43,7 +43,7 @@ class GPIOPin(HardwareInterface):
 
     def __init__(self, number):
         """Constructor"""
-        pin_num = number
+        self._pin_num = number
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
@@ -65,7 +65,7 @@ class GPIOPin(HardwareInterface):
         self._pull = pull
 
     def _get_pull(self):
-        return pull
+        return self._pull
 
     pull = property(_get_pull, _set_pull)
 
