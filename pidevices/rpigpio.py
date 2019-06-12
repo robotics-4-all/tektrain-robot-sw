@@ -28,13 +28,13 @@ class RPiGPIO(GPIO):
 
         super(RPiGPIO, self).__init__(**kwargs)
 
+    def initialize(self):
         # Set RPi.GPIO mode
         if RPIGPIO.getmode() is None:
             RPIGPIO.setmode(RPIGPIO.BCM)
 
     def read(self, pin):
-        pin = self.pins[pin]
-        return RPIGPIO.input(pin.pin_num)
+        return RPIGPIO.input(self.pins[pin].pin_num)
 
     def write(self, pin, value):
         # Check for value type
@@ -42,11 +42,10 @@ class RPiGPIO(GPIO):
             value = float(value)
 
         if not isinstance(value, float):
-            raise TypeError("Invalid value type, should be float.")
+            raise TypeError("Invalid value type, should be float or int.")
 
         value = abs(value)    # Make it positive
-
-        # Move it in range [0, 1]
+        # Move it in range [0, 1], it may be with no reason
         try:
             value = (value - int(value)) if value % 1 != 0 else value/value
         except ZeroDivisionError:
@@ -62,12 +61,17 @@ class RPiGPIO(GPIO):
             else:
                 value = int(round(value))
                 RPIGPIO.output(pin.pin_num, value)
+        else:
+            # Can't drive an input pin.
 
     def close(self):
         RPIGPIO.cleanup()
 
     def close_pin(self, pin):
         RPIGPIO.cleanup(self.pins[pin])
+
+    def remove_pins(self):
+        pass
 
     def set_pin_function(self, pin, function):
         pin = self.pins[pin]
