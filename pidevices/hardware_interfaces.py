@@ -133,9 +133,26 @@ class GPIO(HardwareInterface):
         """ 
         
         self._pins = {}
+        self.add_pins(**kwargs)
+
+    def add_pins(self, **kwargs):
+        """Add new pins.
+        
+        Args:
+            **kwargs: Keyword arguments pin_name: pin_number. For example 
+                    echo=1, trigger=2
+        """
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
     
+    # Not sure yet
+    def remove_pin(self, pin):
+        pass
+
+    # Not sure yet
+    def remove_pins(self, pins):
+        pass
+
     def initialize(self, pin, function, pull="floating", value=None):
         """Initialize single pin.
         
@@ -200,3 +217,4 @@ class GPIO(HardwareInterface):
 
     def get_pin_duty_cycle(self, pin):
         return self._pins[pin].duty_cycle
+
