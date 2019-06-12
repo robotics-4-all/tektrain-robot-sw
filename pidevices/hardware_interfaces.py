@@ -110,6 +110,8 @@ class GPIOPin(HardwareInterface):
     pwm = property(_get_duty_cycle, _set_duty_cycle)
 
 
+# TODO: catch exceptions if the pin for get functions if the pins has not that
+# attribute
 class GPIO(HardwareInterface):
     """GPIO
 
