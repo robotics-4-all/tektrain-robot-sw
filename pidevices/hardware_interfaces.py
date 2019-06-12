@@ -39,15 +39,17 @@ class GPIOPin(HardwareInterface):
         frequency: An integer indicating the frequency of the pin, if it is 
                  a pwm pin. 
         pwm: A boolean that indicates if the pin is pwm or not.
+        duty_cycle: Float for the percentage of the pwm cycle.
     """
 
     def __init__(self, number):
         """Constructor"""
         self._pin_num = number
-        self._frequency = 0
-        self._pwm = False
-        self._duty_cycle = 0 
-        self._edges = None
+        self._function = None
+        self._pull = None
+        self._frequency = None
+        self._pwm = None
+        self._duty_cycle = None
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
@@ -81,22 +83,6 @@ class GPIOPin(HardwareInterface):
 
     frequency = property(_get_frequency, _set_frequency)
 
-    def _set_bounce_time(self, bounce_time):
-        self._bounce_time = bounce_time
-
-    def _get_bounce_time(self):
-        return self._bounce_time
-
-    bounce_time = property(_get_bounce_time, _set_bounce_time)
-
-    def _set_edges(self, edges):
-        self._edges = edges
-
-    def _get_edges(self):
-        return self._edges
-
-    edges = property(_get_edges, _set_edges)
-    
     def _set_pwm(self, pwm):
         self._pwm = pwm
 
@@ -121,14 +107,13 @@ class GPIO(HardwareInterface):
     Attributes:
         pins: A dictionary that has as keys the pin's name and as value the 
             GPIOPin instance.
-    Methods:
     """
     
     def __init__(self, **kwargs):
         """Constructor
 
         Args:
-            **kwargs: Keyword arguments pin_name: pin_number. For example 
+            **kwargs: Keyword arguments pin_name=pin_number. For example 
                     echo=1, trigger=2
         """ 
         
@@ -139,37 +124,30 @@ class GPIO(HardwareInterface):
         """Add new pins.
         
         Args:
-            **kwargs: Keyword arguments pin_name: pin_number. For example 
+            **kwargs: Keyword arguments pin_name=pin_number. For example 
                     echo=1, trigger=2
         """
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
     
-    # Not sure yet
-    def remove_pin(self, pin):
+    def remove_pins(self, *args):
+        """Remove a pin/pins from the dictionary and free the resources."""
         pass
 
-    # Not sure yet
-    def remove_pins(self, pins):
-        pass
+    def initialize_input(self, pin, pull):
+        """Initialize a pin to input with initial pull up value."""
+        self.set_pin_pull(pin, pull)
+    
+    def initialize_output(self, pin, value):
+        """Initialize a pin to output with an output value."""
+        self.set_pin_function(pin, "output")
+        self.write(pin, value)
 
-    def initialize(self, pin, function, pull="floating", value=None):
-        """Initialize single pin.
-        
-        Args:
-            pin: A string representing the pin as the user has name it.
-            function: A string for the pin function.
-            pull: Initialize pull up if it is an input pin.
-            value: Initialize value if it is an output pin.
-        """
-        self.set_pin_function(pin, function)
-
-        # Write if the function is output and we want value on start
-        if function is 'output' and value is not None:
-            self.write(pin, value)
-
-        if function is 'input':
-            self.set_pin_pull(pin, pull)
+    def initialize_pwm(self, pin, frequency, duty_cycle=0):
+        """Initialize a pin to pwm with frequency and duty cycle."""
+        self.set_pin_function(pin, "output")
+        self.set_pin_pwm(pin, frequency)
+        self.write(pin, duty_cycle)
 
     def write(self, pin, value):
         """Write a value to the specific pin
@@ -206,7 +184,7 @@ class GPIO(HardwareInterface):
     def get_pin_frequency(self, pin):
         return self._pins[pin].frequency
 
-    def set_pin_pwm(self, pin, pwm):
+    def set_pin_pwm(self, pin, frequency):
         pass
 
     def get_pin_pwm(self, pin):
@@ -217,4 +195,3 @@ class GPIO(HardwareInterface):
 
     def get_pin_duty_cycle(self, pin):
         return self._pins[pin].duty_cycle
-
