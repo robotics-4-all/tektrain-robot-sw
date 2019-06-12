@@ -44,6 +44,10 @@ class GPIOPin(HardwareInterface):
     def __init__(self, number):
         """Constructor"""
         self._pin_num = number
+        self._frequency = 0
+        self._pwm = False
+        self._duty_cycle = 0 
+        self._edges = None
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
@@ -107,7 +111,7 @@ class GPIOPin(HardwareInterface):
     def _get_duty_cycle(self):
         return self._duty_cycle
 
-    pwm = property(_get_duty_cycle, _set_duty_cycle)
+    duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
 
 
 # TODO: catch exceptions if the pin for get functions if the pins has not that
@@ -133,6 +137,15 @@ class GPIO(HardwareInterface):
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
     
+    def write(self, pin, value):
+        """Write a value to the specific pin
+        
+        Args:
+            pin: An integer indicating the pin number
+            value: A float that should be between [0, 1]
+        """
+        pass
+
     def _set_pins(self, pins):
         self._pins = pins
 
