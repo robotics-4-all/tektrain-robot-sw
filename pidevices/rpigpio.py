@@ -43,14 +43,31 @@ class RPiGPIO(GPIO):
 
     def read(self, pin):
         pin = self.pins[pin]
-        if pin.function is 'input':
-            return RPIGPIO.input(pin.pin_num)
-        else:
-            # Cant read from output pin
-            pass
+        return RPIGPIO.input(pin.pin_num)
 
-    def write(self, pin):
-        pass
+    def write(self, pin, value):
+        # Check for value type
+        if isinstance(value, int):
+            value = float(value)
+
+        if not isinstance(value, float):
+            raise TypeError("Invalid value type, should be float.")
+
+        value = abs(value)    # Make it positive
+        # Move it in range [0, 1]
+        value = (value - int(value)) if value % 1 != 0 else 1 # Maybe no reason
+
+        pin = self.pins[pin]
+        # Check if it is pwm or simple output
+        if pin.function is 'output':
+            if pin.pwm:
+                pass
+            else:
+                # If it is greater than 1 make it 1, also if it negative make 
+                # it positive.
+                value = int(round(value))
+                RPIGPIO.output(pin.pin_num, value)
+
 
     def close(self, pin):
         pass
@@ -75,14 +92,15 @@ class RPiGPIO(GPIO):
 
     def set_pin_pwm(self, pin, pwm):
         # This is software pwm
-        pin = self.pins[pin]
-        if pin.function is 'output':
-            # TODO: Checks for frequency as gpiozero.
-            RPIGPIO.PWM(pin.number, pin.frequency)
-            pin.pwm = True
-        else:
-            # Raise expeption for hardware pwm
-            pass
+        #pin = self.pins[pin]
+        #if pin.function is 'output':
+        #    # TODO: Checks for frequency as gpiozero.
+        #    RPIGPIO.PWM(pin.number, pin.frequency)
+        #    pin.pwm = True
+        #else:
+        #    # Raise expeption for hardware pwm
+        #    pass
+        pass
 
     def set_pin_frequency(self, pin, frequency):
         #pin = self.pins[pin]
