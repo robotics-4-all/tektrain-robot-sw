@@ -198,3 +198,63 @@ class GPIO(HardwareInterface):
 
     def get_pin_duty_cycle(self, pin):
         return self._pins[pin].duty_cycle
+
+
+class SPI(HardwareInterface):
+    """Abstract class representing spi hardware interface.
+
+    Attributes:
+        clock_polarity: Boolean representing the polarity of the SPI clock. 
+                      If it is False the clock will idle low and pulse high. 
+                      Else it will idle high and pulse low.
+        clock_phase: Boolean representing the phase of the SPI clock. If it is 
+                   False the data will be read from the MISO pin when the clock
+                   pin activates. Else it the data will be read from the MISO
+                   pin when the clock pin deactivates.
+        lsb_first: Boolean that controls if the data are read and written in 
+                  LSB.
+        select_high: Boolean that indicates if the chip select line is considered
+                   active when it is pulled down.
+        bit_per_word: An integer representing the number of bits that make up 
+                    a word.
+    """
+    
+    def _get_clock_polarity(self):
+        return self._clock_polarity
+
+    def _set_clock_polarity(self, clock_polarity):
+        self._clock_polarity = clock_polarity
+    
+    clock_polarity = property(_get_clock_polarity, _set_clock_polarity)
+
+    def _get_clock_phase(self):
+        return self._clock_phase
+
+    def _set_clock_phase(self, clock_phase):
+        self._clock_phase = clock_phase
+    
+    clock_phase = property(_get_clock_phase, _set_clock_phase)
+
+    def _get_lsb_first(self):
+        return self._lsb_first
+
+    def _set_lsb_first(self, lsb_first):
+        self._lsb_first = lsb_first
+    
+    lsb_first = property(_get_lsb_first, _set_lsb_first)
+
+    def _get_select_high(self):
+        return self._select_high
+
+    def _set_select_high(self, select_high):
+        self._select_high = select_high
+    
+    select_high = property(_get_select_high, _set_select_high)
+
+    def _get_bit_per_word(self):
+        return self._bit_per_word
+
+    def _set_bit_per_word(self, bit_per_word):
+        self._bit_per_word = bit_per_word
+    
+    bit_per_word = property(_get_bit_per_word, _set_bit_per_word)
