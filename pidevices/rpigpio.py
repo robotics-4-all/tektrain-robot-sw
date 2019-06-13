@@ -73,13 +73,20 @@ class RPiGPIO(GPIO):
             pass
 
     def close(self):
-        RPIGPIO.cleanup()
+        self.remove_pins(*self.pins.keys())
 
-    def close_pin(self, pin):
-        RPIGPIO.cleanup(self.pins[pin])
+    def remove_pins(self, *args):
+        """Remove a pin/pins
+        
+        Args:
+            *args: String with the pin's name, it could be more than one.
+        """
+        for pin in args:
+            if self.pins[pin].pwm:
+                self.set_pin_pwm(pin, False)
+            RPIGPIO.cleanup(self.pins[pin].pin_num)
+            del self.pins[pin]
 
-    def remove_pins(self):
-        pass
 
     def set_pin_function(self, pin, function):
         pin = self.pins[pin]
