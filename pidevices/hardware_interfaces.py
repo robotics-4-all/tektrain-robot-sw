@@ -137,6 +137,7 @@ class GPIO(HardwareInterface):
 
     def initialize_input(self, pin, pull):
         """Initialize a pin to input with initial pull up value."""
+        self.set_pin_function(pin, "input")
         self.set_pin_pull(pin, pull)
     
     def initialize_output(self, pin, value):
