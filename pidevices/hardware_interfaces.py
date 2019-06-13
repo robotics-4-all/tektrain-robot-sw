@@ -149,7 +149,7 @@ class GPIO(HardwareInterface):
         """Initialize a pin to pwm with frequency and duty cycle."""
         self.set_pin_function(pin, "output")
         self.set_pin_pwm(pin, True)
-        self.set_pin_frequency(frequency)
+        self.set_pin_frequency(pin, frequency)
         self.write(pin, duty_cycle)
 
     def write(self, pin, value):
