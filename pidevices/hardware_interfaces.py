@@ -217,6 +217,7 @@ class SPI(HardwareInterface):
                    active when it is pulled down.
         bit_per_word: An integer representing the number of bits that make up 
                     a word.
+        max_speed_hz: Integer that sets the maximum bus speed in Hz.
     """
     
     def _get_clock_polarity(self):
@@ -258,3 +259,11 @@ class SPI(HardwareInterface):
         self._bit_per_word = bit_per_word
     
     bit_per_word = property(_get_bit_per_word, _set_bit_per_word)
+
+    def _get_max_speed_hz(self):
+        return self._max_speed_hz
+
+    def _set_max_speed_hz(self, max_speed_hz):
+        self._max_speed_hz = max_speed_hz
+    
+    max_speed_hz = property(_get_max_speed_hz, _set_max_speed_hz)
