@@ -13,10 +13,12 @@ class RPiGPIO(GPIO):
     Methods:
     """
 
+    # Maybe make them class attributes and with inheritance change the values
     RPIGPIO_FUNCTIONS = {
         'input': RPIGPIO.IN,
         'output': RPIGPIO.OUT
     }
+
     RPIGPIO_PULLS = {
         'up': RPIGPIO.PUD_UP,
         'down': RPIGPIO.PUD_DOWN,
@@ -27,6 +29,10 @@ class RPiGPIO(GPIO):
         """Contstructor"""
 
         super(RPiGPIO, self).__init__(**kwargs)
+        self.initialize()
+
+        # Specific pwm pin instances of RPi.GPIO library.
+        self._pwm_pins = {}
 
     def initialize(self):
         # Set RPi.GPIO mode
@@ -51,18 +57,20 @@ class RPiGPIO(GPIO):
         except ZeroDivisionError:
             value = 0
 
+        pin_name = pin
         pin = self.pins[pin]
 
         # Check if it is pwm or simple output
         if pin.function is 'output':
             if pin.pwm:
-                pin.pwm.ChangeDutyCycle(value*100)
+                self.pwm_pins[pin_name].ChangeDutyCycle(value*100)
                 pin.duty_cycle = value
             else:
                 value = int(round(value))
                 RPIGPIO.output(pin.pin_num, value)
         else:
             # Can't drive an input pin.
+            pass
 
     def close(self):
         RPIGPIO.cleanup()
@@ -89,28 +97,44 @@ class RPiGPIO(GPIO):
             # Raise exception for invalid function for pin
             pass
 
-    def set_pin_pwm(self, pin, frequency):
-        """Starts the pwm with duty cycle 0."""
+    def set_pin_pwm(self, pin, pwm):
+        """Sets the pwm attribute and initialize pwm with frequency 0 and 
+           duty cycle 0.
+            
+            Args:
+                pwm: A boolean indicating the state of the pin.
+        """
+        if not isinstance(pwm, bool):
+            raise TypeError("Invalid pwm type, should be boolean.")
 
-        # This is software pwm
+        pin_name = pin
         pin = self.pins[pin]
-        if pin.function is 'output':
-            pin.pwm = RPIGPIO.PWM(pin.pin_num, frequency)
-            pin.frequency = frequency
-            pin.duty_cycle = 0.
-            pin.pwm.start(pin.duty_cycle)
-        else:
-            # Raise expeption for hardware pwm
-            pass
+
+        if not pin.pwm and pwm:
+            # The pwm is deactivated and it will be activated.
+            pin.frequency = 1
+            pin.duty_cycle = 0
+            self.pwm_pins[pin_name] = RPIGPIO.PWM(pin.pin_num, pin.frequency)
+            self.pwm_pins[pin_name].start(pin.duty_cycle)
+        elif pin.pwm and not pwm:
+            # The pwm is activated and will be deactivated.
+            pin.frequency = None
+            pin.duty_cycle = None
+            self.pwm_pins[pin_name].stop()
+            del self.pwm_pins[pin_name]
+
+        pin.pwm = pwm
 
     def set_pin_frequency(self, pin, frequency):
+        pin_name = pin
         pin = self.pins[pin]
         if pin.pwm:
             pin.frequency = frequency
-            pin.pwm.ChangeFrequency(frequency)
+            self.pwm_pins[pin_name].ChangeFrequency(frequency)
         else:
             # Raise exception that this pin isn't pwm
             pass
 
-    def set_pin_duty_cycle(self, pin, duty_cycle):
-        pin = self.pins[pin].duty_cycle = duty_cycle
+    @property
+    def pwm_pins(self):
+        return self._pwm_pins

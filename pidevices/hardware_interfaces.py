@@ -99,6 +99,7 @@ class GPIOPin(HardwareInterface):
 
     duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
 
+
 # TODO: catch exceptions if the pin for get functions if the pins has not that
 # attribute
 class GPIO(HardwareInterface):
@@ -146,7 +147,8 @@ class GPIO(HardwareInterface):
     def initialize_pwm(self, pin, frequency, duty_cycle=0):
         """Initialize a pin to pwm with frequency and duty cycle."""
         self.set_pin_function(pin, "output")
-        self.set_pin_pwm(pin, frequency)
+        self.set_pin_pwm(pin, True)
+        self.set_pin_frequency(frequency)
         self.write(pin, duty_cycle)
 
     def write(self, pin, value):
