@@ -211,6 +211,7 @@ class SPI(HardwareInterface):
                    False the data will be read from the MISO pin when the clock
                    pin activates. Else it the data will be read from the MISO
                    pin when the clock pin deactivates.
+        clock_mode: 
         lsb_first: Boolean that controls if the data are read and written in 
                   LSB.
         select_high: Boolean that indicates if the chip select line is considered
@@ -221,49 +222,49 @@ class SPI(HardwareInterface):
     """
     
     def _get_clock_polarity(self):
-        return self._clock_polarity
+        pass
 
     def _set_clock_polarity(self, clock_polarity):
-        self._clock_polarity = clock_polarity
+        pass
     
     clock_polarity = property(_get_clock_polarity, _set_clock_polarity)
 
     def _get_clock_phase(self):
-        return self._clock_phase
+        pass
 
     def _set_clock_phase(self, clock_phase):
-        self._clock_phase = clock_phase
+        pass
     
     clock_phase = property(_get_clock_phase, _set_clock_phase)
 
     def _get_lsb_first(self):
-        return self._lsb_first
+        pass
 
     def _set_lsb_first(self, lsb_first):
-        self._lsb_first = lsb_first
+        pass
     
     lsb_first = property(_get_lsb_first, _set_lsb_first)
 
     def _get_select_high(self):
-        return self._select_high
+        pass
 
     def _set_select_high(self, select_high):
-        self._select_high = select_high
+        pass
     
     select_high = property(_get_select_high, _set_select_high)
 
     def _get_bit_per_word(self):
-        return self._bit_per_word
+        pass
 
     def _set_bit_per_word(self, bit_per_word):
-        self._bit_per_word = bit_per_word
+        pass
     
     bit_per_word = property(_get_bit_per_word, _set_bit_per_word)
 
     def _get_max_speed_hz(self):
-        return self._max_speed_hz
+        pass
 
     def _set_max_speed_hz(self, max_speed_hz):
-        self._max_speed_hz = max_speed_hz
+        pass
     
     max_speed_hz = property(_get_max_speed_hz, _set_max_speed_hz)
