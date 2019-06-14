@@ -211,7 +211,8 @@ class SPI(HardwareInterface):
                    False the data will be read from the MISO pin when the clock
                    pin activates. Else it the data will be read from the MISO
                    pin when the clock pin deactivates.
-        clock_mode: 
+        clock_mode: Integer representing the four combinations of clock_polarity
+                  and clock_phase.
         lsb_first: Boolean that controls if the data are read and written in 
                   LSB.
         select_high: Boolean that indicates if the chip select line is considered
@@ -236,6 +237,14 @@ class SPI(HardwareInterface):
         pass
     
     clock_phase = property(_get_clock_phase, _set_clock_phase)
+
+    def _get_clock_mode(self):
+        pass
+
+    def _set_clock_mode(self, clock_phase):
+        pass
+    
+    clock_phase = property(_get_clock_mode, _set_clock_mode)
 
     def _get_lsb_first(self):
         pass
