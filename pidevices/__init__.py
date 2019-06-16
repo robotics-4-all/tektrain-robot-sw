@@ -1,4 +1,4 @@
 from .hardware_interfaces import *
-from .rpigpio import RPiGPIO
+from .gpio_implementations import RPiGPIO
 
 name = 'pidevices'
