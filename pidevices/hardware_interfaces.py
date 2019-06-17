@@ -277,3 +277,31 @@ class SPI(HardwareInterface):
         pass
     
     max_speed_hz = property(_get_max_speed_hz, _set_max_speed_hz)
+
+
+class HPWM(HardwareInterface):
+    """Abstract class representing hardware pwm."""
+
+    def _get_frequency(self):
+        pass
+
+    def _set_frequency(self, frequency):
+        pass
+
+    frequency = property(_get_frequency, _set_frequency)
+
+    def _get_duty_cycle(self):
+        pass
+
+    def _set_duty_cycle(self, duty_cycle):
+        pass
+
+    duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
+
+    def _get_enable(self):
+        pass
+
+    def _set_enable(self, enable):
+        pass
+
+    enable = property(_get_enable, _set_enable)
