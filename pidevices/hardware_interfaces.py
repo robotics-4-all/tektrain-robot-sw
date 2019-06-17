@@ -135,17 +135,17 @@ class GPIO(HardwareInterface):
         """Remove a pin/pins from the dictionary and free the resources."""
         pass
 
-    def initialize_input(self, pin, pull):
+    def init_input(self, pin, pull):
         """Initialize a pin to input with initial pull up value."""
         self.set_pin_function(pin, "input")
         self.set_pin_pull(pin, pull)
     
-    def initialize_output(self, pin, value):
+    def init_output(self, pin, value):
         """Initialize a pin to output with an output value."""
         self.set_pin_function(pin, "output")
         self.write(pin, value)
 
-    def initialize_pwm(self, pin, frequency, duty_cycle=0):
+    def init_pwm(self, pin, frequency, duty_cycle=0):
         """Initialize a pin to pwm with frequency and duty cycle."""
         self.set_pin_function(pin, "output")
         self.set_pin_pwm(pin, True)
