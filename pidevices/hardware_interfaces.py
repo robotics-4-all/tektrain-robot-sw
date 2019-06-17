@@ -305,3 +305,11 @@ class HPWM(HardwareInterface):
         pass
 
     enable = property(_get_enable, _set_enable)
+
+    def _get_polarity(self):
+        pass
+
+    def _set_polarity(self, polarity):
+        pass
+
+    polarity = property(_get_polarity, _set_polarity)
