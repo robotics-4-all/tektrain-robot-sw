@@ -166,14 +166,14 @@ class Device(object):
         self._id = name
 
     @property
-    def spi(self):
-        """Get SPI instance."""
-        return self._hardware_interfaces["SPI"]
-
-    @property
     def gpio(self):
         """Get GPIO instance."""
         return self._hardware_interfaces["GPIO"]
+
+    @property
+    def spi(self):
+        """Get SPI instance."""
+        return self._hardware_interfaces["SPI"]
 
     @property
     def uart(self):
@@ -192,7 +192,6 @@ class Device(object):
 
 
 class Sensor(Device):
-
     def read(self):
         """Empty function for reading from devices, which will be
             overloaded.
