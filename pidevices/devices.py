@@ -10,7 +10,7 @@ class Device(object):
         'SPI': ["SPIimplementation"],
         'UART': [],
         'I2C': [],
-        'HPWM': []
+        'HPWM': ["HPWMPeriphery"]
     }
 
     _MODULES = {
@@ -18,7 +18,7 @@ class Device(object):
         'SPI': "pidevices.spi_implementations",
         'UART': None,
         'I2C': None,
-        'HPWM': None
+        'HPWM': "pidevices.hpwm_implementations"
     }
 
     def __init__(self, name="", max_data_length=100):
