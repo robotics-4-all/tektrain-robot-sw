@@ -321,7 +321,8 @@ class HPWM(HardwareInterface):
     def _set_duty_cycle(self, duty_cycle):
         pass
 
-    duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
+    duty_cycle = property(lambda self: self._get_duty_cycle(),
+                          lambda self, value: self._set_duty_cycle(value))
 
     def _get_enable(self):
         pass
@@ -329,7 +330,8 @@ class HPWM(HardwareInterface):
     def _set_enable(self, enable):
         pass
 
-    enable = property(_get_enable, _set_enable)
+    enable = property(lambda self: self._get_enable(),
+                      lambda self, value: self._set_enable(value))
 
     def _get_polarity(self):
         pass
@@ -337,4 +339,5 @@ class HPWM(HardwareInterface):
     def _set_polarity(self, polarity):
         pass
 
-    polarity = property(_get_polarity, _set_polarity)
+    polarity = property(lambda self: self._get_polarity(),
+                        lambda self, value: self._set_polarity(value))
