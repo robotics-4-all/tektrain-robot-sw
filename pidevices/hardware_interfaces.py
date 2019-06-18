@@ -282,13 +282,38 @@ class SPI(HardwareInterface):
 class HPWM(HardwareInterface):
     """Abstract class representing hardware pwm."""
 
+    _VALID_COMBS = [(12, 13), (18, 19), (40, 41), (52, 53)]
+    _SELECTED_COMB = None 
+    
+    def __init__(self, pin):
+        if not self._check_valid(pin):
+            # Raise exception
+            print("Invalid pin")
+            pass
+
+    def _check_valid(self, pin):
+        """Check if the pin is pwm"""
+
+        ret_val = False
+        if not HPWM._SELECTED_COMB: 
+            for comb in self._VALID_COMBS:
+                if pin in comb:
+                    HPWM._SELECTED_COMB = comb
+                    ret_val = True
+        else:
+            if pin in HPWM._SELECTED_COMB:
+                ret_val = True
+
+        return ret_val
+
     def _get_frequency(self):
         pass
 
     def _set_frequency(self, frequency):
         pass
 
-    frequency = property(_get_frequency, _set_frequency)
+    frequency = property(lambda self: self._get_frequency(),
+                         lambda self, value: self._set_frequency(value))
 
     def _get_duty_cycle(self):
         pass
