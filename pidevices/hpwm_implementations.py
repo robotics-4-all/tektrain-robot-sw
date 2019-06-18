@@ -30,7 +30,7 @@ class HPWMPeriphery(HPWM):
         self.duty_cycle = value
     
     def close(self):
-        pass
+        self.enable = 0
 
     def _get_frequency(self):
         return self.pwm.frequency

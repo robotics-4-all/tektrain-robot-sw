@@ -78,11 +78,11 @@ class DfrobotMotorController(MotorController):
             RPM:
         """
 
-        if speed_1:
+        if speed_1 not None:
             direction = int(speed_1 >= 0)
             self._write_motor(self.channel_1, direction, abs(speed_1), RPM)
 
-        if speed_2:
+        if speed_2 not None:
             direction = int(speed_2 >= 0)
             self._write_motor(self.channel_2, direction, abs(speed_2), RPM)
 
