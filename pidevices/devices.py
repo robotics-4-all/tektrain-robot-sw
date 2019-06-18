@@ -30,22 +30,17 @@ class Device(object):
         self._id = name
         self._max_data_length = max_data_length
         self.data = deque()
-        self._hardware_interfaces = {
-            'GPIO': None,
-            'SPI': None,
-            'UART': None,
-            'I2C': None,
-            'HPWM': None,
-        }
+        self._hardware_interfaces = {}
 
     # TODO: see if it is better practice to remove **kwargs from the function
     # and call the constructors with no arguments.
-    def init_interface(self, interface: str, impl=None, **kwargs):
+    def init_interface(self, name, interface: str, impl=None, **kwargs):
         """Choose an implementation for an interface.
 
         Args:
-            interface: String representing the hardware interface to be 
-                     initialized.
+            name: The interface name.
+            interface: String representing the hardware interface type, it should
+                     be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm
             impl: The specific implementation to be used. If it is none the 
                  first that is installed will be used.
             **kwargs: Keyword arguments for the constructor of the chosen 
@@ -56,17 +51,17 @@ class Device(object):
             raise TypeError("Wrong interface type, should be string.")
 
         interface = interface.upper()
-        if interface not in self._hardware_interfaces:
+        if interface not in self._MODULES:
             # Raise not supported interface
             pass
 
         if impl is not None:
-            self._hardware_interfaces[interface] = self._unwrap(interface,
-                                                                impl,
-                                                                **kwargs)
+            self._hardware_interfaces[name] = self._unwrap(interface,
+                                                           impl,
+                                                           **kwargs)
         else:
-            self._hardware_interfaces[interface] = self._choose_def(interface,
-                                                                    **kwargs)
+            self._hardware_interfaces[name] = self._choose_def(interface,
+                                                               **kwargs)
 
     def _choose_def(self, interface, **kwargs):
         """Choose default implementation.
@@ -166,29 +161,8 @@ class Device(object):
         self._id = name
 
     @property
-    def gpio(self):
-        """Get GPIO instance."""
-        return self._hardware_interfaces["GPIO"]
-
-    @property
-    def spi(self):
-        """Get SPI instance."""
-        return self._hardware_interfaces["SPI"]
-
-    @property
-    def uart(self):
-        """Get UART instance."""
-        return self._hardware_interfaces["UART"]
-
-    @property
-    def i2c(self):
-        """Get I2C instance."""
-        return self._hardware_interfaces["I2C"]
-
-    @property
-    def hpwm(self):
-        """Get HPWM instance."""
-        return self._hardware_interfaces["HPWM"]
+    def hardware_interfaces(self):
+        return self._hardware_interfaces
 
 
 class Sensor(Device):
