@@ -1,4 +1,4 @@
-from .hardware_interfaces import HPMW
+from .hardware_interfaces import HPWM
 
 try:
     from periphery import PWM
@@ -6,20 +6,31 @@ except ImportError:
     PWM = None
 
 
-class HPWMPeriphery(HPMW):
+class HPWMPeriphery(HPWM):
     """Wrapper around python periphery pwm implementation."""
 
-    def __init__(self, chip, channel):
+    _chip = 0  # PWM chip
 
+    def __init__(self, pin):
+        # Check if the pin is valid
+        try:
+            super(HPWMPeriphery, self).__init__(pin)
+        except:
+            pass
+        
         if PWM is None:
             raise ImportError("Failed to import PWM from periphery.")
-        self._pwm = PWM(chip, channel)
+
+        self._pwm = PWM(self._chip, self._SELECTED_COMB.index(pin))
 
     def read(self):
         return self.duty_cycle
 
     def write(self, value):
         self.duty_cycle = value
+    
+    def close(self):
+        pass
 
     def _get_frequency(self):
         return self.pwm.frequency
@@ -34,10 +45,15 @@ class HPWMPeriphery(HPMW):
         self.pwm.duty_cycle = duty_cycle
 
     def _get_enable(self):
-        return self.pwm.enable
+        return self._enable
 
     def _set_enable(self, enable):
-        self.pwm.enable = enable
+        #self.pwm.enable = enable
+        self._enable = enable
+        if self._enable:
+            self.pwm.enable()
+        else:
+            self.pwm.disable()
 
     def _get_polarity(self):
         pass
