@@ -2,7 +2,8 @@ from .hardware_interfaces import GPIO
 
 try:
     import RPi.GPIO as RPIGPIO
-except ModuleNotFoundError:
+except ImportError:
+    RPIGPIO = None
     print("RPi.GPIO is not installed.")
 
 
@@ -27,6 +28,8 @@ class RPiGPIO(GPIO):
 
     def __init__(self, **kwargs):
         """Contstructor"""
+        if RPIGPIO is None:
+            raise ImportError("rpigpio not found.")
 
         super(RPiGPIO, self).__init__(**kwargs)
         self.initialize()
@@ -86,7 +89,6 @@ class RPiGPIO(GPIO):
                 self.set_pin_pwm(pin, False)
             RPIGPIO.cleanup(self.pins[pin].pin_num)
             del self.pins[pin]
-
 
     def set_pin_function(self, pin, function):
         pin = self.pins[pin]
