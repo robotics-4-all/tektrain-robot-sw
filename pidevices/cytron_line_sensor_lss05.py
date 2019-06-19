@@ -106,16 +106,16 @@ class CytronLfLSS05(LineFollower):
         """
 
         for i in range(pulses):
-            self.gpio.write("cal", 0)
+            self.hardware_interfaces[self._gpio].write("cal", 0)
             c = 0
             while c < self._PULSE_TIME:
-                sleep(0.001)
+                sleep(self._SLEEP_TIME)
                 c += 1
 
-            self.gpio.write("cal", 1)
+            self.hardware_interfaces[self._gpio].write("cal", 1)
             c = 0
             while c < self._PULSE_TIME:
-                sleep(0.001)
+                sleep(self._SLEEP_TIME)
                 c += 1
 
     # Setters and getters
