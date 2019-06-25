@@ -60,7 +60,7 @@ class Device(object):
         if impl is not None:
             self._hardware_interfaces.append(self._unwrap(interface,
                                                           impl,
-                                                          **kwargs)
+                                                          **kwargs))
         else:
             self._hardware_interfaces.append(self._choose_def(interface, 
                                                               **kwargs))
