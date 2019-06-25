@@ -36,7 +36,12 @@ class HPWMPeriphery(HPWM):
         return self.pwm.frequency
 
     def _set_frequency(self, frequency):
-        self.pwm.frequency = frequency
+        "Ugly solution to sysf permission error"
+        try:
+            self.pwm.frequency = frequency
+        except PermissionError:
+            sleep(0.1)
+            self.pwm.frequency = frequency
 
     def _get_duty_cycle(self):
         return self.pwm.duty_cycle
