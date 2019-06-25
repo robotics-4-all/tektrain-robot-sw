@@ -15,7 +15,6 @@ class CytronLfLSS05(LineFollower):
     _MODES = {"dark": 2, "bright": 3}
     _PULSE_TIME = 200
     _SLEEP_TIME = 0.001
-    _gpio = "gpio"
 
     def __init__(self, so_1, so_2, 
                  so_3, so_4, so_5, 
@@ -41,17 +40,19 @@ class CytronLfLSS05(LineFollower):
             mode = "dark"
         self._mode = mode
 
+        self._gpio = None
+
         self.start()
 
     def start(self):
         """Initializa hardware and os resources."""
 
-        self.init_interface(self._gpio, "gpio",
-                            so_1=self.so_1,
-                            so_2=self.so_2,
-                            so_3=self.so_3,
-                            so_4=self.so_4,
-                            so_5=self.so_5)
+        self._gpio = self.init_interface("gpio",
+                                         so_1=self.so_1,
+                                         so_2=self.so_2,
+                                         so_3=self.so_3,
+                                         so_4=self.so_4,
+                                         so_5=self.so_5)
 
         # Init pins as input and pull down the resistors.
         self.hardware_interfaces[self._gpio].init_input("so_1", pull="down")

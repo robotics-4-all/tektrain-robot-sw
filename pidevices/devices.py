@@ -30,11 +30,11 @@ class Device(object):
         self._id = name
         self._max_data_length = max_data_length
         self.data = deque()
-        self._hardware_interfaces = {}
+        self._hardware_interfaces = []
 
     # TODO: see if it is better practice to remove **kwargs from the function
     # and call the constructors with no arguments.
-    def init_interface(self, name, interface: str, impl=None, **kwargs):
+    def init_interface(self, interface: str, impl=None, **kwargs):
         """Choose an implementation for an interface.
 
         Args:
@@ -45,6 +45,8 @@ class Device(object):
                  first that is installed will be used.
             **kwargs: Keyword arguments for the constructor of the chosen 
                      interface.
+        Returns:
+            int: Representing the interface's index in the list.
         """
 
         if not isinstance(interface, str):
@@ -56,12 +58,14 @@ class Device(object):
             pass
 
         if impl is not None:
-            self._hardware_interfaces[name] = self._unwrap(interface,
-                                                           impl,
-                                                           **kwargs)
+            self._hardware_interfaces.append(self._unwrap(interface,
+                                                          impl,
+                                                          **kwargs)
         else:
-            self._hardware_interfaces[name] = self._choose_def(interface,
-                                                               **kwargs)
+            self._hardware_interfaces.append(self._choose_def(interface, 
+                                                              **kwargs))
+
+        return len(self._hardware_interfaces) - 1
 
     def _choose_def(self, interface, **kwargs):
         """Choose default implementation.

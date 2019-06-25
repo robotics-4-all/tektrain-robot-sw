@@ -13,9 +13,6 @@ class DfrobotMotorController(MotorController):
     """
 
     _FREQUENCY = 20
-    _gpio = "gpio"
-    _pwm_1 = "pwm_1"
-    _pwm_2 = "pwm_2"
 
     def __init__(self,
                  E1, M1,
@@ -36,6 +33,10 @@ class DfrobotMotorController(MotorController):
                                   
         # PWM frequency                  
         self._frequency = self._FREQUENCY
+        self._gpio = None
+        self._pwm_1 = None
+        self._pwm_2 = None
+
         self.start() 
 
     def _enable_side(self, gpio_pin, pwm):
@@ -47,9 +48,9 @@ class DfrobotMotorController(MotorController):
 
     def start(self):
         # Initialize hardware interfaces
-        self.init_interface(self._gpio, "gpio", M1=self.M1, M2=self.M2)
-        self.init_interface(self._pwm_1, "hpwm", pin=self.E1)
-        self.init_interface(self._pwm_2, "hpwm", pin=self.E2)
+        self._gpio = self.init_interface("gpio", M1=self.M1, M2=self.M2)
+        self._pwm_1 = self.init_interface("hpwm", pin=self.E1)
+        self._pwm_2 = self.init_interface("hpwm", pin=self.E2)
 
         self._enable_side("M1", self._pwm_1)
         self._enable_side("M2", self._pwm_2)
