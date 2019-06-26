@@ -341,3 +341,16 @@ class HPWM(HardwareInterface):
 
     polarity = property(lambda self: self._get_polarity(),
                         lambda self, value: self._set_polarity(value))
+
+
+class I2C(HardwareInterface):
+    """Abstract base class representing i2c hardware interface."""
+    
+    def _set_bus(self, bus):
+        pass
+
+    def _get_bus(self):
+        pass
+
+    bus = property(lambda self: self._get_bus(),
+                   lambda self, value: self._set_bus(value))
