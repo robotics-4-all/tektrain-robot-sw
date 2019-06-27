@@ -9,7 +9,7 @@ class Device(object):
         'GPIO': ["RPiGPIO"],
         'SPI': ["SPIimplementation"],
         'UART': [],
-        'I2C': [],
+        'I2C': ["SMBus2"],
         'HPWM': ["HPWMPeriphery"]
     }
 
@@ -17,7 +17,7 @@ class Device(object):
         'GPIO': "pidevices.gpio_implementations",
         'SPI': "pidevices.spi_implementations",
         'UART': None,
-        'I2C': None,
+        'I2C': "pidevices.i2c_implementations",
         'HPWM': "pidevices.hpwm_implementations"
     }
 
@@ -60,7 +60,7 @@ class Device(object):
         if impl is not None:
             self._hardware_interfaces.append(self._unwrap(interface,
                                                           impl,
-                                                          **kwargs)
+                                                          **kwargs))
         else:
             self._hardware_interfaces.append(self._choose_def(interface, 
                                                               **kwargs))
