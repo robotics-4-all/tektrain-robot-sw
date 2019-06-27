@@ -128,11 +128,11 @@ class PCA9685(Actuator):
            first low and then high bytes.
         """
 
-        l = value & 0xFF 
+        low = value & 0xFF 
         h = value >> 8
         self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
                                                   register,
-                                                  l)
+                                                  low)
         self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
                                                   register + 1,
                                                   h)
@@ -167,6 +167,7 @@ class PCA9685(Actuator):
     def restart(self):
         """Set bit 7 at 1 of mode 1 register."""
         pass
+
     def _settle_osc(self):
         time.sleep(0.005)
 
@@ -202,12 +203,13 @@ class PCA9685(Actuator):
                                                   self.MODE_1,
                                                   old_mode | 0x80)
         
-
     def _get_frequency(self):
         """Maybe read prescaler value than having an extra variable."""
-        pass
+        prescaler = self.hardware_interfaces[self._i2c].read(self.PCA_ADDRESS,
+                                                             self.PRESCALE)
+        return (self.OSC_CLOCK*prescaler) / (prescaler+1)
 
-    frequency  = property(_get_frequency, _set_frequency)
+    frequency = property(_get_frequency, _set_frequency)
 
     @property
     def bus(self):
