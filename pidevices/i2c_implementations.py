@@ -26,11 +26,11 @@ class SMBus2(I2C):
             byte_num: How many bytes to read from the device. Max 32
         """
         
-        byte_num = max(byte_num, 32)
+        byte_num = min(byte_num, 32)
         if byte_num > 1:
             data = self.smbus.read_i2c_block_data(address, register, byte_num)
         else:
-            data = self.read_byte_data(address, register)
+            data = self.smbus.read_byte_data(address, register)
 
         return data
 
