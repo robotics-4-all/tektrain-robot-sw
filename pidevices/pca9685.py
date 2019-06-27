@@ -81,7 +81,8 @@ class PCA9685(Actuator):
     def write(self, channels, duty_cycle, delay=0):
         """Write
         
-        Channel list of channels or a single value
+        Channel list of channels or a single value, if channel is -1 right to
+        all channels
 
         delay is in %
 
@@ -159,10 +160,13 @@ class PCA9685(Actuator):
         self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
                                                   self.ALL_LED_OFF_L,
                                                   all_led_off_l)
+    
+    def stop(self):
+        pass
+
     def restart(self):
         """Set bit 7 at 1 of mode 1 register."""
         pass
-
     def _settle_osc(self):
         time.sleep(0.005)
 
