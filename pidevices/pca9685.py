@@ -147,12 +147,11 @@ class PCA9685(Actuator):
         """
         pass
     
+    # TODO: Use on chip reset and not the ad hoc solution.
     def stop(self):
         """Free hardware and os resources."""
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  self.SWRST,
-                                                  self.RESET)
-        self.hardware_interfaces.close()
+        self.write(list(range(16)), 0)
+        self.hardware_interfaces[self._i2c].close()
 
     def _settle_osc(self):
         time.sleep(0.005)
