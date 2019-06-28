@@ -14,11 +14,11 @@ class Device(object):
     }
 
     _MODULES = {
-        'GPIO': "pidevices.gpio_implementations",
-        'SPI': "pidevices.spi_implementations",
+        'GPIO': "pidevices.hardware_interfaces.gpio_implementations",
+        'SPI': "pidevices.hardware_interfaces.spi_implementations",
         'UART': None,
-        'I2C': "pidevices.i2c_implementations",
-        'HPWM': "pidevices.hpwm_implementations"
+        'I2C': "pidevices.hardware_interfaces.i2c_implementations",
+        'HPWM': "pidevices.hardware_interfaces.hpwm_implementations"
     }
 
     def __init__(self, name="", max_data_length=100):
