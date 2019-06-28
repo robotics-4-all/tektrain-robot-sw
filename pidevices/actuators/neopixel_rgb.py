@@ -1,6 +1,6 @@
 import time
 from neopixel import *
-from .devices import Actuator
+from ..devices import Actuator
 
 
 class LedController(Actuator):

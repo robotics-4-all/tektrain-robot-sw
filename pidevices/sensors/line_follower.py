@@ -1,4 +1,4 @@
-from .devices import Sensor
+from ..devices import Sensor
 
 class LineFollower(Sensor):
     """Base class representing line following sensors."""

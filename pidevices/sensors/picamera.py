@@ -5,7 +5,7 @@ from threading import Thread, Event, Lock
 from io import BytesIO
 from collections import namedtuple, deque
 from picamera import PiCamera
-from .devices import Sensor
+from ..devices import Sensor
 
 
 # Dimensions tuple

@@ -1,4 +1,4 @@
-from .devices import Actuator
+from ..devices import Actuator
 
 
 class MotorController(Actuator):
