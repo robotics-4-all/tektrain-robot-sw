@@ -9,7 +9,7 @@ class Device(object):
         'GPIO': ["RPiGPIO"],
         'SPI': ["SPIimplementation"],
         'UART': [],
-        'I2C': [],
+        'I2C': ["SMBus2"],
         'HPWM': ["HPWMPeriphery"]
     }
 
@@ -17,7 +17,7 @@ class Device(object):
         'GPIO': "pidevices.gpio_implementations",
         'SPI': "pidevices.spi_implementations",
         'UART': None,
-        'I2C': None,
+        'I2C': "pidevices.i2c_implementations",
         'HPWM': "pidevices.hpwm_implementations"
     }
 
