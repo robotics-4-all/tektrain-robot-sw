@@ -39,6 +39,9 @@ class PCA9685(Actuator):
     # Values for leds
     LED_FULL = 0x1000
 
+    SWRST = 0x00
+    RESET = 0x06
+
     def __init__(self, bus, frequency=None, oe=None, name="", max_data_lenght=1):
         """Constructor"""
 
@@ -142,31 +145,14 @@ class PCA9685(Actuator):
         
         Write to register ALLCALLADDR
         """
-        #if int(value) is 1:
-        #    all_led_on_h = self.LED_FULL
-        #elif !value:
-        #    all_led_off_h = self.LED_FULL
-
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  self.ALL_LED_ON_H,
-                                                  all_led_on_h)
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  self.ALL_LED_ON_L,
-                                                  all_led_on_l)
-
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  self.ALL_LED_OFF_H,
-                                                  all_led_off_h)
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  self.ALL_LED_OFF_L,
-                                                  all_led_off_l)
+        pass
     
     def stop(self):
-        pass
-
-    def restart(self):
-        """Set bit 7 at 1 of mode 1 register."""
-        pass
+        """Free hardware and os resources."""
+        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
+                                                  self.SWRST,
+                                                  self.RESET)
+        self.hardware_interfaces.close()
 
     def _settle_osc(self):
         time.sleep(0.005)
