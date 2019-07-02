@@ -22,5 +22,11 @@ class TestBME680(unittest.TestCase):
         register = sensor._get_bits(register, bits, shift)
         print(bin(register))
 
+    def test_mode(self):
+        pass
+
+    def test_reset(self):
+        pass
+
 if __name__ == "__main__":
     unittest.main()

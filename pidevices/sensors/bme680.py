@@ -34,7 +34,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     # Bits to shift for setting/reading bits in registers
 
     # CONFIG register
-    SPI_3W_EN = 1
+    SPI_3W_EN = 0
     SPI_3W_EN_BITS = 1
     FILTER = 2
     FILTER_BITS = 3
@@ -86,6 +86,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     GAS_MEASURING_BITS = 1
     NEW_DATA_0 = 7
     NEW_DATA_0_BITS = 1
+
+    MODES = {"sleep": 0, "forced": 1}
 
     def __init__(self, bus, slave, name="", max_data_lenght=1):
         """Constructor
@@ -142,13 +144,21 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         return (register & mask) >> shift
 
-    def _set_mode(self, value):
+    def _set_mode(self, mode):
         """Set chip mode.
 
         The mode could be sleep mode (0) or forced mode (1)
         Args:
             value: An integer indicating the mode.
+            mode: Could be sleep or forced
         """
         ctrl_meas = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
                                                              self.CTRL_MEAS)
-        self._set_bits(self, ctrl_meas, value, self.MODE)
+        self._set_bits(ctrl_meas, self.MODES[mode], self.MODE_BITS, self.MODE)
+
+    def _reset(self):
+        """Software reset, is like a power-on reset."""
+
+        self.hardware_interfaces[self._i2c].write(self.BME_ADDRESS,
+                                                  self.RESET,
+                                                  0xB6)
