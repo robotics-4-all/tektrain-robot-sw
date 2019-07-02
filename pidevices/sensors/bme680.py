@@ -130,7 +130,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         return register | (value << shift)
 
     def _get_bits(self, register, num_bits, shift):
-        pass
+        """Get specific bits from register
+        
+        Args:
+            register:
+            num_bits:
+            shift:
+        """
+        
+        mask = ((1<<num_bits) - 1) << shift
+
+        return (register & mask) >> shift
 
     def _set_mode(self, value):
         """Set chip mode.
