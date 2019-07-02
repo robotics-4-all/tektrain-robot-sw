@@ -88,6 +88,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     NEW_DATA_0_BITS = 1
 
     MODES = {"sleep": 0, "forced": 1}
+    OVERSAMPLING = {0: 0, 1: 1, 2: 2, 4: 3, 8: 4, 16: 5}
 
     def __init__(self, bus, slave, name="", max_data_lenght=1):
         """Constructor
@@ -109,12 +110,38 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         
         self._i2c = self.init_interface("i2c", bus=self._bus)
 
-    def read(self, measurement):
+    def read(self, t_oversampling=0, t_irr=0):
+        """Get a measurment.
+        
+        Args:
+            meas: String that could be temperature, humidity, pressure or gas.
+        """
+
+        #meas = meas if isinstance(meas, list) else [meas]
+        #temp_flag = True if "temperature" in meas else False
+        #pres_flag = True if "pressure" in meas else False
+        #hum_flag = True if "humidity" in meas else False
+        #gas_flag = True if "humidity" in meas else False
+
+        # Set oversampling if it is humidity, temperature or pressure.
+        # Set gas wait and heat for gas
+        # Change mode
+
+    def _prepare_temp(self, oversampling, iir):
+        pass
+
+    def _prepare_hum(self, oversampling, iir):
+        pass
+
+    def _prepare_pres(self, oversampling):
+        pass
+
+    def _prepare_gas(self):
         pass
 
     def stop(self):
         pass
-
+    
     def _set_bits(self, register, value, num_bits, shift):
         """Set shift bits from start of register with value.
 
