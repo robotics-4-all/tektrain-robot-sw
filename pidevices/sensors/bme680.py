@@ -124,13 +124,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """
 
         # Zero target bits
-        mask = (0xFF << ((num_bits + shift) | (1 << (num_bits+shift) - 1))) & 0xFF
-        print(mask)
-        #register = register & 
-        #value = (value << shift) | ((1 << (shift+1) - 1))
-        #value_bits = 
-        #register = register & value
-        #return register & (((0xFF & value) << shift) & 0xFF)
+        mask = ((0xFF << (num_bits + shift)) | ((1<<shift) - 1)) & 0xFF
+        register = register & mask
+
+        return register | (value << shift)
 
     def _get_bits(self, register, num_bits, shift):
         pass
