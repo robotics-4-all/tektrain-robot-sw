@@ -1,3 +1,4 @@
+import time
 from .humidity_sensor import HumiditySensor
 from .temperature_sensor import TemperatureSensor
 from .gas_sensor import GasSensor
@@ -29,7 +30,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PRESS_XLSB = 0x21
     PRESS_LSB = 0x20
     PRESS_MSB = 0x1F
-    EAS_STATUS_0 = 0x1D
+    MEAS_STATUS_0 = 0x1D
 
     # Bits to shift for setting/reading bits in registers
 
@@ -126,7 +127,34 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         Args:
             meas: String that could be temperature, humidity, pressure or gas.
         """
-        pass
+
+        self._set_register(self.CTRL_MEAS, self.MODE_BITS,
+                           self.MODE, self.MODES['forced'])
+
+        # Wait for measurements to finish
+        while self._get_register(self.MEAS_STATUS_0, self.MEASURING_BITS,
+                self.MEASURING):
+            time.sleep(0.01)
+
+        # Read results
+        temp = self._read_temp()
+
+        return temp
+
+    def _read_temp(self):
+        """Read temperature measurment."""
+        
+        data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
+                                                        self.TEMP_XLSB,
+                                                        byte_num=3)
+
+        # Get the bits of interest from third register
+        last_byte = self.OVERSAMPLING[self.t_oversample] - 1
+        data[2] = self._get_bits(data[2], self.TEMP_XLSB_7_4_BITS,
+                                 self.TEMP_XLSB_7_4)
+
+
+        return data
 
     def stop(self):
         pass
@@ -167,6 +195,18 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                                                   self.RESET,
                                                   0xB6)
 
+    def _get_register(self, register, bits, shift):
+        """Get specific bits from register.
+        
+        Args:
+            register:
+            bits:
+            shift:
+        """
+        r_val = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
+                                                         register)
+
+        return self._get_bits(r_val, bits, shift)
 
     def _set_register(self, register, bits, shift, value):
         """Write a new value to register.
