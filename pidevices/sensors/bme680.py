@@ -90,7 +90,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     MODES = {"sleep": 0, "forced": 1}
     OVERSAMPLING = {0: 0, 1: 1, 2: 2, 4: 3, 8: 4, 16: 5}
 
-    def __init__(self, bus, slave, name="", max_data_lenght=1):
+    def __init__(self, bus,
+                 slave, t_oversample=1, 
+                 p_oversample=0, h_oversample=0,
+                 name="", max_data_lenght=1):
         """Constructor
 
         Args:
@@ -100,43 +103,27 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         super(BME680, self).__init__(name, max_data_lenght)
         self._bus = bus
+        self.start()
+
+        # Initialize measurements parameters
+        self.t_oversample = t_oversample
+        self.p_oversample = p_oversample
+        self.h_oversample = h_oversample
 
         # TODO check slave values
         self.BME_ADDRESS = 0x76 + slave
-        self.start()
 
     def start(self):
         """Initialize hardware and os resources."""
         
         self._i2c = self.init_interface("i2c", bus=self._bus)
 
-    def read(self, t_oversampling=0, t_irr=0):
+    def read(self):
         """Get a measurment.
         
         Args:
             meas: String that could be temperature, humidity, pressure or gas.
         """
-
-        #meas = meas if isinstance(meas, list) else [meas]
-        #temp_flag = True if "temperature" in meas else False
-        #pres_flag = True if "pressure" in meas else False
-        #hum_flag = True if "humidity" in meas else False
-        #gas_flag = True if "humidity" in meas else False
-
-        # Set oversampling if it is humidity, temperature or pressure.
-        # Set gas wait and heat for gas
-        # Change mode
-
-    def _prepare_temp(self, oversampling, iir):
-        pass
-
-    def _prepare_hum(self, oversampling, iir):
-        pass
-
-    def _prepare_pres(self, oversampling):
-        pass
-
-    def _prepare_gas(self):
         pass
 
     def stop(self):
@@ -171,21 +158,56 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         return (register & mask) >> shift
 
-    def _set_mode(self, mode):
-        """Set chip mode.
-
-        The mode could be sleep mode (0) or forced mode (1)
-        Args:
-            value: An integer indicating the mode.
-            mode: Could be sleep or forced
-        """
-        ctrl_meas = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
-                                                             self.CTRL_MEAS)
-        self._set_bits(ctrl_meas, self.MODES[mode], self.MODE_BITS, self.MODE)
-
     def _reset(self):
         """Software reset, is like a power-on reset."""
 
         self.hardware_interfaces[self._i2c].write(self.BME_ADDRESS,
                                                   self.RESET,
                                                   0xB6)
+
+
+    def _set_register(self, register, bits, shift, value):
+        """Write a new value to register.
+        
+        Args:
+            register:
+            bits:
+            shift:
+            value:
+        """
+        
+        r_val = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
+                                                         register)
+        r_val = self._set_bits(r_val, value, bits, shift)
+        self.hardware_interfaces[self._i2c].write(self.BME_ADDRESS,
+                                                  register,
+                                                  r_val)
+
+    @property
+    def t_oversample(self):
+        return self._t_oversample
+
+    @t_oversample.setter
+    def t_oversample(self, value):
+        self._t_oversample = value
+
+        # Set osrs_t
+        self._set_register(self.CTRL_MEAS, self.OSRS_T_BITS,
+                           self.OSRS_T, self.OVERSAMPLING[value])
+        
+
+    @property
+    def p_oversample(self):
+        return self._p_oversample
+
+    @p_oversample.setter
+    def p_oversample(self, value):
+        self._p_oversample = value
+
+    @property
+    def h_oversample(self):
+        return self._h_oversample
+
+    @h_oversample.setter
+    def h_oversample(self, value):
+        self._h_oversample = value
