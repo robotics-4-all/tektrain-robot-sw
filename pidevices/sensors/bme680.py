@@ -153,8 +153,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """
 
         # Zero target bits
-        mask = ((0xFF << (num_bits + shift)) | ((1<<shift) - 1)) & 0xFF
-        register = register & mask
+        mask = ((0xFF << (num_bits + shift)) | ((1 << shift) - 1)) & 0xFF
+        register &= mask
 
         return register | (value << shift)
 
@@ -167,7 +167,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             shift:
         """
         
-        mask = ((1<<num_bits) - 1) << shift
+        mask = ((1 << num_bits) - 1) << shift
 
         return (register & mask) >> shift
 
