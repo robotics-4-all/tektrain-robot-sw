@@ -159,6 +159,28 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     def stop(self):
         pass
     
+    def _get_calibration_pars(self):
+        """Get calibrations parameters."""
+
+        # Temperature
+        par_t1 = self._get_bytes(self.PAR_T1_l, 2)
+        par_t2 = self._get_bytes(self.PAR_T2_l, 2)
+        par_t3 = self._get_bytes(self.PAR_T3, 1)
+
+    def _get_bytes(self, low_byte_addr, byte_num):
+        """Get lsb and msb and make a number."""
+
+        data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
+                                                        low_byte_addr,
+                                                        byte_num=byte_num)
+        data = data if isinstance(data, list) else [data]
+        print(data)
+        res = 0
+        for (i, d) in enumerate(data):
+            res += d << (i*8) 
+        print(res)
+        return res
+
     def _set_bits(self, register, value, num_bits, shift):
         """Set shift bits from start of register with value.
 
