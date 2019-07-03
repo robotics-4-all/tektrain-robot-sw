@@ -3,7 +3,9 @@ from .humidity_sensor import HumiditySensor
 from .temperature_sensor import TemperatureSensor
 from .gas_sensor import GasSensor
 from .pressure_sensor import PressureSensor
+from collections import namedtuple
 
+t_cal = namedtuple('t_cal', ['par_t1', 'par_t2', 'par_t3'])
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     """Class implementing BME680 sensor."""
@@ -31,6 +33,9 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PRESS_LSB = 0x20
     PRESS_MSB = 0x1F
     MEAS_STATUS_0 = 0x1D
+    PAR_T1_l = 0xE9
+    PAR_T2_l = 0x8A
+    PAR_T3 = 0x8C
 
     # Bits to shift for setting/reading bits in registers
 
@@ -115,6 +120,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self.p_oversample = p_oversample
         self.h_oversample = h_oversample
         self.iir_coef = iir_coef
+        self._get_calibration_pars()
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -145,16 +151,36 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Read temperature measurment."""
         
         data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
-                                                        self.TEMP_XLSB,
+                                                        self.TEMP_MSB,
                                                         byte_num=3)
 
         # Get the bits of interest from third register
-        last_byte = self.OVERSAMPLING[self.t_oversample] - 1
-        data[2] = self._get_bits(data[2], self.TEMP_XLSB_7_4_BITS,
-                                 self.TEMP_XLSB_7_4)
+        # If oversample is 0 the measurment is skipped
+        if self.iir_coef and self.t_oversample:
+            last_byte = 4
+        elif not self.iir_coef and self.t_oversample:
+            last_byte = self.OVERSAMPLING[self.t_oversample] - 1
+        else:
+            return None
 
+        data[2] = self._get_bits(data[2], last_byte,
+                                 self.TEMP_XLSB_7_4_BITS - last_byte\
+                                 + self.TEMP_XLSB_7_4)
+        
+        resolution = 16 + last_byte
+        temp_adc = (data[0] << (resolution-8)) | (data[1] << last_byte) | data[2]
 
-        return data
+        return self._calc_temp(temp_adc) / 100
+
+    def _calc_temp(self, temp_adc, INT=True):
+        """Calculate temperature from adc value."""
+        var_1 = (temp_adc >> 3) - (self.t_calib.par_t1 << 1)
+        var_2 = (var_1*self.t_calib.par_t2) >> 11
+        var_3 = ((((var_1 >> 1) * (var_1 >> 1)) >> 12)\
+                * (self.t_calib.par_t3 << 4)) >> 14
+        t_fine = var_2 + var_3
+
+        return ((t_fine * 5) + 128) >> 8
 
     def stop(self):
         pass
@@ -166,6 +192,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         par_t1 = self._get_bytes(self.PAR_T1_l, 2)
         par_t2 = self._get_bytes(self.PAR_T2_l, 2)
         par_t3 = self._get_bytes(self.PAR_T3, 1)
+        self._t_calib = t_cal(par_t1=par_t1, par_t2=par_t2, par_t3=par_t3)
 
     def _get_bytes(self, low_byte_addr, byte_num):
         """Get lsb and msb and make a number."""
@@ -174,11 +201,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                                                         low_byte_addr,
                                                         byte_num=byte_num)
         data = data if isinstance(data, list) else [data]
-        print(data)
         res = 0
         for (i, d) in enumerate(data):
-            res += d << (i*8) 
-        print(res)
+            res += d << (i*8)
+
         return res
 
     def _set_bits(self, register, value, num_bits, shift):
@@ -294,3 +320,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         # Set osrs_t
         self._set_register(self.CONFIG, self.FILTER_BITS,
                            self.FILTER, self.IIR[value])
+
+    @property
+    def t_calib(self):
+        return self._t_calib

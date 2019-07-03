@@ -32,7 +32,7 @@ class TestBME680(unittest.TestCase):
         t_over = 16
         h_over = 1
         p_over = 0
-        iir_coef = 7
+        iir_coef = 3
         sensor = BME680(1, 0,
                         t_oversample=t_over, 
                         h_oversample=h_over,
@@ -64,7 +64,7 @@ class TestBME680(unittest.TestCase):
         t_over = 16
         h_over = 1
         p_over = 0
-        iir_coef = 0
+        iir_coef = 7
         sensor = BME680(1, 0,
                         t_oversample=t_over, 
                         h_oversample=h_over,
@@ -72,6 +72,11 @@ class TestBME680(unittest.TestCase):
                         iir_coef=iir_coef)
         data = sensor.read()
         print(data)
+
+    def test_get_bytes(self):
+        sensor = BME680(1, 0)
+        sensor._get_bytes(sensor.PAR_T1_l, 2)
+        sensor._get_bytes(sensor.PAR_T1_l, 1)
 
 if __name__ == "__main__":
     unittest.main()
