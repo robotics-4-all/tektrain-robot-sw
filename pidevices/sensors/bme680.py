@@ -6,6 +6,8 @@ from .pressure_sensor import PressureSensor
 from collections import namedtuple
 
 t_cal = namedtuple('t_cal', ['par_t1', 'par_t2', 'par_t3'])
+p_cal = namedtuple('p_cal', ['par_p1', 'par_p2', 'par_p3', 'par_p4', 'par_p5',
+                             'par_p6', 'par_p7', 'par_p8', 'par_p9', 'par_p10'])
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     """Class implementing BME680 sensor."""
@@ -36,6 +38,16 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PAR_T1_l = 0xE9
     PAR_T2_l = 0x8A
     PAR_T3 = 0x8C
+    PAR_P1_l = 0x8E
+    PAR_P2_l = 0x90
+    PAR_P3 = 0x92
+    PAR_P4_l = 0x94
+    PAR_P5_l = 0x96
+    PAR_P6 = 0x99
+    PAR_P7 = 0x98
+    PAR_P8_l = 0x9C
+    PAR_P9_l = 0x9E
+    PAR_P10 = 0xA0
 
     # Bits to shift for setting/reading bits in registers
 
@@ -83,6 +95,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     TEMP_XLSB_7_4 = 4
     TEMP_XLSB_7_4_BITS = 4
 
+    # PRESS_XLSB
+    PRESS_XLSB_7_4 = 4
+    PRESS_XLSB_7_4_BITS = 4
+
     # EAS_STATUS
     GAS_MEAS_INDEX = 0
     GAS_MEAS_INDEX_BITS = 4
@@ -116,9 +132,9 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self.start()
 
         # Initialize measurements parameters
+        self.h_oversample = h_oversample
         self.t_oversample = t_oversample
         self.p_oversample = p_oversample
-        self.h_oversample = h_oversample
         self.iir_coef = iir_coef
         self._get_calibration_pars()
 
@@ -143,34 +159,52 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             time.sleep(0.01)
 
         # Read results
-        temp = self._read_temp()
+        try:
+            temp = self._read_temp_hum(self.TEMP_MSB, self.t_oversample,
+                                       self.TEMP_XLSB_7_4_BITS, self.TEMP_XLSB_7_4,
+                                       self._calc_temp) / 100
+        except TypeError:
+            pass
 
-        return temp
+        try:
+            pres = self._read_temp_hum(self.PRESS_MSB, self.p_oversample,
+                                       self.PRESS_XLSB_7_4_BITS, self.PRESS_XLSB_7_4,
+                                       self._calc_pres) / 100
+        except TypeError:
+            pass
 
-    def _read_temp(self):
-        """Read temperature measurment."""
+        return temp, pres
+
+    def _read_temp_hum(self, register, oversample, bits, shift, calculator):
+        """Read pressure or temperature measurement.
+        
+        Args:
+            register: The result msb
+            calculator the function for computing the result from adc
+        """
         
         data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
-                                                        self.TEMP_MSB,
+                                                        register,
                                                         byte_num=3)
 
-        # Get the bits of interest from third register
-        # If oversample is 0 the measurment is skipped
-        if self.iir_coef and self.t_oversample:
+        # If iir is enable then the result resolution is 20 bits
+        if self.iir_coef and oversample:
             last_byte = 4
-        elif not self.iir_coef and self.t_oversample:
-            last_byte = self.OVERSAMPLING[self.t_oversample] - 1
+        # if iir is not enabled the resultion is 16 + (osrt_f - 1)
+        elif not self.iir_coef and oversample:
+            last_byte = self.OVERSAMPLING[oversample] - 1
+        # If oversample is 0 the measurment is skipped
         else:
             return None
-
-        data[2] = self._get_bits(data[2], last_byte,
-                                 self.TEMP_XLSB_7_4_BITS - last_byte\
-                                 + self.TEMP_XLSB_7_4)
-        
         resolution = 16 + last_byte
-        temp_adc = (data[0] << (resolution-8)) | (data[1] << last_byte) | data[2]
 
-        return self._calc_temp(temp_adc) / 100
+        # Keep bits of interest from the lsb
+        data[2] = self._get_bits(data[2], last_byte, bits - last_byte + shift)
+        
+        # Calculate whole adc reading
+        adc = (data[0] << (resolution-8)) | (data[1] << last_byte) | data[2]
+
+        return calculator(adc)
 
     def _calc_temp(self, temp_adc, INT=True):
         """Calculate temperature from adc value."""
@@ -178,9 +212,44 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         var_2 = (var_1*self.t_calib.par_t2) >> 11
         var_3 = ((((var_1 >> 1) * (var_1 >> 1)) >> 12)\
                 * (self.t_calib.par_t3 << 4)) >> 14
-        t_fine = var_2 + var_3
+        self._t_fine = var_2 + var_3
 
-        return ((t_fine * 5) + 128) >> 8
+        return ((self.t_fine * 5) + 128) >> 8
+
+    def _calc_pres(self, pres_adc, INT=True):
+        """Convert the raw pressure using calibration data."""
+
+        var_1 = ((self.t_fine) >> 1) - 64000
+        var_2 = ((((var_1 >> 2) * (var_1 >> 2)) >> 11) *
+                self.p_calib.par_p6) >> 2
+        var_2 = var_2 + ((var_1 * self.p_calib.par_p5) << 1)
+        var_2 = (var_2 >> 2) + (self.p_calib.par_p4 << 16)
+        var_1 = (((((var_1 >> 2) * (var_1 >> 2)) >> 13) *
+                ((self.p_calib.par_p3 << 5)) >> 3) +
+                ((self.p_calib.par_p2 * var_1) >> 1))
+        var_1 = var_1 >> 18
+
+        var_1 = ((32768 + var_1) * self.p_calib.par_p1) >> 15
+        calc_pressure = 1048576 - pres_adc
+        calc_pressure = ((calc_pressure - (var_2 >> 12)) * (3125))
+
+        if calc_pressure >= (1 << 31):
+            calc_pressure = ((calc_pressure // var_1) << 1)
+        else:
+            calc_pressure = ((calc_pressure << 1) // var_1)
+
+        var_1 = (self.p_calib.par_p9 * (((calc_pressure >> 3) *
+                (calc_pressure >> 3)) >> 13)) >> 12
+        var_2 = ((calc_pressure >> 2) *
+                self.p_calib.par_p8) >> 13
+        var_3 = ((calc_pressure >> 8) * (calc_pressure >> 8) *
+                (calc_pressure >> 8) *
+                self.p_calib.par_p10) >> 17
+
+        calc_pressure = (calc_pressure) + ((var_1 + var_2 + var_3 +
+                                           (self.p_calib.par_p7 << 7)) >> 4)
+
+        return calc_pressure
 
     def stop(self):
         pass
@@ -193,6 +262,23 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         par_t2 = self._get_bytes(self.PAR_T2_l, 2)
         par_t3 = self._get_bytes(self.PAR_T3, 1)
         self._t_calib = t_cal(par_t1=par_t1, par_t2=par_t2, par_t3=par_t3)
+
+        # Pressure
+        par_p1 = self._get_bytes(self.PAR_P1_l, 2)
+        par_p2 = self._get_bytes(self.PAR_P2_l, 2)
+        par_p3 = self._get_bytes(self.PAR_P3, 1)
+        par_p4 = self._get_bytes(self.PAR_P4_l, 2)
+        par_p5 = self._get_bytes(self.PAR_P5_l, 2)
+        par_p6 = self._get_bytes(self.PAR_P6, 1)
+        par_p7 = self._get_bytes(self.PAR_P7, 1)
+        par_p8 = self._get_bytes(self.PAR_P8_l, 2)
+        par_p9 = self._get_bytes(self.PAR_P9_l, 2)
+        par_p10 = self._get_bytes(self.PAR_P10, 1)
+        self._p_calib = p_cal(par_p1=par_p1, par_p2=par_p2, par_p3=par_p3,
+                              par_p4=par_p4, par_p5=par_p5, par_p6=par_p6,
+                              par_p7=par_p7, par_p8=par_p8, par_p9=par_p9,
+                              par_p10=par_p10)
+
 
     def _get_bytes(self, low_byte_addr, byte_num):
         """Get lsb and msb and make a number."""
@@ -324,3 +410,11 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     @property
     def t_calib(self):
         return self._t_calib
+
+    @property
+    def p_calib(self):
+        return self._p_calib
+
+    @property
+    def t_fine(self):
+        return self._t_fine

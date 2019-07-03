@@ -63,15 +63,15 @@ class TestBME680(unittest.TestCase):
     def test_read(self):
         t_over = 16
         h_over = 1
-        p_over = 0
+        p_over = 4
         iir_coef = 7
         sensor = BME680(1, 0,
                         t_oversample=t_over, 
                         h_oversample=h_over,
                         p_oversample=p_over,
                         iir_coef=iir_coef)
-        data = sensor.read()
-        print(data)
+        temp, pres = sensor.read()
+        print("Temp: {}\tPres: {}".format(temp, pres))
 
     def test_get_bytes(self):
         sensor = BME680(1, 0)
