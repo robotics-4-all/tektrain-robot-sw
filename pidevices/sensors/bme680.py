@@ -89,11 +89,13 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     MODES = {"sleep": 0, "forced": 1}
     OVERSAMPLING = {0: 0, 1: 1, 2: 2, 4: 3, 8: 4, 16: 5}
+    IIR = {0: 0, 1: 1, 3: 2, 7: 3, 15: 4, 31: 5, 63:6, 127:7}
 
     def __init__(self, bus,
                  slave, t_oversample=1, 
                  p_oversample=0, h_oversample=0,
-                 name="", max_data_lenght=1):
+                 iir_coef=0,
+                 name="", max_data_length=1):
         """Constructor
 
         Args:
@@ -101,17 +103,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             slave: The slave address. Should be 0 or 1
         """
 
-        super(BME680, self).__init__(name, max_data_lenght)
+        super(BME680, self).__init__(name, max_data_length)
         self._bus = bus
+        # TODO check slave values
+        self.BME_ADDRESS = 0x76 + slave
         self.start()
 
         # Initialize measurements parameters
         self.t_oversample = t_oversample
         self.p_oversample = p_oversample
         self.h_oversample = h_oversample
-
-        # TODO check slave values
-        self.BME_ADDRESS = 0x76 + slave
+        self.iir_coef = iir_coef
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -194,7 +196,6 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         # Set osrs_t
         self._set_register(self.CTRL_MEAS, self.OSRS_T_BITS,
                            self.OSRS_T, self.OVERSAMPLING[value])
-        
 
     @property
     def p_oversample(self):
@@ -204,6 +205,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     def p_oversample(self, value):
         self._p_oversample = value
 
+        # Set osrs_p
+        self._set_register(self.CTRL_MEAS, self.OSRS_P_BITS,
+                           self.OSRS_P, self.OVERSAMPLING[value])
+
     @property
     def h_oversample(self):
         return self._h_oversample
@@ -211,3 +216,19 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     @h_oversample.setter
     def h_oversample(self, value):
         self._h_oversample = value
+
+        # Set osrs_h
+        self._set_register(self.CTRL_HUM, self.OSRS_H_BITS,
+                           self.OSRS_H, self.OVERSAMPLING[value])
+
+    @property
+    def iir_coef(self):
+        return self._iir_coef
+
+    @iir_coef.setter
+    def iir_coef(self, value):
+        self._iir_coef = value
+
+        # Set osrs_t
+        self._set_register(self.CONFIG, self.FILTER_BITS,
+                           self.FILTER, self.IIR[value])
