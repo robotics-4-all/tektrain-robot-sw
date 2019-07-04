@@ -70,8 +70,8 @@ class TestBME680(unittest.TestCase):
                         h_oversample=h_over,
                         p_oversample=p_over,
                         iir_coef=iir_coef)
-        temp, pres = sensor.read()
-        print("Temp: {}\tPres: {}".format(temp, pres))
+        temp, pres, humi = sensor.read()
+        print("Temp: {}\tPres: {}\tHumi: {}".format(temp, pres, humi))
 
     def test_get_bytes(self):
         sensor = BME680(1, 0)

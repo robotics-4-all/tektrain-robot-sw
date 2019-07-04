@@ -8,6 +8,9 @@ from collections import namedtuple
 t_cal = namedtuple('t_cal', ['par_t1', 'par_t2', 'par_t3'])
 p_cal = namedtuple('p_cal', ['par_p1', 'par_p2', 'par_p3', 'par_p4', 'par_p5',
                              'par_p6', 'par_p7', 'par_p8', 'par_p9', 'par_p10'])
+h_cal = namedtuple('h_cal', ['par_h1', 'par_h2', 'par_h3', 
+                             'par_h4', 'par_h5', 'par_h6',
+                             'par_h7'])
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     """Class implementing BME680 sensor."""
@@ -35,6 +38,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PRESS_LSB = 0x20
     PRESS_MSB = 0x1F
     MEAS_STATUS_0 = 0x1D
+
+    # Calibration registers
     PAR_T1_l = 0xE9
     PAR_T2_l = 0x8A
     PAR_T3 = 0x8C
@@ -48,6 +53,15 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PAR_P8_l = 0x9C
     PAR_P9_l = 0x9E
     PAR_P10 = 0xA0
+    PAR_H1_l = 0xE2
+    PAR_H1_h = 0xE3
+    PAR_H2_l = 0xE2
+    PAR_H2_h = 0xE1
+    PAR_H3 = 0xE4
+    PAR_H4 = 0xE5
+    PAR_H5 = 0xE6
+    PAR_H6 = 0xE7
+    PAR_H7 = 0xE8
 
     # Bits to shift for setting/reading bits in registers
 
@@ -162,18 +176,33 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         try:
             temp = self._read_temp_hum(self.TEMP_MSB, self.t_oversample,
                                        self.TEMP_XLSB_7_4_BITS, self.TEMP_XLSB_7_4,
-                                       self._calc_temp) / 100
+                                       self._calc_temp)
         except TypeError:
-            pass
+            temp = 0
 
         try:
             pres = self._read_temp_hum(self.PRESS_MSB, self.p_oversample,
                                        self.PRESS_XLSB_7_4_BITS, self.PRESS_XLSB_7_4,
-                                       self._calc_pres) / 100
+                                       self._calc_pres)
         except TypeError:
-            pass
+            pres = 0
 
-        return temp, pres
+        try:
+            humi = self._read_humi()
+        except TypeError:
+            humi = 0
+
+        return temp/100, pres/100, humi/1000
+
+    def _read_humi(self):
+        """Read humidity measurment."""
+
+        if not self.h_oversample:
+            return None
+
+        adc = self._get_bytes(self.HUM_MSB, 2, reverse=True)
+
+        return self._calc_humi(adc)
 
     def _read_temp_hum(self, register, oversample, bits, shift, calculator):
         """Read pressure or temperature measurement.
@@ -251,6 +280,24 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         return calc_pressure
 
+    def _calc_humi(self, humidity_adc, INT=True):
+        """Convert the raw humidity using calibration data."""
+        temp_scaled = ((self.t_fine * 5) + 128) >> 8
+        var_1 = (humidity_adc - ((self.h_calib.par_h1 * 16))) -\
+               (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
+        var_2 = (self.h_calib.par_h2 *
+                (((temp_scaled * self.h_calib.par_h4) // (100)) +
+                 (((temp_scaled * ((temp_scaled * self.h_calib.par_h5) // (100))) >> 6) //
+                 (100)) + (1 * 16384))) >> 10
+        var_3 = var_1 * var_2
+        var_4 = self.h_calib.par_h6 << 7
+        var_4 = ((var_4) + ((temp_scaled * self.h_calib.par_h7) // (100))) >> 4
+        var_5 = ((var_3 >> 14) * (var_3 >> 14)) >> 10
+        var_6 = (var_4 * var_5) >> 1
+        calc_hum = (((var_3 + var_6) >> 10) * (1000)) >> 12
+
+        return min(max(calc_hum, 0), 100000)
+
     def stop(self):
         pass
     
@@ -279,14 +326,33 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                               par_p7=par_p7, par_p8=par_p8, par_p9=par_p9,
                               par_p10=par_p10)
 
+        # Humidity
+        par_h1 = self._get_bytes(self.PAR_H1_h, 1) << 4
+        par_h1 += self._get_bits(self._get_bytes(self.PAR_H1_l, 1), 4, 4)
+        par_h2 = self._get_bytes(self.PAR_H2_h, 1) << 4
+        par_h2 += self._get_bits(self._get_bytes(self.PAR_H2_l, 1), 4, 4)
+        par_h3 = self._get_bytes(self.PAR_H3, 1)
+        par_h4 = self._get_bytes(self.PAR_H4, 1)
+        par_h5 = self._get_bytes(self.PAR_H5, 1)
+        par_h6 = self._get_bytes(self.PAR_H6, 1)
+        par_h7 = self._get_bytes(self.PAR_H7, 1)
+        self._h_calib = h_cal(par_h1=par_h1, par_h2=par_h2, par_h3=par_h3,
+                              par_h4=par_h4, par_h5=par_h5, par_h6=par_h6,
+                              par_h7=par_h7)
 
-    def _get_bytes(self, low_byte_addr, byte_num):
+    def _get_bytes(self, low_byte_addr, byte_num, reverse=False):
         """Get lsb and msb and make a number."""
 
         data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
                                                         low_byte_addr,
                                                         byte_num=byte_num)
+        # Make it a list if it is one element
         data = data if isinstance(data, list) else [data]
+        
+        # Reverse it
+        if reverse:
+            data = data.reverse()
+
         res = 0
         for (i, d) in enumerate(data):
             res += d << (i*8)
@@ -414,6 +480,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     @property
     def p_calib(self):
         return self._p_calib
+
+    @property
+    def h_calib(self):
+        return self._h_calib
 
     @property
     def t_fine(self):
