@@ -61,10 +61,10 @@ class TestBME680(unittest.TestCase):
         self.assertEqual(iir ,iir_coef, "Should be {}".format(iir_coef))
 
     def test_read(self):
-        t_over = 16
-        h_over = 1
+        t_over = 8
+        h_over = 2
         p_over = 4
-        iir_coef = 7
+        iir_coef = 3
         sensor = BME680(1, 0,
                         t_oversample=t_over, 
                         h_oversample=h_over,

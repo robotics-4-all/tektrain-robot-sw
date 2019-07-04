@@ -12,7 +12,8 @@ p_cal = namedtuple('p_cal', ['par_p1', 'par_p2', 'par_p3', 'par_p4', 'par_p5',
 h_cal = namedtuple('h_cal', ['par_h1', 'par_h2', 'par_h3', 
                              'par_h4', 'par_h5', 'par_h6',
                              'par_h7'])
-g_cal = namedtuple('g_cal', ['par_g1', 'par_g2', 'par_g3'])
+g_cal = namedtuple('g_cal', ['par_g1', 'par_g2', 'par_g3', 'res_heat_range',
+                             'res_heat_val'])
 
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
@@ -69,6 +70,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PAR_G2_L = 0xEB
     PAR_G3 = 0xEE
     RES_HEAT_RANGE = 0x02
+    RES_HEAT_VAL = 0x00
 
     # Bits to shift for setting/reading bits in registers
 
@@ -160,6 +162,9 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self.gas_status = gas_status
         self._get_calibration_pars()
 
+        # TODO fix it
+        self.ambient_temperature = None
+
     def start(self):
         """Initialize hardware and os resources."""
         
@@ -181,32 +186,28 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             time.sleep(0.01)
 
         # Read results
-        try:
-            temp = self._read_temp_hum(self.TEMP_MSB, self.t_oversample,
-                                       self.TEMP_XLSB_7_4_BITS, self.TEMP_XLSB_7_4,
-                                       self._calc_temp)
-        except TypeError:
-            temp = 0
+        temp = self._read_temp_pre(self.TEMP_MSB, self.t_oversample,
+                                   self.TEMP_XLSB_7_4_BITS, self.TEMP_XLSB_7_4,
+                                   self._calc_temp)
+        pres = self._read_temp_pre(self.PRESS_MSB, self.p_oversample,
+                                   self.PRESS_XLSB_7_4_BITS, self.PRESS_XLSB_7_4,
+                                   self._calc_pres)
+        humi = self._read_humi()
+        gas = self._read_gas()
 
-        try:
-            pres = self._read_temp_hum(self.PRESS_MSB, self.p_oversample,
-                                       self.PRESS_XLSB_7_4_BITS, self.PRESS_XLSB_7_4,
-                                       self._calc_pres)
-        except TypeError:
-            pres = 0
+        return temp/100, pres/100, humi/1000, gas
 
-        try:
-            humi = self._read_humi()
-        except TypeError:
-            humi = 0
+    def _read_gas(self):
+        """Read gas temperature"""
 
-        return temp/100, pres/100, humi/1000
+        if not self.gas_status:
+            return 0
 
     def _read_humi(self):
         """Read humidity measurment."""
 
         if not self.h_oversample:
-            return None
+            return 0
 
         adc = self._get_bytes(self.HUM_MSB, 2, rev=True)
 
@@ -232,7 +233,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             last_byte = self.OVERSAMPLING[oversample] - 1
         # If oversample is 0 the measurment is skipped
         else:
-            return None
+            return 0
         resolution = 16 + last_byte
 
         # Keep bits of interest from the lsb
@@ -330,7 +331,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """
 
         for val, i in zip(values, indexes):
-            self._set_register(self.RES_HEAT+i, 0, 0, val)
+            val = self._calc_res_heat(val)
+            self._set_register(self.RES_HEAT+i, 0, 0, int(val))
 
     # TODO: dont calculate if the temperature isn't set
     def _calc_res_heat(self, temperature):
@@ -342,22 +344,27 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         """Convert raw heater resistance using calibration data."""
         temperature = min(max(temperature, 200), 400)
-        ambient_temperature, _ = self.read()
-        ambient_temperature *= 100
+        # Get temp measurement for ambient temp.
+        if self.ambient_temperature is None:
+            prev_gs = self.gas_status
+            self.gas_status = 0
+            self.ambient_temperature, pres, hum, gas = self.read()
+            self.gas_status = prev_gs
+            self.ambient_temperature *= 100
 
-        var1 = ((self.ambient_temperature * self.calibration_data.par_gh3) / 1000) * 256
-        var2 = (self.calibration_data.par_gh1 + 784)\
-               * (((((self.calibration_data.par_gh2 + 154009)\
+        var_1 = ((self.ambient_temperature * self.g_calib.par_g3) / 1000) * 256
+        var_2 = (self.g_calib.par_g1 + 784)\
+               * (((((self.g_calib.par_g2 + 154009)\
                       * temperature * 5) / 100) + 3276800) / 10)
-        var3 = var1 + (var2 / 2)
-        var4 = (var3 / (self.calibration_data.res_heat_range + 4))
-        var5 = (131 * self.calibration_data.res_heat_val) + 65536
-        heatr_res_x100 = (((var4 / var5) - 250) * 34)
+        var_3 = var_1 + (var_2 / 2)
+        var_4 = (var_3 / (self.g_calib.res_heat_range + 4))
+        var_5 = (131 * self.g_calib.res_heat_val) + 65536
+        heatr_res_x100 = (((var_4 / var_5) - 250) * 34)
         heatr_res = ((heatr_res_x100 + 50) / 100)
 
         return heatr_res
 
-    def set_gas_wait(self, indexes, values, multis):
+    def set_gas_wait(self, indexes, values):
         """Set gas wait registers.
 
         Args:
@@ -366,9 +373,22 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             multis:
         """
 
-        for val, mul, i in zip(values, multis, indexes):
-            self._set_register(self.GAS_WAIT+i, 6, 0, val)
-            self._set_register(self.GAS_WAIT+i, 2, 6, mul)
+        for val, i in zip(values, indexes):
+            val = self._calc_heater_duration(val)
+            self._set_register(self.GAS_WAIT+i, 0, 0, val)
+
+    def _calc_heater_duration(self, duration):
+        """Calculate correct value for heater duration setting from milliseconds."""
+        if duration < 0xfc0:
+            factor = 0
+
+            while duration > 0x3f:
+                duration /= 4
+                factor += 1
+
+            return int(duration + (factor * 64))
+
+        return 0xff
 
     def set_heater_off(self, value):
         """Set heater of bit
@@ -422,11 +442,14 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                               par_h7=par_h7)
         
         # Gas
-        par_g1 = self._get_bytes(self.PAR_G1, 1)
+        par_g1 = self._get_bytes(self.PAR_G1, 1, signed=True)
         par_g2 = self._get_bytes(self.PAR_G2_L, 2, signed=True)
-        par_g3 = self._get_bytes(self.PAR_G3, 1)
-        self._g_calib = g_cal(par_g1=par_g1, par_g2=par_g2, par_g3=par_g3)
-        self._res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 1), 2, 4)
+        par_g3 = self._get_bytes(self.PAR_G3, 1, signed=True)
+        res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 1), 2, 4)
+        res_heat_val = self._get_bytes(self.RES_HEAT_VAL, 1, signed=True)
+        self._g_calib = g_cal(par_g1=par_g1, par_g2=par_g2, par_g3=par_g3,
+                              res_heat_range=res_heat_range,
+                              res_heat_val=res_heat_val)
 
     # TODO: Check maybe remove the option to get one byte
     def _get_bytes(self, low_byte_addr, byte_num, signed=False, rev=False):
