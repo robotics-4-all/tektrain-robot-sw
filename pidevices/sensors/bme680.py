@@ -208,11 +208,11 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         if not self.h_oversample:
             return None
 
-        adc = self._get_bytes(self.HUM_MSB, 2, reverse=True)
+        adc = self._get_bytes(self.HUM_MSB, 2, rev=True)
 
         return self._calc_humi(adc)
 
-    def _read_temp_hum(self, register, oversample, bits, shift, calculator):
+    def _read_temp_pre(self, register, oversample, bits, shift, calculator):
         """Read pressure or temperature measurement.
         
         Args:
@@ -412,11 +412,11 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         par_h1 += self._get_bits(self._get_bytes(self.PAR_H1_l, 1), 4, 4)
         par_h2 = self._get_bytes(self.PAR_H2_h, 1) << 4
         par_h2 += self._get_bits(self._get_bytes(self.PAR_H2_l, 1), 4, 4)
-        par_h3 = self._get_bytes(self.PAR_H3, 1)
-        par_h4 = self._get_bytes(self.PAR_H4, 1)
-        par_h5 = self._get_bytes(self.PAR_H5, 1)
+        par_h3 = self._get_bytes(self.PAR_H3, 1, signed=True)
+        par_h4 = self._get_bytes(self.PAR_H4, 1, signed=True)
+        par_h5 = self._get_bytes(self.PAR_H5, 1, signed=True)
         par_h6 = self._get_bytes(self.PAR_H6, 1)
-        par_h7 = self._get_bytes(self.PAR_H7, 1)
+        par_h7 = self._get_bytes(self.PAR_H7, 1, signed=True)
         self._h_calib = h_cal(par_h1=par_h1, par_h2=par_h2, par_h3=par_h3,
                               par_h4=par_h4, par_h5=par_h5, par_h6=par_h6,
                               par_h7=par_h7)
@@ -429,7 +429,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self._res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 1), 2, 4)
 
     # TODO: Check maybe remove the option to get one byte
-    def _get_bytes(self, low_byte_addr, byte_num, signed=False, reverse=False):
+    def _get_bytes(self, low_byte_addr, byte_num, signed=False, rev=False):
         """Get lsb and msb and make a number."""
 
         data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
@@ -439,15 +439,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         data = data if isinstance(data, list) else [data]
         
         # Reverse it
-        if reverse:
-            data = data.reverse()
+        if rev:
+            data.reverse()
 
         res = 0
         for (i, d) in enumerate(data):
             res += d << (i*8)
 
+        power = byte_num*8 - 1
+        whole = 2**(power+1) - 1
         if signed:
-            res = res if res < (2**15 - 1) else -((0xFFFF ^ res) + 1)
+            res = res if res < (2**power - 1) else -((whole ^ res) + 1)
 
         return res
 
