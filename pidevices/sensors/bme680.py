@@ -5,12 +5,15 @@ from .gas_sensor import GasSensor
 from .pressure_sensor import PressureSensor
 from collections import namedtuple
 
+
 t_cal = namedtuple('t_cal', ['par_t1', 'par_t2', 'par_t3'])
 p_cal = namedtuple('p_cal', ['par_p1', 'par_p2', 'par_p3', 'par_p4', 'par_p5',
                              'par_p6', 'par_p7', 'par_p8', 'par_p9', 'par_p10'])
 h_cal = namedtuple('h_cal', ['par_h1', 'par_h2', 'par_h3', 
                              'par_h4', 'par_h5', 'par_h6',
                              'par_h7'])
+g_cal = namedtuple('g_cal', ['par_g1', 'par_g2', 'par_g3'])
+
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     """Class implementing BME680 sensor."""
@@ -62,6 +65,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     PAR_H5 = 0xE6
     PAR_H6 = 0xE7
     PAR_H7 = 0xE8
+    PAR_G1 = 0xED
+    PAR_G2_L = 0xEB
+    PAR_G3 = 0xEE
+    RES_HEAT_RANGE = 0x02
 
     # Bits to shift for setting/reading bits in registers
 
@@ -130,7 +137,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     def __init__(self, bus,
                  slave, t_oversample=1, 
                  p_oversample=0, h_oversample=0,
-                 iir_coef=0,
+                 iir_coef=0, gas_status=0,
                  name="", max_data_length=1):
         """Constructor
 
@@ -150,6 +157,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self.t_oversample = t_oversample
         self.p_oversample = p_oversample
         self.iir_coef = iir_coef
+        self.gas_status = gas_status
         self._get_calibration_pars()
 
     def start(self):
@@ -239,8 +247,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Calculate temperature from adc value."""
         var_1 = (temp_adc >> 3) - (self.t_calib.par_t1 << 1)
         var_2 = (var_1*self.t_calib.par_t2) >> 11
-        var_3 = ((((var_1 >> 1) * (var_1 >> 1)) >> 12)\
-                * (self.t_calib.par_t3 << 4)) >> 14
+        var_3 = ((var_1 >> 1) * (var_1 >> 1)) >> 12
+        var_3 = ((var_3) * (self.t_calib.par_t3 << 4)) >> 14
         self._t_fine = var_2 + var_3
 
         return ((self.t_fine * 5) + 128) >> 8
@@ -287,8 +295,9 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
         var_2 = (self.h_calib.par_h2 *
                 (((temp_scaled * self.h_calib.par_h4) // (100)) +
-                 (((temp_scaled * ((temp_scaled * self.h_calib.par_h5) // (100))) >> 6) //
-                 (100)) + (1 * 16384))) >> 10
+                 (((temp_scaled * ((temp_scaled * self.h_calib.par_h5)\
+                    // (100))) >> 6)\
+                    // (100)) + (1 * 16384))) >> 10
         var_3 = var_1 * var_2
         var_4 = self.h_calib.par_h6 << 7
         var_4 = ((var_4) + ((temp_scaled * self.h_calib.par_h7) // (100))) >> 4
@@ -301,25 +310,97 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     def stop(self):
         pass
     
+    def set_idac_heat(self, indexes, values):
+        """Set idac_heat_x registers.
+        
+        Args:
+            values: List with the values
+            indexes: List with indexes
+        """
+
+        for val, i in zip(values, indexes):
+            self._set_register(self.IDAC_HEAT+i, 0, 0, val)
+
+    def set_res_heat(self, indexes, values):
+        """Set idac_heat_x registers.
+        
+        Args:
+            values: List with the values
+            indexes: List with indexes
+        """
+
+        for val, i in zip(values, indexes):
+            self._set_register(self.RES_HEAT+i, 0, 0, val)
+
+    # TODO: dont calculate if the temperature isn't set
+    def _calc_res_heat(self, temperature):
+        """Calculate resistance heat
+        
+        Args:
+            value: 
+        """
+
+        """Convert raw heater resistance using calibration data."""
+        temperature = min(max(temperature, 200), 400)
+        ambient_temperature, _ = self.read()
+        ambient_temperature *= 100
+
+        var1 = ((self.ambient_temperature * self.calibration_data.par_gh3) / 1000) * 256
+        var2 = (self.calibration_data.par_gh1 + 784)\
+               * (((((self.calibration_data.par_gh2 + 154009)\
+                      * temperature * 5) / 100) + 3276800) / 10)
+        var3 = var1 + (var2 / 2)
+        var4 = (var3 / (self.calibration_data.res_heat_range + 4))
+        var5 = (131 * self.calibration_data.res_heat_val) + 65536
+        heatr_res_x100 = (((var4 / var5) - 250) * 34)
+        heatr_res = ((heatr_res_x100 + 50) / 100)
+
+        return heatr_res
+
+    def set_gas_wait(self, indexes, values, multis):
+        """Set gas wait registers.
+
+        Args:
+            indexes:
+            values,:
+            multis:
+        """
+
+        for val, mul, i in zip(values, multis, indexes):
+            self._set_register(self.GAS_WAIT+i, 6, 0, val)
+            self._set_register(self.GAS_WAIT+i, 2, 6, mul)
+
+    def set_heater_off(self, value):
+        """Set heater of bit
+
+        """
+
+        self._set_register(self.CTRL_GAS_0, self.HEAT_OFF_BITS, 
+                           self.HEAT_OFF, value)
+
+    def set_nb_conv(self, value):
+        self._set_register(self.CTRL_GAS_1, self.NB_CONV_BITS,
+                           self.NB_CONV, value)
+
     def _get_calibration_pars(self):
         """Get calibrations parameters."""
 
         # Temperature
         par_t1 = self._get_bytes(self.PAR_T1_l, 2)
-        par_t2 = self._get_bytes(self.PAR_T2_l, 2)
+        par_t2 = self._get_bytes(self.PAR_T2_l, 2, signed=True)
         par_t3 = self._get_bytes(self.PAR_T3, 1)
         self._t_calib = t_cal(par_t1=par_t1, par_t2=par_t2, par_t3=par_t3)
 
         # Pressure
         par_p1 = self._get_bytes(self.PAR_P1_l, 2)
-        par_p2 = self._get_bytes(self.PAR_P2_l, 2)
+        par_p2 = self._get_bytes(self.PAR_P2_l, 2, signed=True)
         par_p3 = self._get_bytes(self.PAR_P3, 1)
-        par_p4 = self._get_bytes(self.PAR_P4_l, 2)
-        par_p5 = self._get_bytes(self.PAR_P5_l, 2)
+        par_p4 = self._get_bytes(self.PAR_P4_l, 2, signed=True)
+        par_p5 = self._get_bytes(self.PAR_P5_l, 2, signed=True)
         par_p6 = self._get_bytes(self.PAR_P6, 1)
         par_p7 = self._get_bytes(self.PAR_P7, 1)
-        par_p8 = self._get_bytes(self.PAR_P8_l, 2)
-        par_p9 = self._get_bytes(self.PAR_P9_l, 2)
+        par_p8 = self._get_bytes(self.PAR_P8_l, 2, signed=True)
+        par_p9 = self._get_bytes(self.PAR_P9_l, 2, signed=True)
         par_p10 = self._get_bytes(self.PAR_P10, 1)
         self._p_calib = p_cal(par_p1=par_p1, par_p2=par_p2, par_p3=par_p3,
                               par_p4=par_p4, par_p5=par_p5, par_p6=par_p6,
@@ -339,8 +420,16 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self._h_calib = h_cal(par_h1=par_h1, par_h2=par_h2, par_h3=par_h3,
                               par_h4=par_h4, par_h5=par_h5, par_h6=par_h6,
                               par_h7=par_h7)
+        
+        # Gas
+        par_g1 = self._get_bytes(self.PAR_G1, 1)
+        par_g2 = self._get_bytes(self.PAR_G2_L, 2, signed=True)
+        par_g3 = self._get_bytes(self.PAR_G3, 1)
+        self._g_calib = g_cal(par_g1=par_g1, par_g2=par_g2, par_g3=par_g3)
+        self._res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 1), 2, 4)
 
-    def _get_bytes(self, low_byte_addr, byte_num, reverse=False):
+    # TODO: Check maybe remove the option to get one byte
+    def _get_bytes(self, low_byte_addr, byte_num, signed=False, reverse=False):
         """Get lsb and msb and make a number."""
 
         data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
@@ -357,7 +446,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         for (i, d) in enumerate(data):
             res += d << (i*8)
 
+        if signed:
+            res = res if res < (2**15 - 1) else -((0xFFFF ^ res) + 1)
+
         return res
+
+    def _reset(self):
+        """Software reset, is like a power-on reset."""
+
+        self.hardware_interfaces[self._i2c].write(self.BME_ADDRESS,
+                                                  self.RESET,
+                                                  0xB6)
 
     def _set_bits(self, register, value, num_bits, shift):
         """Set shift bits from start of register with value.
@@ -387,13 +486,6 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         mask = ((1 << num_bits) - 1) << shift
 
         return (register & mask) >> shift
-
-    def _reset(self):
-        """Software reset, is like a power-on reset."""
-
-        self.hardware_interfaces[self._i2c].write(self.BME_ADDRESS,
-                                                  self.RESET,
-                                                  0xB6)
 
     def _get_register(self, register, bits, shift):
         """Get specific bits from register.
@@ -474,6 +566,18 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                            self.FILTER, self.IIR[value])
 
     @property
+    def gas_status(self):
+        return self._gas_status
+
+    @gas_status.setter
+    def gas_status(self, value):
+        self._gas_status = value
+
+        # Set register
+        self._set_register(self.CTRL_GAS_1, self.RUN_GUS_BITS,
+                           self.RUN_GUS, value)
+
+    @property
     def t_calib(self):
         return self._t_calib
 
@@ -486,5 +590,13 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         return self._h_calib
 
     @property
+    def g_calib(self):
+        return self._g_calib
+
+    @property
     def t_fine(self):
         return self._t_fine
+
+    @property
+    def res_heat_range(self):
+        return self._res_heat_range
