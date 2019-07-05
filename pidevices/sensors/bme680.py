@@ -354,7 +354,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         return calc_gas_res
 
     def stop(self):
-        pass
+        self._reset()
+        self.hardware_interfaces[self._i2c].close()
     
     def set_idac_heat(self, indexes, values):
         """Set idac_heat_x registers.
