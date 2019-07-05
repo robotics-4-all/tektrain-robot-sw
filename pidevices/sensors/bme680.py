@@ -183,12 +183,21 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         
         self._i2c = self.init_interface("i2c", bus=self._bus)
 
-    def read(self):
+    def read(self, TEMP=True, HUM=True, PRES=True, GAS=True):
         """Get a measurment.
         
         Args:
             meas: String that could be temperature, humidity, pressure or gas.
         """
+
+        if not HUM:
+            self.h_oversample = 0
+        if not TEMP:
+            self.t_oversample = 0
+        if not PRES:
+            self.p_oversample = 0
+        if not GAS:
+            self.gas_status = 0
 
         self._set_register(self.CTRL_MEAS, self.MODE_BITS,
                            self.MODE, self.MODES['forced'])

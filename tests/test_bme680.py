@@ -84,13 +84,19 @@ class TestBME680(unittest.TestCase):
         sensor.set_heating_temp([0], [320])
         sensor.set_heating_time([0], [100])
         sensor.set_nb_conv(0)
-        while True:
+        for i in range(10):
             data = sensor.read()
             print("Temp: {}\tPres: {}\tHumi: {}\tGas: {}".format(data.temp,
                                                                  data.pres,
                                                                  data.hum,
                                                                  data.gas))
             time.sleep(1)
+
+        data = sensor.read(HUM=False, GAS=False)
+        print("Temp: {}\tPres: {}\tHumi: {}\tGas: {}".format(data.temp,
+                                                             data.pres,
+                                                             data.hum,
+                                                             data.gas))
 
     def test_get_bytes(self):
         sensor = BME680(1, 0)
