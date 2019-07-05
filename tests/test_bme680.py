@@ -26,7 +26,16 @@ class TestBME680(unittest.TestCase):
         pass
 
     def test_reset(self):
-        pass
+        t_over = 16
+        sensor = BME680(1, 0, t_oversample=t_over)
+        val = sensor._get_register(sensor.CTRL_MEAS, 
+                                   sensor.OSRS_T_BITS,
+                                   sensor.OSRS_T)
+        sensor._reset()
+        val = sensor._get_register(sensor.CTRL_MEAS, 
+                                   sensor.OSRS_T_BITS,
+                                   sensor.OSRS_T)
+        self.assertEqual(val, 0, "Should be zero.")
 
     def test_init(self):
         t_over = 16
@@ -65,13 +74,23 @@ class TestBME680(unittest.TestCase):
         h_over = 2
         p_over = 4
         iir_coef = 3
+        g_status = 1
         sensor = BME680(1, 0,
                         t_oversample=t_over, 
                         h_oversample=h_over,
                         p_oversample=p_over,
-                        iir_coef=iir_coef)
-        temp, pres, humi = sensor.read()
-        print("Temp: {}\tPres: {}\tHumi: {}".format(temp, pres, humi))
+                        iir_coef=iir_coef,
+                        gas_status=g_status)
+        sensor.set_heating_temp([0], [320])
+        sensor.set_heating_time([0], [100])
+        sensor.set_nb_conv(0)
+        while True:
+            data = sensor.read()
+            print("Temp: {}\tPres: {}\tHumi: {}\tGas: {}".format(data.temp,
+                                                                 data.pres,
+                                                                 data.hum,
+                                                                 data.gas))
+            time.sleep(1)
 
     def test_get_bytes(self):
         sensor = BME680(1, 0)

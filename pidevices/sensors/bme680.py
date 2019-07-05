@@ -16,6 +16,7 @@ h_cal = namedtuple('h_cal', ['par_h1', 'par_h2', 'par_h3',
 g_cal = namedtuple('g_cal', ['par_g1', 'par_g2', 'par_g3', 'res_heat_range',
                              'res_heat_val'])
 
+bme860_data = namedtuple('bme860_data', ['temp', 'pres', 'hum', 'gas'])
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     """Class implementing BME680 sensor."""
@@ -29,10 +30,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     CTRL_HUM = 0x72
     CTRL_GAS_1 = 0x71
     CTRL_GAS_0 = 0x70
-    GAS_WAIT = 0x6D   # 9 registers(0x6D..0x64) gas_wait_x, starting from 0
-    RES_HEAT = 0x63   # 9 registers(0x63..0x5A) res_heat_x, starting from 0
-    IDAC_HEAT = 0x59   # 9 registers(0x59..0x50) idac_heat_x, starting from 0
-    GAS_LSB = 0x2B
+    GAS_WAIT = 0x64   # 9 registers(0x6D..0x64) gas_wait_x, starting from 0
+    RES_HEAT = 0x5A   # 9 registers(0x63..0x5A) res_heat_x, starting from 0
+    IDAC_HEAT = 0x50   # 9 registers(0x59..0x50) idac_heat_x, starting from 0
+    GAS_R_LSB = 0x2B
     GAS_MSB = 0x2A
     HUM_LSB = 0x26
     HUM_MSB = 0x25
@@ -137,6 +138,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     OVERSAMPLING = {0: 0, 1: 1, 2: 2, 4: 3, 8: 4, 16: 5}
     IIR = {0: 0, 1: 1, 3: 2, 7: 3, 15: 4, 31: 5, 63:6, 127:7}
 
+    # TODO: Make it one list
+    lookupTable1 = [2147483647, 2147483647, 2147483647, 2147483647,
+                    2147483647, 2126008810, 2147483647, 2130303777, 2147483647,
+                    2147483647, 2143188679, 2136746228, 2147483647, 2126008810,
+                    2147483647, 2147483647]
+
+    lookupTable2 = [4096000000, 2048000000, 1024000000, 512000000,
+                    255744255, 127110228, 64000000, 32258064,
+                    16016016, 8000000, 4000000, 2000000,
+                    1000000, 500000, 250000, 125000]
+
     def __init__(self, bus,
                  slave, t_oversample=1, 
                  p_oversample=0, h_oversample=0,
@@ -196,13 +208,31 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         humi = self._read_humi()
         gas = self._read_gas()
 
-        return temp/100, pres/100, humi/1000, gas
+        data = bme860_data(temp=temp/100, pres=pres/100, hum=humi/1000, gas=gas)
+        return data
 
+    # TODO: check if multiple returns is a good practice
     def _read_gas(self):
         """Read gas temperature"""
 
         if not self.gas_status:
             return 0
+
+        # Check if the heater temperature is stable for gas measurment
+        heat_stab = self._get_register(self.GAS_R_LSB,
+                                       self.HEAF_STAB_R_BITS,
+                                       self.HEAF_STAB_R)
+        if not heat_stab:
+            return 0
+
+        # Get measurment
+        gas_range = self._get_register(self.GAS_R_LSB,
+                                       self.GAS_RANGE_R_BITS,
+                                       self.GAS_RANGE_R)
+        range_error = self._get_bytes(0x04, 4, signed=True)
+        adc = self._get_bytes(self.GAS_MSB, 10, rev=True)
+
+        return self._calc_gas(adc, gas_range, range_error)
 
     def _read_humi(self):
         """Read humidity measurment."""
@@ -210,7 +240,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         if not self.h_oversample:
             return 0
 
-        adc = self._get_bytes(self.HUM_MSB, 2, rev=True)
+        adc = self._get_bytes(self.HUM_MSB, 16, rev=True)
 
         return self._calc_humi(adc)
 
@@ -222,10 +252,6 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             calculator the function for computing the result from adc
         """
         
-        data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
-                                                        register,
-                                                        byte_num=3)
-
         # If iir is enable then the result resolution is 20 bits
         if self.iir_coef and oversample:
             last_byte = 4
@@ -305,6 +331,19 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         return min(max(calc_hum, 0), 100000)
 
+    def _calc_gas(self, adc, gas_range, range_error):
+        """Convert the raw gas resistance using calibration data."""
+
+        var_1 = ((1340 + (5 * range_error)) * (self.lookupTable1[gas_range])) >> 16
+        var_2 = (((adc << 15) - (16777216)) + var_1)
+        var_3 = ((self.lookupTable2[gas_range] * var_1) >> 9)
+        calc_gas_res = ((var_3 + (var_2 >> 1)) / var_2)
+
+        if calc_gas_res < 0:
+            calc_gas_res = (1 << 32) + calc_gas_res
+
+        return calc_gas_res
+
     def stop(self):
         pass
     
@@ -319,7 +358,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         for val, i in zip(values, indexes):
             self._set_register(self.IDAC_HEAT+i, 0, 0, val)
 
-    def set_res_heat(self, indexes, values):
+    def set_heating_temp(self, indexes, values):
         """Set idac_heat_x registers.
         
         Args:
@@ -329,7 +368,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         for val, i in zip(values, indexes):
             val = self._calc_res_heat(val)
-            self._set_register(self.RES_HEAT+i, 0, 0, int(val))
+            self._set_register(self.RES_HEAT+i, 8, 0, int(val))
 
     # TODO: dont calculate if the temperature isn't set
     def _calc_res_heat(self, temperature):
@@ -361,7 +400,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         return heatr_res
 
-    def set_gas_wait(self, indexes, values):
+    def set_heating_time(self, indexes, values):
         """Set gas wait registers.
 
         Args:
@@ -372,7 +411,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         for val, i in zip(values, indexes):
             val = self._calc_heater_duration(val)
-            self._set_register(self.GAS_WAIT+i, 0, 0, val)
+            self._set_register(self.GAS_WAIT+i, 8, 0, val)
 
     def _calc_heater_duration(self, duration):
         """Calculate correct value for heater duration setting from milliseconds."""
