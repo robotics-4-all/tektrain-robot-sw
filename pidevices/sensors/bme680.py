@@ -1,4 +1,5 @@
 import time
+from math import ceil
 from .humidity_sensor import HumiditySensor
 from .temperature_sensor import TemperatureSensor
 from .gas_sensor import GasSensor
@@ -236,11 +237,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             return 0
         resolution = 16 + last_byte
 
-        # Keep bits of interest from the lsb
-        data[2] = self._get_bits(data[2], last_byte, bits - last_byte + shift)
-        
-        # Calculate whole adc reading
-        adc = (data[0] << (resolution-8)) | (data[1] << last_byte) | data[2]
+        adc = self._get_bytes(register, resolution, rev=True)
 
         return calculator(adc)
 
@@ -406,55 +403,57 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Get calibrations parameters."""
 
         # Temperature
-        par_t1 = self._get_bytes(self.PAR_T1_l, 2)
-        par_t2 = self._get_bytes(self.PAR_T2_l, 2, signed=True)
-        par_t3 = self._get_bytes(self.PAR_T3, 1)
+        par_t1 = self._get_bytes(self.PAR_T1_l, 16)
+        par_t2 = self._get_bytes(self.PAR_T2_l, 16, signed=True)
+        par_t3 = self._get_bytes(self.PAR_T3, 8)
         self._t_calib = t_cal(par_t1=par_t1, par_t2=par_t2, par_t3=par_t3)
 
         # Pressure
-        par_p1 = self._get_bytes(self.PAR_P1_l, 2)
-        par_p2 = self._get_bytes(self.PAR_P2_l, 2, signed=True)
-        par_p3 = self._get_bytes(self.PAR_P3, 1)
-        par_p4 = self._get_bytes(self.PAR_P4_l, 2, signed=True)
-        par_p5 = self._get_bytes(self.PAR_P5_l, 2, signed=True)
-        par_p6 = self._get_bytes(self.PAR_P6, 1)
-        par_p7 = self._get_bytes(self.PAR_P7, 1)
-        par_p8 = self._get_bytes(self.PAR_P8_l, 2, signed=True)
-        par_p9 = self._get_bytes(self.PAR_P9_l, 2, signed=True)
-        par_p10 = self._get_bytes(self.PAR_P10, 1)
+        par_p1 = self._get_bytes(self.PAR_P1_l, 16)
+        par_p2 = self._get_bytes(self.PAR_P2_l, 16, signed=True)
+        par_p3 = self._get_bytes(self.PAR_P3, 8)
+        par_p4 = self._get_bytes(self.PAR_P4_l, 16, signed=True)
+        par_p5 = self._get_bytes(self.PAR_P5_l, 16, signed=True)
+        par_p6 = self._get_bytes(self.PAR_P6, 8)
+        par_p7 = self._get_bytes(self.PAR_P7, 8)
+        par_p8 = self._get_bytes(self.PAR_P8_l, 16, signed=True)
+        par_p9 = self._get_bytes(self.PAR_P9_l, 16, signed=True)
+        par_p10 = self._get_bytes(self.PAR_P10, 8)
         self._p_calib = p_cal(par_p1=par_p1, par_p2=par_p2, par_p3=par_p3,
                               par_p4=par_p4, par_p5=par_p5, par_p6=par_p6,
                               par_p7=par_p7, par_p8=par_p8, par_p9=par_p9,
                               par_p10=par_p10)
 
         # Humidity
-        par_h1 = self._get_bytes(self.PAR_H1_h, 1) << 4
-        par_h1 += self._get_bits(self._get_bytes(self.PAR_H1_l, 1), 4, 4)
-        par_h2 = self._get_bytes(self.PAR_H2_h, 1) << 4
-        par_h2 += self._get_bits(self._get_bytes(self.PAR_H2_l, 1), 4, 4)
-        par_h3 = self._get_bytes(self.PAR_H3, 1, signed=True)
-        par_h4 = self._get_bytes(self.PAR_H4, 1, signed=True)
-        par_h5 = self._get_bytes(self.PAR_H5, 1, signed=True)
-        par_h6 = self._get_bytes(self.PAR_H6, 1)
-        par_h7 = self._get_bytes(self.PAR_H7, 1, signed=True)
+        # TODO: Make one call
+        par_h1 = self._get_bytes(self.PAR_H1_h, 8) << 4
+        par_h1 += self._get_bits(self._get_bytes(self.PAR_H1_l, 8), 4, 4)
+        par_h2 = self._get_bytes(self.PAR_H2_h, 8) << 4
+        par_h2 += self._get_bits(self._get_bytes(self.PAR_H2_l, 8), 4, 4)
+        par_h3 = self._get_bytes(self.PAR_H3, 8, signed=True)
+        par_h4 = self._get_bytes(self.PAR_H4, 8, signed=True)
+        par_h5 = self._get_bytes(self.PAR_H5, 8, signed=True)
+        par_h6 = self._get_bytes(self.PAR_H6, 8)
+        par_h7 = self._get_bytes(self.PAR_H7, 8, signed=True)
         self._h_calib = h_cal(par_h1=par_h1, par_h2=par_h2, par_h3=par_h3,
                               par_h4=par_h4, par_h5=par_h5, par_h6=par_h6,
                               par_h7=par_h7)
         
         # Gas
-        par_g1 = self._get_bytes(self.PAR_G1, 1, signed=True)
-        par_g2 = self._get_bytes(self.PAR_G2_L, 2, signed=True)
-        par_g3 = self._get_bytes(self.PAR_G3, 1, signed=True)
-        res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 1), 2, 4)
-        res_heat_val = self._get_bytes(self.RES_HEAT_VAL, 1, signed=True)
+        par_g1 = self._get_bytes(self.PAR_G1, 8, signed=True)
+        par_g2 = self._get_bytes(self.PAR_G2_L, 16, signed=True)
+        par_g3 = self._get_bytes(self.PAR_G3, 8, signed=True)
+        res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 8), 2, 4)
+        res_heat_val = self._get_bytes(self.RES_HEAT_VAL, 8, signed=True)
         self._g_calib = g_cal(par_g1=par_g1, par_g2=par_g2, par_g3=par_g3,
                               res_heat_range=res_heat_range,
                               res_heat_val=res_heat_val)
 
     # TODO: Check maybe remove the option to get one byte
-    def _get_bytes(self, low_byte_addr, byte_num, signed=False, rev=False):
+    def _get_bytes(self, low_byte_addr, res, signed=False, rev=False):
         """Get lsb and msb and make a number."""
 
+        byte_num = ceil(res / 8)
         data = self.hardware_interfaces[self._i2c].read(self.BME_ADDRESS,
                                                         low_byte_addr,
                                                         byte_num=byte_num)
@@ -465,16 +464,24 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         if rev:
             data.reverse()
 
-        res = 0
-        for (i, d) in enumerate(data):
-            res += d << (i*8)
+        # Find the bit number of the lsb
+        low_res = res % 8
+        low_res = low_res if low_res else 8
 
-        power = byte_num*8 - 1
+        # Get only the bits of interest
+        data[0] = self._get_bits(data[0], low_res, 8-low_res)
+
+        # Compute the whole number from spare bytes
+        num = data[0]
+        for (i, d) in enumerate(data[1:], start=1):
+            num += d << (i*8 - (8-low_res))
+
+        power = res - 1
         whole = 2**(power+1) - 1
         if signed:
-            res = res if res < (2**power - 1) else -((whole ^ res) + 1)
+            num = num if num < (2**power - 1) else -((whole ^ num) + 1)
 
-        return res
+        return num
 
     def _reset(self):
         """Software reset, is like a power-on reset."""
