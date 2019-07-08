@@ -5,7 +5,7 @@ LIB = libvl53l1_api.a
 LDFLAGS :=
 CFLAGS := -Iapi/core -Iapi/platform -std=c99
 
-SRC_FILES := $(wildcard $(SRC)/*/*.c)
+SC_FILES := $(wildcard $(SRC)/*/*.c)
 SRC_FILES := $(wildcard $(SRC)/*/*.c)
 OBJ_FILES := $(patsubst $(SRC)/*/*.c,$(SRC)/*/%.o,$(SRC_FILES))
 

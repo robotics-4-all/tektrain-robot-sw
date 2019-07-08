@@ -25,14 +25,17 @@ _I2C_READ_FUNC = CFUNCTYPE(c_int, c_ubyte,
 _I2C_WRITE_FUNC = CFUNCTYPE(c_int, c_ubyte, c_ubyte, POINTER(c_ubyte), c_ubyte)
 
 # Load VL53L1X shared lib
-_TOF_LIBRARY = CDLL('./libvl53l1_api.a')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+_TOF_LIBRARY = CDLL(dir_path + '/libvl53l1_api.a')
 
 
-class VL53L1X:
+class VL53L1X(Sensor):
     """VL53L1X ToF."""
 
-    def __init__(self, tca9548a_num=255, tca9548a_addr=0):
+    def __init__(self, bus=1, tca9548a_num=255, tca9548a_addr=0):
         """Initialize the VL53L1X ToF Sensor from ST"""
+        super(VL53L1X, self).__init__(name="", max_data_length=1)
+        self._bus = bus
         self.VL53L1X_ADDRESS = 0x29
         self._tca9548a_num = tca9548a_num
         self._tca9548a_addr = tca9548a_addr
@@ -48,7 +51,7 @@ class VL53L1X:
 
     def start(self):
         """Init hardware and os resources."""
-        self._i2c = self.init_interface('i2c', bus=1)
+        self._i2c = self.init_interface('i2c', bus=self._bus)
         self._configure_i2c_library_functions()
         self._dev = _TOF_LIBRARY.initialise(self.i2c_address)
 
