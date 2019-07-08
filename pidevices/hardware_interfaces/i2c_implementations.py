@@ -54,7 +54,10 @@ class SMBus2(I2C):
         write = i2c_msg.write(address, data)
         read = i2c_msg.read(address, byte_num)
         
-        return self.smbus.i2c_rdwr(write, read)
+        self.smbus.i2c_rdwr(write, read)
+        res = [ord(read.buf[i]) for i in range(byte_num)]
+
+        return res
 
     def close(self):
         self.smbus.close()
