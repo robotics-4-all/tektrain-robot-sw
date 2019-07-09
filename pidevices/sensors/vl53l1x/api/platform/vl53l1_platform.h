@@ -75,62 +75,65 @@ extern "C"
 {
 #endif
 
+
+void VL53L1_set_i2c(void *read_func, void *write_func);
+
 VL53L1_Error VL53L1_CommsInitialise(
-	VL53L1_Dev_t *pdev,
+	VL53L1_DEV pdev,
 	uint8_t       comms_type,
 	uint16_t      comms_speed_khz);
 
 VL53L1_Error VL53L1_CommsClose(
-	VL53L1_Dev_t *pdev);
+	VL53L1_DEV pdev);
 
 VL53L1_Error VL53L1_WriteMulti(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint8_t      *pdata,
 		uint32_t      count);
 
 VL53L1_Error VL53L1_ReadMulti(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint8_t      *pdata,
 		uint32_t      count);
 
 VL53L1_Error VL53L1_WrByte(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint8_t       VL53L1_PRM_00005);
 
 VL53L1_Error VL53L1_WrWord(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint16_t      VL53L1_PRM_00005);
 
 VL53L1_Error VL53L1_WrDWord(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint32_t      VL53L1_PRM_00005);
 
 VL53L1_Error VL53L1_RdByte(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint8_t      *pdata);
 
 VL53L1_Error VL53L1_RdWord(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint16_t     *pdata);
 
 VL53L1_Error VL53L1_RdDWord(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint16_t      index,
 		uint32_t     *pdata);
 
 VL53L1_Error VL53L1_WaitUs(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		int32_t       wait_us);
 
 VL53L1_Error VL53L1_WaitMs(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		int32_t       wait_ms);
 
 VL53L1_Error VL53L1_GetTimerFrequency(int32_t *ptimer_freq_hz);
@@ -157,7 +160,7 @@ VL53L1_Error VL53L1_GetTickCount(
 	uint32_t *ptime_ms);
 
 VL53L1_Error VL53L1_WaitValueMaskEx(
-		VL53L1_Dev_t *pdev,
+		VL53L1_DEV pdev,
 		uint32_t      timeout_ms,
 		uint16_t      index,
 		uint8_t       value,

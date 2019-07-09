@@ -9,7 +9,7 @@ class TestVL53L1X(unittest.TestCase):
         sensor = VL53L1X()
         sensor.start_ranging(1)
         for i in range(10):
-            print(sensor.get_distance())
+            print(sensor.read())
             time.sleep(1)
 
 
