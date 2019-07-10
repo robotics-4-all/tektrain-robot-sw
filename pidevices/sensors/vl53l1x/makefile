@@ -1,7 +1,8 @@
 .PHONY: clean lib
 
+CC = gcc
 SRC = api
-LIB = libvl53l1_api.a
+LIB = test.so
 LDFLAGS :=
 CFLAGS := -Iapi/core -Iapi/platform -std=c99
 
