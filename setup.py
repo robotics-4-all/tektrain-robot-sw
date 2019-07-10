@@ -4,6 +4,8 @@ REQUIRES = []
 NAME = "pidevices"
 VERSION = "0.0.1"
 
+DEPENDENCIES = ['pyalsaaudio']
+
 setup(
     name=NAME,
     version=VERSION,
