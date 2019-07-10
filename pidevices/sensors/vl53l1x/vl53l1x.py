@@ -74,14 +74,14 @@ class VL53L1X(Sensor):
         self.ADDR_I2C_ID_LOW = 0x19 # Write serial number low byte for I2C address unlock
         self.ADDR_I2C_SEC_ADDR = 0x8a # Write new I2C address after unlock
 
-        self.open()
+        self.start()
 
-    def open(self):
+    def start(self):
         self._i2c = self.init_interface('i2c', bus=self._bus)
         self._configure_i2c_library_functions()
         self._dev = _TOF_LIBRARY.initialise(self.VL53L1X_ADDRESS)
 
-    def close(self):
+    def stop(self):
         self.hardware_interfaces[self._i2c].close()
         self._dev = None
 
@@ -138,14 +138,14 @@ class VL53L1X(Sensor):
 
     # This function included to show how to access the ST library directly
     # from python instead of through the simplified interface
-    def get_timing(self):
-        budget = c_uint(0)
-        budget_p = pointer(budget)
-        status = _TOF_LIBRARY.VL53L1_GetMeasurementTimingBudgetMicroSeconds(self._dev, budget_p)
-        if status == 0:
-            return budget.value + 1000
-        else:
-            return 0
+    #def get_timing(self):
+    #    budget = c_uint(0)
+    #    budget_p = pointer(budget)
+    #    status = _TOF_LIBRARY.VL53L1_GetMeasurementTimingBudgetMicroSeconds(self._dev, budget_p)
+    #    if status == 0:
+    #        return budget.value + 1000
+    #    else:
+    #        return 0
 
     def change_address(self, new_address):
         _TOF_LIBRARY.setDeviceAddress(self._dev, new_address)
