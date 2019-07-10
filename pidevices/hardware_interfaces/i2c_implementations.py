@@ -1,7 +1,7 @@
 from .hardware_interfaces import I2C
 
 try:
-    from smbus2 import SMBus
+    from smbus2 import SMBus, i2c_msg
 except ImportError:
     SMBus = None
 
@@ -47,6 +47,30 @@ class SMBus2(I2C):
             if isinstance(data, list) else self.smbus.write_byte_data
 
         write_func(address, register, data)
+    
+    def write_i2c(self, address, register, data):
+        data = data if isinstance(data, list) else [data]
+        msg = i2c_msg.write(address, [register] + data)
+        self.smbus.i2c_rdwr(msg)
+
+    def read_i2c(self, address, byte_num):
+        msg = i2c_msg.read(address, byte_num)
+        self.smbus.i2c_rdwr(msg)
+        res = [ord(read.buf[i]) for i in range(byte_num)]
+
+        return res
+
+    def read_write(self, address, register, data, byte_num):
+        """Combined read and write command."""
+
+        data = data if isinstance(data, list) else [data]
+        write = i2c_msg.write(address, [register] + data)
+        read = i2c_msg.read(address, byte_num)
+        
+        self.smbus.i2c_rdwr(write, read)
+        res = [ord(read.buf[i]) for i in range(byte_num)]
+
+        return res
 
     def close(self):
         self.smbus.close()
