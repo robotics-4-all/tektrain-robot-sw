@@ -20,6 +20,9 @@ class Speaker(Actuator):
 
         self._device = alsaaudio.PCM(cardindex=self.cardindex)
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
+        self._write_lock = threading.Lock()
+        self._stop_cond = threading.Condition()
+        self.stop_play = False
 
     def write(self, fil, volume=50, loop=False):
         """Write data
@@ -33,6 +36,9 @@ class Speaker(Actuator):
 
         # Open the wav file
         f = wave.open(self._fix_path(fil), 'rb')
+
+        # Stop another playback if it is running
+        #self._check_other()
 
         # Set Device attributes for playback
         self.device.setchannels(f.getnchannels())
@@ -58,24 +64,51 @@ class Speaker(Actuator):
 
         self.device.setperiodsize(periodsize)
         
-        thread = threading.Thread(target=self._async_write, args=(f, 
-                                                                  loop, 
-                                                                  periodsize))
+        thread = threading.Thread(target=self._async_write, 
+                                  args=(f, loop, periodsize),
+                                  daemon=True)
         thread.start()
 
     
     def _async_write(self, f, loop, periodsize):
         """Read from the file."""
+
         cond = True
         while cond:
+            cond = loop
             data = f.readframes(periodsize)
             while data:
                 # Read data from stdin
                 self.device.write(data)
                 data = f.readframes(periodsize)
+
+                # Check for stop
+                self.stop_cond.acquire()
+                if self.stop_play:
+                    self.stop_cond.wait()
+                self.stop_cond.release()
+            #    # Check for termination
+            #    self.write_lock.acquire()
+            #    if self.new:
+            #        cond = False
+            #    self.write_lock.release()
             f.rewind()
-            cond = loop
+
         f.close()
+
+    def pause(self, enabled=True):
+        """Pause or resume the playback."""
+
+        self.device.pause(enabled)
+
+        # Get lock for stopping playback
+        self.stop_cond.acquire()
+        self.stop_play = enabled
+
+        # For resuming notify
+        if not enabled:
+            self.stop_cond.notify()
+        self.stop_cond.release()
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
@@ -105,3 +138,11 @@ class Speaker(Actuator):
     @property
     def mixer(self):
         return self._mixer
+
+    @property
+    def write_lock(self):
+        return self._write_lock
+
+    @property
+    def stop_cond(self):
+        return self._stop_cond
