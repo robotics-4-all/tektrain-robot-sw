@@ -23,9 +23,7 @@ class Speaker(Actuator):
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
 
     def _init_thread(self):
-        self._stop_cond = threading.Condition()
         self._kill_cond = threading.Condition()
-        self._stop_play = False   # Variable for stopping playback
         self._playing = False
         self._kill = False
 
@@ -44,11 +42,15 @@ class Speaker(Actuator):
 
         # Stop another playback if it is running
         if self.playing:
+            # Change kill flag
             self.kill_cond.acquire()
             self.kill = True
             self.kill_cond.wait()
             self.kill_cond.release()
             
+            # Unstop at first
+            self.pause(False)
+
         # Set Device attributes for playback
         self.device.setchannels(f.getnchannels())
         self.device.setrate(f.getframerate())
@@ -91,12 +93,6 @@ class Speaker(Actuator):
                 self.device.write(data)
                 data = f.readframes(periodsize)
 
-                # Check for stop
-                self.stop_cond.acquire()
-                if self.stop_play:
-                    self.stop_cond.wait()
-                self.stop_cond.release()
-
                 # kill Thread
                 self.kill_cond.acquire()
                 if self.kill:
@@ -106,6 +102,7 @@ class Speaker(Actuator):
 
             f.rewind()
 
+        print("end")
         self.restart()
 
         if self.kill:
@@ -118,15 +115,6 @@ class Speaker(Actuator):
         """Pause or resume the playback."""
 
         self.device.pause(enabled)
-
-        # Get lock for stopping playback
-        self.stop_cond.acquire()
-        self.stop_play = enabled
-
-        # For resuming notify
-        if not enabled:
-            self.stop_cond.notify()
-        self.stop_cond.release()
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
@@ -164,20 +152,8 @@ class Speaker(Actuator):
         return self._write_lock
 
     @property
-    def stop_cond(self):
-        return self._stop_cond
-
-    @property
-    def stop_play(self):
-        return self._stop_play
-
-    @property
     def kill_cond(self):
         return self._kill_cond
-
-    @stop_play.setter
-    def stop_play(self, value):
-        self._stop_play = value
 
     @property
     def playing(self):
