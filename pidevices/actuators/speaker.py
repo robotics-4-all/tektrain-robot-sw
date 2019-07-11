@@ -42,14 +42,21 @@ class Speaker(Actuator):
 
         # Stop another playback if it is running
         if self.playing:
+            # Mute for to play the last sector of previous file
+            self.mixer.setmute(1)
+
+            # Unstop at first
+            self.pause(False)
+
             # Change kill flag
             self.kill_cond.acquire()
             self.kill = True
             self.kill_cond.wait()
             self.kill_cond.release()
+
+            # Unmute
+            self.mixer.setmute(0)
             
-            # Unstop at first
-            self.pause(False)
 
         # Set Device attributes for playback
         self.device.setchannels(f.getnchannels())
@@ -102,7 +109,6 @@ class Speaker(Actuator):
 
             f.rewind()
 
-        print("end")
         self.restart()
 
         if self.kill:

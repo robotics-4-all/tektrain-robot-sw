@@ -5,6 +5,13 @@ from pidevices.actuators.speaker import Speaker
 
 class TestSpeaker(unittest.TestCase):
 
+    def test_one(self):
+        speaker = Speaker()
+        speaker.write('open-the-goddamn-door.wav', 15, loop=False)
+        while True:
+            time.sleep(2)
+            break
+
     def test_write(self):
         speaker = Speaker()
         speaker.write('open-the-goddamn-door.wav', 15, loop=True)
@@ -16,8 +23,8 @@ class TestSpeaker(unittest.TestCase):
             if c is 10 :
                 speaker.pause()
             if c is 20 :
-                speaker.pause(False)
-                #speaker.write('maybe-next-time-huh.wav', 40, loop=True)
+                #speaker.pause(False)
+                speaker.write('maybe-next-time-huh.wav', 40, loop=True)
             if c is 30:
                 break
 
