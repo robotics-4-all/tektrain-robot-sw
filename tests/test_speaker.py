@@ -7,7 +7,10 @@ class TestSpeaker(unittest.TestCase):
 
     def test_write(self):
         speaker = Speaker()
-        speaker.write('open-the-goddamn-door.wav', 40)
+        speaker.write('open-the-goddamn-door.wav', 40, loop=True)
+        while True:
+            time.sleep(0.2)
+            print("sleep")
 
 
     def test_path(self):

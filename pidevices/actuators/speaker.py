@@ -1,5 +1,6 @@
 import wave
 import os
+import threading
 from ..devices import Actuator
 import alsaaudio
 
@@ -20,12 +21,14 @@ class Speaker(Actuator):
         self._device = alsaaudio.PCM(cardindex=self.cardindex)
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
 
-    def write(self, fil, volume=50):
+    def write(self, fil, volume=50, loop=False):
         """Write data
         
         Args:
             fil: The file path of the file to be played. Currently it supports
                 only wav file format.
+            volume: Volume percenatage
+            loop: Run the same file in a loop.
         """
 
         # Open the wav file
@@ -55,12 +58,23 @@ class Speaker(Actuator):
 
         self.device.setperiodsize(periodsize)
         
-        data = f.readframes(periodsize)
-        while data:
-            # Read data from stdin
-            self.device.write(data)
-            data = f.readframes(periodsize)
+        thread = threading.Thread(target=self._async_write, args=(f, 
+                                                                  loop, 
+                                                                  periodsize))
+        thread.start()
 
+    
+    def _async_write(self, f, loop, periodsize):
+        """Read from the file."""
+        cond = True
+        while cond:
+            data = f.readframes(periodsize)
+            while data:
+                # Read data from stdin
+                self.device.write(data)
+                data = f.readframes(periodsize)
+            f.rewind()
+            cond = loop
         f.close()
 
     def _fix_path(self, fil_path):
