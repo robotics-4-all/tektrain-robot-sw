@@ -7,7 +7,7 @@ class TestSpeaker(unittest.TestCase):
 
     def test_write(self):
         speaker = Speaker()
-        speaker.write('open-the-goddamn-door.wav', 40, loop=True)
+        speaker.write('open-the-goddamn-door.wav', 20, loop=True)
         c = 0
         while True:
             time.sleep(0.2)
@@ -17,6 +17,18 @@ class TestSpeaker(unittest.TestCase):
                 speaker.pause()
             if c is 20 :
                 speaker.pause(False)
+            if c is 30:
+                break
+
+    def test_multi(self):
+        speaker = Speaker()
+        speaker.write('open-the-goddamn-door.wav', 30, loop=True)
+        c = 0
+        while True:
+            time.sleep(0.2)
+            c += 1
+            if c is 20:
+                speaker.write('maybe-next-time-huh.wav', 40, loop=True)
             if c is 30:
                 break
 

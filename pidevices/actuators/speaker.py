@@ -14,15 +14,20 @@ class Speaker(Actuator):
         super(Speaker, self).__init__(name, max_data_length)
         self.cardindex = cardindex
         self.start()
+        self._init_thread()
 
     def start(self):
         """Initialize hardware and os resources."""
 
         self._device = alsaaudio.PCM(cardindex=self.cardindex)
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
-        self._write_lock = threading.Lock()
+
+    def _init_thread(self):
         self._stop_cond = threading.Condition()
-        self.stop_play = False
+        self._kill_cond = threading.Condition()
+        self._stop_play = False   # Variable for stopping playback
+        self._playing = False
+        self._kill = False
 
     def write(self, fil, volume=50, loop=False):
         """Write data
