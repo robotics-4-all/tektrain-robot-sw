@@ -38,8 +38,12 @@ class Speaker(Actuator):
         f = wave.open(self._fix_path(fil), 'rb')
 
         # Stop another playback if it is running
-        #self._check_other()
-
+        if self.playing:
+            self.kill_cond.acquire()
+            self.kill = True
+            self.kill_cond.wait()
+            self.kill_cond.release()
+            
         # Set Device attributes for playback
         self.device.setchannels(f.getnchannels())
         self.device.setrate(f.getframerate())
@@ -68,7 +72,7 @@ class Speaker(Actuator):
                                   args=(f, loop, periodsize),
                                   daemon=True)
         thread.start()
-
+        self.playing = True
     
     def _async_write(self, f, loop, periodsize):
         """Read from the file."""
@@ -87,14 +91,23 @@ class Speaker(Actuator):
                 if self.stop_play:
                     self.stop_cond.wait()
                 self.stop_cond.release()
-            #    # Check for termination
-            #    self.write_lock.acquire()
-            #    if self.new:
-            #        cond = False
-            #    self.write_lock.release()
+
+                # kill Thread
+                self.kill_cond.acquire()
+                if self.kill:
+                    data = False
+                    cond = False
+                self.kill_cond.release()
+
             f.rewind()
 
-        f.close()
+        self.restart()
+
+        if self.kill:
+            self.kill_cond.acquire()
+            self.kill = False
+            self.kill_cond.notify()
+            self.kill_cond.release()
 
     def pause(self, enabled=True):
         """Pause or resume the playback."""
@@ -121,7 +134,9 @@ class Speaker(Actuator):
 
     def stop(self):
         """Clean hardware and os reources."""
-        pass
+
+        self.device.close()
+        self.mixer.close()
 
     @property
     def cardindex(self):
@@ -146,3 +161,31 @@ class Speaker(Actuator):
     @property
     def stop_cond(self):
         return self._stop_cond
+
+    @property
+    def stop_play(self):
+        return self._stop_play
+
+    @property
+    def kill_cond(self):
+        return self._kill_cond
+
+    @stop_play.setter
+    def stop_play(self, value):
+        self._stop_play = value
+
+    @property
+    def playing(self):
+        return self._playing
+
+    @playing.setter
+    def playing(self, value):
+        self._playing = value
+
+    @property
+    def kill(self):
+        return self._kill
+
+    @kill.setter
+    def kill(self, value):
+        self._kill = value
