@@ -109,6 +109,7 @@ class Speaker(Actuator):
 
             f.rewind()
 
+        f.close()
         self.restart()
 
         if self.kill:
