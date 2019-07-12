@@ -8,42 +8,27 @@ class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
         speaker = Speaker(cardindex=2)
-        speaker.write(cmd_par, 100, loop=False)
-        while True:
-            time.sleep(0.1)
-            #break
+        speaker.write(cmd_par, 30, times=2)
 
-    def test_write(self):
-        speaker = Speaker()
-        speaker.write('open-the-goddamn-door.wav', 15, loop=True)
-        c = 0
-        while True:
-            time.sleep(0.2)
-            c += 1
-            #print("sleep")
-            if c is 10 :
-                speaker.pause()
-            if c is 20 :
-                #speaker.pause(False)
-                speaker.write('maybe-next-time-huh.wav', 40, loop=True)
-            if c is 30:
-                break
+    def test_pause(self):
+        speaker = Speaker(cardindex=2)
+        speaker.async_write('open-the-goddamn-door.wav', 15, times=10)
+        time.sleep(4)
+        speaker.pause()
+        time.sleep(2)
+        speaker.pause(False)
+        time.sleep(13)
 
     def test_multi(self):
-        speaker = Speaker()
-        speaker.write('open-the-goddamn-door.wav', 30, loop=True)
-        c = 0
-        while True:
-            time.sleep(0.2)
-            c += 1
-            if c is 20:
-                speaker.write('maybe-next-time-huh.wav', 40, loop=True)
-            if c is 30:
-                break
+        speaker = Speaker(cardindex=2)
+        speaker.async_write('open-the-goddamn-door.wav', 15, times=10)
+        time.sleep(5)
+        speaker.write('maybe-next-time-huh.wav', 40, times=2)
+        #time.sleep(10)
 
 
     def test_path(self):
-        speaker = Speaker()
+        speaker = Speaker(cardindex=2)
         speaker._fix_path('f')
 
 if __name__ == "__main__":

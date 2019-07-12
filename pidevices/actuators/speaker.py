@@ -20,6 +20,7 @@ class Speaker(Actuator):
         """Initialize hardware and os resources."""
         
         # It uses the default card for speaker with the ~/.asoundrc config
+        #self._device = alsaaudio.PCM(cardindex=self.cardindex)
         self._device = alsaaudio.PCM()
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
 
@@ -27,19 +28,17 @@ class Speaker(Actuator):
         self._kill_cond = threading.Condition()
         self._playing = False
         self._kill = False
+        self._paused = False
 
-    def write(self, fil, volume=50, loop=False):
+    def write(self, file_path, volume=50, times=1):
         """Write data
         
         Args:
-            fil: The file path of the file to be played. Currently it supports
-                only wav file format.
+            file_path: The file path of the file to be played. Currently it
+                     supports only wav file format.
             volume: Volume percenatage
             loop: Run the same file in a loop.
         """
-
-        # Open the wav file
-        f = wave.open(self._fix_path(fil), 'rb')
 
         # Stop another playback if it is running
         if self.playing:
@@ -47,7 +46,8 @@ class Speaker(Actuator):
             self.mixer.setmute(1)
 
             # Unstop at first
-            self.pause(False)
+            if self.paused:
+                self.pause(False)
 
             # Change kill flag
             self.kill_cond.acquire()
@@ -57,7 +57,9 @@ class Speaker(Actuator):
 
             # Unmute
             self.mixer.setmute(0)
-            
+        
+        # Open the wav file
+        f = wave.open(self._fix_path(file_path), 'rb')
 
         # Set Device attributes for playback
         self.device.setchannels(f.getnchannels())
@@ -80,22 +82,12 @@ class Speaker(Actuator):
             raise ValueError('Unsupported format')
 
         periodsize = 256
-        #periodsize = round(f.getframerate() / 8)
 
         self.device.setperiodsize(periodsize)
-        
-        thread = threading.Thread(target=self._async_write, 
-                                  args=(f, loop, periodsize),
-                                  daemon=True)
-        thread.start()
-        self.playing = True
-    
-    def _async_write(self, f, loop, periodsize):
-        """Read from the file."""
 
+        # Play the file
         cond = True
-        while cond:
-            cond = loop
+        for i in range(times):
             data = f.readframes(periodsize)
             while data:
                 # Read data from stdin
@@ -109,6 +101,10 @@ class Speaker(Actuator):
                     cond = False
                 self.kill_cond.release()
 
+            # Break the loop
+            if not cond:
+                break;
+            
             f.rewind()
 
         f.close()
@@ -119,11 +115,28 @@ class Speaker(Actuator):
             self.kill = False
             self.kill_cond.notify()
             self.kill_cond.release()
+    
+    def async_write(self, file_path, volume, times=1):
+        """Asynchronous write
+        
+        Args:
+            file_path: The file path of the file to be played. Currently it
+                     supports only wav file format.
+            volume: Volume percenatage
+            loop: Run the same file in a loop.
+        """
 
+        thread = threading.Thread(target=self.write, 
+                                  args=(file_path, volume, times),
+                                  daemon=True)
+        thread.start()
+        self.playing = True
+     
     def pause(self, enabled=True):
         """Pause or resume the playback."""
 
         self.device.pause(enabled)
+        self.paused = enabled
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
@@ -179,3 +192,11 @@ class Speaker(Actuator):
     @kill.setter
     def kill(self, value):
         self._kill = value
+
+    @property
+    def paused(self):
+        return self._paused
+
+    @paused.setter
+    def paused(self, value):
+        self._paused = value
