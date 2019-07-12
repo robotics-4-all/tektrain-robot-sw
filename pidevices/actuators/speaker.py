@@ -64,7 +64,7 @@ class Speaker(Actuator):
         self.device.setrate(f.getframerate())
 
         # Set volume for channels
-        self.mixer.setvolume(volume, 0) 
+        self.mixer.setvolume(volume) 
 
         # 8bit is unsigned in wav files
         if f.getsampwidth() == 1:
