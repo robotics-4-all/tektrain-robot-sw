@@ -22,7 +22,7 @@ class Microphone(Sensor):
 
         self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
                                      cardindex=self.cardindex)
-        #self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
+        self._mixer = alsaaudio.Mixer(control='Mic', cardindex=self.cardindex)
 
     def _init_thread(self):
         self._kill_cond = threading.Condition()
@@ -76,7 +76,7 @@ class Microphone(Sensor):
         self.device.setrate(framerate)
 
         # Set volume for channels
-        #self.mixer.setvolume(volume, 0) 
+        self.mixer.setvolume(volume) 
 
         # 8bit is unsigned in wav files
         if sample_width == 1:
