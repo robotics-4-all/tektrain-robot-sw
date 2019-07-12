@@ -1,3 +1,4 @@
+import sys
 import unittest
 import time
 from pidevices.actuators.speaker import Speaker
@@ -6,11 +7,11 @@ from pidevices.actuators.speaker import Speaker
 class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
-        speaker = Speaker()
-        speaker.write('open-the-goddamn-door.wav', 15, loop=False)
+        speaker = Speaker(cardindex=2)
+        speaker.write(cmd_par, 100, loop=False)
         while True:
-            time.sleep(2)
-            break
+            time.sleep(0.1)
+            #break
 
     def test_write(self):
         speaker = Speaker()
@@ -46,4 +47,6 @@ class TestSpeaker(unittest.TestCase):
         speaker._fix_path('f')
 
 if __name__ == "__main__":
+    cmd_par = sys.argv[2]
+    del sys.argv[2:]
     unittest.main()

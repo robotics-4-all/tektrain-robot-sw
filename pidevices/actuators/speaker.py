@@ -8,7 +8,7 @@ import alsaaudio
 class Speaker(Actuator):
     """Class representing a usb speaker."""
 
-    def __init__(self, cardindex=1, name="", max_data_length=0):
+    def __init__(self, cardindex, name="", max_data_length=0):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)
@@ -18,8 +18,9 @@ class Speaker(Actuator):
 
     def start(self):
         """Initialize hardware and os resources."""
-
-        self._device = alsaaudio.PCM(cardindex=self.cardindex)
+        
+        # It uses the default card for speaker with the ~/.asoundrc config
+        self._device = alsaaudio.PCM()
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
 
     def _init_thread(self):
@@ -78,7 +79,8 @@ class Speaker(Actuator):
         else:
             raise ValueError('Unsupported format')
 
-        periodsize = round(f.getframerate() / 8)
+        periodsize = 256
+        #periodsize = round(f.getframerate() / 8)
 
         self.device.setperiodsize(periodsize)
         
