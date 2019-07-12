@@ -7,7 +7,7 @@ class TestMicrophone(unittest.TestCase):
 
     def test_one(self):
         mic = Microphone()
-        mic.read(file_path='test.wav', secs=4)
+        mic.read(file_path='test.wav', secs=4, volume=100)
 
     def test_write(self):
         mic = Microphone()
