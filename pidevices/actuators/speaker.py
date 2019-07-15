@@ -24,6 +24,10 @@ class Speaker(Actuator):
         self._device = alsaaudio.PCM()
         self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
 
+        # Unmute if it is muted at first
+        if self.mixer.getmute():
+            self.mixer.setmute(0)
+
     def _init_thread(self):
         self._kill_cond = threading.Condition()
         self._playing = False
@@ -42,6 +46,9 @@ class Speaker(Actuator):
 
         # Stop another playback if it is running
         if self.playing:
+            # Change kill flag
+            self.kill_cond.acquire()
+
             # Mute for to play the last sector of previous file
             self.mixer.setmute(1)
 
@@ -50,13 +57,13 @@ class Speaker(Actuator):
                 self.pause(False)
 
             # Change kill flag
-            self.kill_cond.acquire()
             self.kill = True
             self.kill_cond.wait()
-            self.kill_cond.release()
 
             # Unmute
             self.mixer.setmute(0)
+
+            self.kill_cond.release()
         
         # Open the wav file
         f = wave.open(self._fix_path(file_path), 'rb')
@@ -86,7 +93,7 @@ class Speaker(Actuator):
         self.device.setperiodsize(periodsize)
 
         # Play the file
-        cond = True
+        self.playing = True      # Set playing flag
         for i in range(times):
             data = f.readframes(periodsize)
             while data:
@@ -98,23 +105,26 @@ class Speaker(Actuator):
                 self.kill_cond.acquire()
                 if self.kill:
                     data = False
-                    cond = False
+                    self.playing = False
                 self.kill_cond.release()
 
-            # Break the loop
-            if not cond:
-                break;
-            
             f.rewind()
 
+            # Break the loop
+            if not self.playing:
+                break;
+
+        self.playing = False    # Clear playing flag
+
+        # Close file and restart device
         f.close()
         self.restart()
 
+        self.kill_cond.acquire()
         if self.kill:
-            self.kill_cond.acquire()
             self.kill = False
             self.kill_cond.notify()
-            self.kill_cond.release()
+        self.kill_cond.release()
     
     def async_write(self, file_path, volume, times=1):
         """Asynchronous write
@@ -130,7 +140,6 @@ class Speaker(Actuator):
                                   args=(file_path, volume, times),
                                   daemon=True)
         thread.start()
-        self.playing = True
      
     def pause(self, enabled=True):
         """Pause or resume the playback."""
