@@ -22,7 +22,7 @@ class Speaker(Actuator):
         # It uses the default card for speaker with the ~/.asoundrc config
         #self._device = alsaaudio.PCM(cardindex=self.cardindex)
         self._device = alsaaudio.PCM()
-        self._mixer = alsaaudio.Mixer(control='PCM', cardindex=self.cardindex)
+        self._mixer = alsaaudio.Mixer(control='PCM')
 
         # Unmute if it is muted at first
         if self.mixer.getmute():
