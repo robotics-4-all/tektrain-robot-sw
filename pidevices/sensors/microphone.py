@@ -25,11 +25,11 @@ class Microphone(Sensor):
         self._mixer = alsaaudio.Mixer(control='Mic', cardindex=self.cardindex)
 
     def _init_thread(self):
-        self._kill_cond = threading.Condition()
-        self._playing = False
-        self._kill = False
+        self._recording_mutex = threading.Condition()
+        self._recording = False
+        self._paused = False
 
-    def read(self, secs, file_path, volume=50):
+    def read(self, secs, file_path, volume=100):
         """Read data from microphone
         
         Args:
@@ -39,26 +39,22 @@ class Microphone(Sensor):
             volume: Volume percenatage
         """
 
+        # Get recording mutex
+        self.recording_mutex.acquire()
+
+        # Wait for another record to stop
+        if self.recording:
+
+            if self.paused:
+                self.pause(False)
+
+            # Change record flag
+            self.recording = False
+            self.recording_mutex.wait()
+            
         # Open the wav file
         f = wave.open(self._fix_path(file_path), 'wb')
 
-        # Stop another playback if it is running
-        #if self.playing:
-        #    # Mute for to play the last sector of previous file
-        #    self.mixer.setmute(1)
-
-        #    # Unstop at first
-        #    self.pause(False)
-
-        #    # Change kill flag
-        #    self.kill_cond.acquire()
-        #    self.kill = True
-        #    self.kill_cond.wait()
-        #    self.kill_cond.release()
-
-        #    # Unmute
-        #    self.mixer.setmute(0)
-            
         # Set attributes
         channels = 1
         framerate = 44100 
@@ -93,44 +89,40 @@ class Microphone(Sensor):
 
         self.device.setperiodsize(periodsize)
         
-        #thread = threading.Thread(target=self._async_read, 
-        #                          args=(f, periodsize),
-        #                          daemon=True)
-        #thread.start()
-        #self.playing = True
-        self._async_read(f, secs)
-    
-    def _async_read(self, f, secs):
-        """Read from the file."""
+        self.recording = True
+        self.recording_mutex.release()
 
+        # Start recording
         t_start = time.time()
         while time.time() - t_start < secs:
-
             l, data = self.device.read()
-
             if l:
                 f.writeframes(data)
-
-            # kill Thread
-            #self.kill_cond.acquire()
-            #if self.kill:
-            #    data = False
-            #    cond = False
-            #self.kill_cond.release()
 
         f.close()
         self.restart()
 
-        #if self.kill:
-        #    self.kill_cond.acquire()
-        #    self.kill = False
-        #    self.kill_cond.notify()
-        #    self.kill_cond.release()
+        # Notify the other recording
+        self.recording_mutex.acquire()
+        if self.recording:
+            self.recording = False
+        else:
+            self.recording_mutex.notify()
+        self.recording_mutex.release()
+    
+    def async_read(self, secs, file_path, volume=100):
+        """Async read."""
+       
+        thread = threading.Thread(target=self.read, 
+                                  args=(secs, file_path, volume,),
+                                  daemon=True)
+        thread.start()
 
     def pause(self, enabled=True):
         """Pause or resume the playback."""
 
         self.device.pause(enabled)
+        self.paused = True
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
@@ -145,7 +137,7 @@ class Microphone(Sensor):
         """Clean hardware and os reources."""
 
         self.device.close()
-        #self.mixer.close()
+        self.mixer.close()
 
     @property
     def cardindex(self):
@@ -164,25 +156,21 @@ class Microphone(Sensor):
         return self._mixer
 
     @property
-    def write_lock(self):
-        return self._write_lock
+    def recording_mutex(self):
+        return self._recording_mutex
 
     @property
-    def kill_cond(self):
-        return self._kill_cond
+    def recording(self):
+        return self._recording
+
+    @recording.setter
+    def recording(self, value):
+        self._recording = value
 
     @property
-    def playing(self):
-        return self._playing
+    def paused(self):
+        return self._paused
 
-    @playing.setter
-    def playing(self, value):
-        self._playing = value
-
-    @property
-    def kill(self):
-        return self._kill
-
-    @kill.setter
-    def kill(self, value):
-        self._kill = value
+    @paused.setter
+    def paused(self, value):
+        self._paused = value

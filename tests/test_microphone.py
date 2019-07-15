@@ -6,37 +6,34 @@ from pidevices.sensors.microphone import Microphone
 class TestMicrophone(unittest.TestCase):
 
     def test_one(self):
-        mic = Microphone()
+        mic = Microphone(cardindex=1)
         mic.read(file_path='test.wav', secs=4, volume=100)
 
-    def test_write(self):
-        mic = Microphone()
-        mic.write('open-the-goddamn-door.wav', 15, loop=True)
-        c = 0
-        while True:
-            time.sleep(0.2)
-            c += 1
-            #print("sleep")
-            if c is 10 :
-                mic.pause()
-            if c is 20 :
-                #mic.pause(False)
-                mic.write('maybe-next-time-huh.wav', 40, loop=True)
-            if c is 30:
-                break
-
     def test_multi(self):
-        mic = Microphone()
-        mic.write('open-the-goddamn-door.wav', 30, loop=True)
-        c = 0
-        while True:
-            time.sleep(0.2)
-            c += 1
-            if c is 20:
-                mic.write('maybe-next-time-huh.wav', 40, loop=True)
-            if c is 30:
-                break
+        mic = Microphone(cardindex=1)
+        mic.async_read(file_path='test_one.wav', secs=4, volume=100)
+        time.sleep(3)
+        mic.read(file_path='test_two.wav', secs=2, volume=100)
 
+        # Test if it is paused
+        mic.async_read(file_path='test_one_p.wav', secs=4, volume=100)
+        time.sleep(2)
+        mic.pause()
+        print("Pause")
+        time.sleep(1)
+        mic.read(file_path='test_two.wav', secs=2, volume=100)
+
+
+    def test_pause(self):
+        mic = Microphone(cardindex=1)
+        mic.async_read(file_path='test.wav', secs=6, volume=100)
+        time.sleep(2)
+        mic.pause()
+        print("Pause")
+        time.sleep(1)
+        print("Restart")
+        mic.pause(False)
+        time.sleep(6)
 
     def test_path(self):
         mic = Microphone()

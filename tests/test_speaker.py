@@ -8,7 +8,7 @@ class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
         speaker = Speaker(cardindex=0)
-        speaker.write(cmd_par, 15, times=2)
+        speaker.write(cmd_par, 100, times=1)
 
     def test_pause(self):
         speaker = Speaker(cardindex=0)
