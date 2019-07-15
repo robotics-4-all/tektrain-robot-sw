@@ -29,9 +29,8 @@ class Speaker(Actuator):
             self.mixer.setmute(0)
 
     def _init_thread(self):
-        self._kill_cond = threading.Condition()
+        self._playing_mutex = threading.Condition()
         self._playing = False
-        self._kill = False
         self._paused = False
 
     def write(self, file_path, volume=50, times=1):
@@ -44,11 +43,11 @@ class Speaker(Actuator):
             loop: Run the same file in a loop.
         """
 
+        # Get playing mutex
+        self.playing_mutex.acquire()
+
         # Stop another playback if it is running
         if self.playing:
-            # Change kill flag
-            self.kill_cond.acquire()
-
             # Mute for to play the last sector of previous file
             self.mixer.setmute(1)
 
@@ -57,13 +56,11 @@ class Speaker(Actuator):
                 self.pause(False)
 
             # Change kill flag
-            self.kill = True
-            self.kill_cond.wait()
+            self.playing = False
+            self.playing_mutex.wait()
 
             # Unmute
             self.mixer.setmute(0)
-
-            self.kill_cond.release()
         
         # Open the wav file
         f = wave.open(self._fix_path(file_path), 'rb')
@@ -92,9 +89,16 @@ class Speaker(Actuator):
 
         self.device.setperiodsize(periodsize)
 
+        # Set playing flag
+        self.playing = True      
+        self.playing_mutex.release()
+
         # Play the file
-        self.playing = True      # Set playing flag
         for i in range(times):
+            # Break the loop if another call is done
+            if not self.playing:
+                break
+
             data = f.readframes(periodsize)
             while data:
                 # Read data from stdin
@@ -102,29 +106,23 @@ class Speaker(Actuator):
                 data = f.readframes(periodsize)
 
                 # kill Thread
-                self.kill_cond.acquire()
-                if self.kill:
+                self.playing_mutex.acquire()
+                if not self.playing:
                     data = False
-                    self.playing = False
-                self.kill_cond.release()
+                self.playing_mutex.release()
 
             f.rewind()
-
-            # Break the loop
-            if not self.playing:
-                break;
-
-        self.playing = False    # Clear playing flag
 
         # Close file and restart device
         f.close()
         self.restart()
 
-        self.kill_cond.acquire()
-        if self.kill:
-            self.kill = False
-            self.kill_cond.notify()
-        self.kill_cond.release()
+        self.playing_mutex.acquire()
+        if self.playing:
+            self.playing = False
+        else:
+            self.playing_mutex.notify()
+        self.playing_mutex.release()
     
     def async_write(self, file_path, volume, times=1):
         """Asynchronous write
@@ -140,6 +138,7 @@ class Speaker(Actuator):
                                   args=(file_path, volume, times),
                                   daemon=True)
         thread.start()
+
      
     def pause(self, enabled=True):
         """Pause or resume the playback."""
@@ -179,12 +178,8 @@ class Speaker(Actuator):
         return self._mixer
 
     @property
-    def write_lock(self):
-        return self._write_lock
-
-    @property
-    def kill_cond(self):
-        return self._kill_cond
+    def playing_mutex(self):
+        return self._playing_mutex
 
     @property
     def playing(self):
@@ -194,13 +189,6 @@ class Speaker(Actuator):
     def playing(self, value):
         self._playing = value
 
-    @property
-    def kill(self):
-        return self._kill
-
-    @kill.setter
-    def kill(self, value):
-        self._kill = value
 
     @property
     def paused(self):
