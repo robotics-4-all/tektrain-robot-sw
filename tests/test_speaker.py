@@ -7,11 +7,11 @@ from pidevices.actuators.speaker import Speaker
 class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
-        speaker = Speaker(cardindex=0)
-        speaker.write(cmd_par, 25, times=1)
+        speaker = Speaker()
+        speaker.write(cmd_par, 85, times=1)
 
     def test_pause(self):
-        speaker = Speaker(cardindex=0)
+        speaker = Speaker()
         speaker.async_write('open-the-goddamn-door.wav', 15, times=6)
         time.sleep(4)
         speaker.pause()
@@ -20,7 +20,7 @@ class TestSpeaker(unittest.TestCase):
         time.sleep(5)
 
     def test_multi(self):
-        speaker = Speaker(cardindex=0)
+        speaker = Speaker()
 
         # In the middle of the playback change
         speaker.async_write('open-the-goddamn-door.wav', 15, times=5)
@@ -45,7 +45,7 @@ class TestSpeaker(unittest.TestCase):
 
 
     def test_path(self):
-        speaker = Speaker(cardindex=2)
+        speaker = Speaker()
         speaker._fix_path('f')
 
 if __name__ == "__main__":

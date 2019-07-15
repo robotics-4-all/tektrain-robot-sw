@@ -6,11 +6,11 @@ from pidevices.sensors.microphone import Microphone
 class TestMicrophone(unittest.TestCase):
 
     def test_one(self):
-        mic = Microphone(cardindex=1)
+        mic = Microphone()
         mic.read(file_path='test.wav', secs=4, volume=100)
 
     def test_multi(self):
-        mic = Microphone(cardindex=1)
+        mic = Microphone()
         mic.async_read(file_path='test_one.wav', secs=4, volume=100)
         time.sleep(3)
         mic.read(file_path='test_two.wav', secs=2, volume=100)
@@ -25,7 +25,7 @@ class TestMicrophone(unittest.TestCase):
 
 
     def test_pause(self):
-        mic = Microphone(cardindex=1)
+        mic = Microphone()
         mic.async_read(file_path='test.wav', secs=6, volume=100)
         time.sleep(2)
         mic.pause()

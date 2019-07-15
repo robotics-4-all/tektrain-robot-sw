@@ -8,11 +8,11 @@ import alsaaudio
 class Speaker(Actuator):
     """Class representing a usb speaker."""
 
-    def __init__(self, cardindex, name="", max_data_length=0):
+    def __init__(self, dev_name='speaker', name="", max_data_length=0):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)
-        self.cardindex = cardindex
+        self.dev_name = dev_name
         self.start()
         self._init_thread()
 
@@ -20,9 +20,9 @@ class Speaker(Actuator):
         """Initialize hardware and os resources."""
         
         # It uses the default card for speaker with the ~/.asoundrc config
-        #self._device = alsaaudio.PCM(cardindex=self.cardindex)
-        self._device = alsaaudio.PCM()
-        self._mixer = alsaaudio.Mixer(control='PCM')
+        #self._device = alsaaudio.PCM(dev_name=self.dev_name)
+        self._device = alsaaudio.PCM(device=self.dev_name)
+        self._mixer = alsaaudio.Mixer(control='PCM', device=self.dev_name)
 
         # Unmute if it is muted at first
         if self.mixer.getmute():
@@ -162,12 +162,12 @@ class Speaker(Actuator):
         self.mixer.close()
 
     @property
-    def cardindex(self):
-        return self._cardindex
+    def dev_name(self):
+        return self._dev_name
 
-    @cardindex.setter
-    def cardindex(self, cardindex):
-        self._cardindex = cardindex
+    @dev_name.setter
+    def dev_name(self, dev_name):
+        self._dev_name = dev_name
 
     @property
     def device(self):

@@ -9,20 +9,19 @@ import alsaaudio
 class Microphone(Sensor):
     """Class representing a usb microphone."""
 
-    def __init__(self, cardindex=1, name="", max_data_length=0):
+    def __init__(self, dev_name='mic', name="", max_data_length=0):
         """Constructor"""
 
         super(Microphone, self).__init__(name, max_data_length)
-        self.cardindex = cardindex
+        self.dev_name = dev_name
         self.start()
         self._init_thread()
 
     def start(self):
         """Initialize hardware and os resources."""
 
-        self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
-                                     cardindex=self.cardindex)
-        self._mixer = alsaaudio.Mixer(control='Mic', cardindex=self.cardindex)
+        self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE, device=self.dev_name)
+        self._mixer = alsaaudio.Mixer(control='Mic', device=self.dev_name)
 
     def _init_thread(self):
         self._recording_mutex = threading.Condition()
@@ -140,12 +139,12 @@ class Microphone(Sensor):
         self.mixer.close()
 
     @property
-    def cardindex(self):
-        return self._cardindex
+    def dev_name(self):
+        return self._dev_name
 
-    @cardindex.setter
-    def cardindex(self, cardindex):
-        self._cardindex = cardindex
+    @dev_name.setter
+    def dev_name(self, dev_name):
+        self._dev_name = dev_name
 
     @property
     def device(self):
