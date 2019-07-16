@@ -40,6 +40,9 @@ class GPIOPin(HardwareInterface):
                  a pwm pin. 
         pwm: A boolean that indicates if the pin is pwm or not.
         duty_cycle: Float for the percentage of the pwm cycle.
+        event: A function to be called with a new edge signal.
+        edge: Could be rising, falling or both.
+        bounce: Integer representing the bounce time in ms.
     """
 
     def __init__(self, number):
@@ -50,6 +53,9 @@ class GPIOPin(HardwareInterface):
         self._frequency = None
         self._pwm = None
         self._duty_cycle = None
+        self._event = None
+        self._edge = None
+        self._bounce = None
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
@@ -98,6 +104,30 @@ class GPIOPin(HardwareInterface):
         return self._duty_cycle
 
     duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
+
+    def _set_edge(self, edge):
+        self._edge = edge
+
+    def _get_edge(self):
+        return self._edge
+
+    edge = property(_get_edge, _set_edge)
+
+    def _set_event(self, event):
+        self._event = event
+
+    def _get_event(self):
+        return self._event
+
+    event = property(_get_event, _set_event)
+
+    def _set_bounce(self, bounce):
+        self._bounce = bounce
+
+    def _get_bounce(self):
+        return self._bounce
+
+    bounce = property(_get_bounce, _set_bounce)
 
 
 # TODO: catch exceptions if the pin for get functions if the pins has not that
@@ -198,7 +228,25 @@ class GPIO(HardwareInterface):
 
     def get_pin_duty_cycle(self, pin):
         return self._pins[pin].duty_cycle
+    
+    def set_pin_edge(self, pin, edge):
+        pass
 
+    def get_pin_edge(self, pin):
+        return self._pins[pin].edge
+
+    def set_pin_event(self, pin, event):
+        pass
+
+    def get_pin_event(self, pin):
+        return self._pins[pin].event
+
+    def set_pin_bounce(self, pin, bounce):
+        pass
+
+    def get_pin_bounce(self, pin):
+        return self._pins[pin].bounce
+    
 
 class SPI(HardwareInterface):
     """Abstract class representing spi hardware interface.
