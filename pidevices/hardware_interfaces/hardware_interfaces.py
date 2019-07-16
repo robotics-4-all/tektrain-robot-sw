@@ -55,7 +55,7 @@ class GPIOPin(HardwareInterface):
         self._duty_cycle = None
         self._event = None
         self._edge = None
-        self._bounce = None
+        self._bounce = 0
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num

@@ -26,6 +26,12 @@ class RPiGPIO(GPIO):
         'floating': RPIGPIO.PUD_OFF
     }
 
+    RPIGPIO_EDGES = {
+        'rising': RPIGPIO.RISING,
+        'falling': RPIGPIO.FALLING,
+        'both': RPIGPIO.BOTH
+    }
+
     def __init__(self, **kwargs):
         """Contstructor"""
         if RPIGPIO is None:
@@ -142,6 +148,36 @@ class RPiGPIO(GPIO):
             self.pwm_pins[pin_name].ChangeFrequency(frequency)
         else:
             # Raise exception that this pin isn't pwm
+            pass
+    
+    def set_pin_edge(self, pin, edge):
+        pin = self.pins[pin]
+        try:
+            edge = self.RPIGPIO_EDGES[edge]
+        except KeyError:
+            # Raise exception not valid name
+            pass
+
+        if pin.function is 'input':
+            pin.edge = edge
+            RPIGPIO.add_event_detect(pin.pin_num, edge)
+        else:
+            # Raise exception output pin.
+            pass
+
+    def set_pin_bounce(self, pin, bounce):
+        self.pins[pin].bounce = bounce
+
+    def set_pin_event(self, pin, event):
+        pin = self.pins[pin]
+
+        if pin.function is 'input':
+            pin.event = event
+            RPIGPIO.add_event_callback(pin.pin_num, 
+                                       pin.event,
+                                       bouncetime=pin.bounce)
+        else:
+            # Raise exception output pin
             pass
 
     @property
