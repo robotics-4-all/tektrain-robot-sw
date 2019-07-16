@@ -160,7 +160,10 @@ class RPiGPIO(GPIO):
 
         if pin.function is 'input':
             pin.edge = edge
-            RPIGPIO.add_event_detect(pin.pin_num, edge)
+            if pin.bounce is None:
+                RPIGPIO.add_event_detect(pin.pin_num, edge)
+            else:
+                RPIGPIO.add_event_detect(pin.pin_num, edge, bouncetime=pin.bounce)
         else:
             # Raise exception output pin.
             pass
@@ -173,9 +176,7 @@ class RPiGPIO(GPIO):
 
         if pin.function is 'input':
             pin.event = event
-            RPIGPIO.add_event_callback(pin.pin_num, 
-                                       pin.event,
-                                       bouncetime=pin.bounce)
+            RPIGPIO.add_event_callback(pin.pin_num, pin.event)
         else:
             # Raise exception output pin
             pass
