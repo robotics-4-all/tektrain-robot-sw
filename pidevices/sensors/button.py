@@ -20,8 +20,20 @@ class Button(Sensor):
         self.hardware_interfaces[self._gpio].set_pin_bounce('button', 200)
         self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
     
-    def read(self, func, *args):
+    def read(self):
+        """Read current state of button."""
+
+        return self.hardware_interfaces[self._gpio].read('button')
+
+    def when_pressed(self, func, *args):
+        """Function to be called when the button is pressed."""
+
         self.hardware_interfaces[self._gpio].set_pin_event('button', func, *args)
+
+    def wait_for_press(self):
+        """Wait to be pressed"""
+
+        self.hardware_interfaces[self._gpio].wait_pin_for_edge('button')
 
     def stop(self):
         """Free hardware and os resources."""
