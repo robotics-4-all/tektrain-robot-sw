@@ -2,8 +2,9 @@ import os, pygame, sys, time
 from pygame.locals import *
 from evdev import InputDevice, list_devices
 import threading
-from subprocess import *
-#from ..devices import Composite
+# from subprocess import *
+# from ..devices import Composite
+from omxplayer.player import OMXPlayer
 
 
 #class TouchScreen(Composite):
@@ -47,7 +48,7 @@ class TouchScreen():
 	os.environ["SDL_MOUSEDEV"] = self.eventX
 	self.backupEvent = self.eventX
 
-	self.turnScreenOff()
+	#self.turnScreenOff()
 
     def write(self, file_path = None, time_enabled = None, touch_enabled = None, \
 		color_rgb = None, color_hex = None, options = None, multiple_options = None, \
@@ -55,7 +56,7 @@ class TouchScreen():
 		show_video = False, show_options = False):
 
 	# Clears the events buffer
-	self.turnScreenOn()
+	#self.turnScreenOn()
 	ret = None
 	pygame.event.clear()
 	if show_color == True:
@@ -72,9 +73,9 @@ class TouchScreen():
 		if file_path == None or time_window == None:	
 			self.turnScreenOff()
 			raise Exception("show_video called without video URI or waiting time")
-		ret = self._show_video(file_path, time_enabled, touch_enabled, text)		
+		ret = self._show_video(file_path, time_window, touch_enabled, text)		
 
-	self.turnScreenOff()
+	#self.turnScreenOff()
 	return ret
 
     def _show_image(self, image_uri, time_enabled, touch_enabled, text):
@@ -137,24 +138,38 @@ class TouchScreen():
 	
 
     def _show_video(self, video_uri, time_window, touch_enabled, text):
-	clock = pygame.time.Clock()
 	pygame.display.flip()
 
 	t_start = time.time()
 	running = True
-	sb = Popen(["omxplayer", "-p", video_uri])
-	#os.popen("omxplayer -p " + video_uri)
-	print "ok"
+	try:
+		player = OMXPlayer(video_uri)
+		player.set_aspect_mode("stretch")
+		while player.is_playing() == False:
+			time.sleep(0.1)
+	except Exception as e:
+		raise Exception("Video not loaded. Error is: " + str(e))
+
 	while time.time() - t_start < time_window and running:
 		for event in pygame.event.get():
 			print event
 			if event.type == pygame.MOUSEBUTTONDOWN and touch_enabled == True:
 				print("Touched")
 				running = False
-				os.popen("killall omxplayer")
+				player.quit()
 				break
-		clock.tick(30)
-		    	
+		try:
+			if player.is_playing() == False:
+				running = False
+		except:
+			running = False
+
+	try:
+		if player.is_playing() == True:
+			player.quit()
+	except:
+		pass
+
 	self._show_black()
 	return time.time() - t_start
 
@@ -169,8 +184,10 @@ class TouchScreen():
 if __name__ == "__main__":
     s = TouchScreen()
     # print s.write(show_color = True, time_enabled = 2, color_rgb = (0, 255, 0))
-    # time.sleep(2)
-    # print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
+    time.sleep(1)
+    print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
+    time.sleep(1)
     print s.write(show_image = True, file_path = "/home/pi/t.png", time_enabled = 5, touch_enabled = True)
-    # print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 5, touch_enabled = True)
+    time.sleep(1)
+    print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 10, touch_enabled = True)
     
