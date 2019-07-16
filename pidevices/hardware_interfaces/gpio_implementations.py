@@ -152,21 +152,10 @@ class RPiGPIO(GPIO):
     
     def set_pin_edge(self, pin, edge):
         pin = self.pins[pin]
-        try:
-            edge = self.RPIGPIO_EDGES[edge]
-        except KeyError:
+        if not edge in self.RPIGPIO_EDGES:
             # Raise exception not valid name
             pass
-
-        if pin.function is 'input':
-            pin.edge = edge
-            if pin.bounce is None:
-                RPIGPIO.add_event_detect(pin.pin_num, edge)
-            else:
-                RPIGPIO.add_event_detect(pin.pin_num, edge, bouncetime=pin.bounce)
-        else:
-            # Raise exception output pin.
-            pass
+        pin.edge = self.RPIGPIO_EDGES[edge]
 
     def set_pin_bounce(self, pin, bounce):
         self.pins[pin].bounce = bounce
@@ -187,10 +176,28 @@ class RPiGPIO(GPIO):
         pin = self.pins[pin]
 
         if pin.function is 'input':
+            if pin.bounce is None:
+                RPIGPIO.add_event_detect(pin.pin_num, pin.edge)
+            else:
+                RPIGPIO.add_event_detect(pin.pin_num, pin.edge, bouncetime=pin.bounce)
+
             pin.event = event
             RPIGPIO.add_event_callback(pin.pin_num, callback)
         else:
             # Raise exception output pin
+            pass
+
+    def wait_pin_for_edge(self, pin, timeout=None):
+        """Wait pin for an edge detection."""
+        
+        pin = self.pins[pin]
+        if pin.function is'input':
+            if timeout is None:
+                RPIGPIO.wait_for_edge(pin.pin_num, pin.edge)
+            else:
+                RPIGPIO.wait_for_edge(pin.pin_num, pin.edge, timeout=timeout)
+        else:
+            # Raise exception
             pass
 
     @property
