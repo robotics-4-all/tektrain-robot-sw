@@ -171,12 +171,24 @@ class RPiGPIO(GPIO):
     def set_pin_bounce(self, pin, bounce):
         self.pins[pin].bounce = bounce
 
-    def set_pin_event(self, pin, event):
+    def set_pin_event(self, pin, event, *args):
+        """Set the function that will be called with a new edge.
+        
+        Args:
+            pin: Pin name
+            event: Function pointer to the target function.
+            *args: The arguments of the target function.
+        """
+
+        # The function which needs the arguments
+        def callback(channel):
+            event(*args)
+
         pin = self.pins[pin]
 
         if pin.function is 'input':
             pin.event = event
-            RPIGPIO.add_event_callback(pin.pin_num, pin.event)
+            RPIGPIO.add_event_callback(pin.pin_num, callback)
         else:
             # Raise exception output pin
             pass

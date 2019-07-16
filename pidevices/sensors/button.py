@@ -4,12 +4,11 @@ from ..devices import Sensor
 class Button(Sensor):
     """A single button"""
 
-    def __init__(self, pin_num, func, name='', max_data_length=0):
+    def __init__(self, pin_num, name='', max_data_length=0):
         """Constructor"""
 
         super(Button, self).__init__(name, max_data_length)
         self._pin_num = pin_num
-        self.func = func
 
         self.start()
 
@@ -20,10 +19,10 @@ class Button(Sensor):
         self.hardware_interfaces[self._gpio].init_input('button', 'up')
         #self.hardware_interfaces[self._gpio].set_pin_bounce = 0
         self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
-        self.hardware_interfaces[self._gpio].set_pin_event('button', self.read)
+        #self.hardware_interfaces[self._gpio].set_pin_event('button', self.read)
     
-    def read(self, channel):
-        self.func()
+    def read(self, func, *args):
+        self.hardware_interfaces[self._gpio].set_pin_event('button', func, *args)
 
     def stop(self):
         """Free hardware and os resources."""
