@@ -14,6 +14,8 @@ class TouchScreen():
 
         #super(Composite, self).__init__(name, max_data_length)
         self.dev_name = dev_name
+	self.screen_w = 800
+	self.screen_h = 480
         self.start()
 
     def start(self):
@@ -49,9 +51,47 @@ class TouchScreen():
 		if color_rgb == None or time_enabled == None:
 			raise Exception("show_color called without color or waiting time")
 		return self._show_color(color_rgb, time_enabled, touch_enabled, text)
+	elif show_image == True:
+		if file_path == None or time_enabled == None:	
+			raise Exception("show_image called without image URI or waiting time")
+		return self._show_image(file_path, time_enabled, touch_enabled, text)
 
     def _show_image(self, image_uri, time_enabled, touch_enabled, text):
-	pass
+	try:
+		img = pygame.image.load(image_uri)
+	except Exception as e:
+		raise Exception("Loading image failed with error: " + str(e))
+
+	img_s = img.get_size()
+	wr = self.screen_w * 1.0 / img_s[0]
+	hr = self.screen_h * 1.0 / img_s[1]
+	rate = wr
+	if wr >= hr:
+		rate = hr
+
+	img = pygame.transform.scale(img, (int(img_s[0] * rate), int(img_s[1] * rate)))
+	
+	padding_w = 0
+	padding_h = 0
+	if wr >= hr:
+		padding_w = (self.screen_w - int(img_s[0] * rate)) / 2
+	else:
+		padding_h = (self.screen_h - int(img_s[1] * rate)) / 2
+
+	self.screen.blit(img, (padding_w, padding_h))
+	pygame.display.flip()
+	t_start = time.time()
+	running = True
+	while time.time() - t_start < time_enabled and running:
+		for event in pygame.event.get():
+			print event
+			if event.type == pygame.MOUSEBUTTONDOWN and touch_enabled == True:
+				print("Touched")
+				running = False
+				break
+	self._show_black()
+	return time.time() - t_start
+	
 
     def _show_black(self):
 	self.background.fill((0,0,0))
@@ -59,7 +99,6 @@ class TouchScreen():
 	pygame.display.flip()
 
     def _show_color(self, color_rgb, time_enabled, touch_enabled, text):
-	print("I'm in print color")
 	self.background.fill(color_rgb)
 	self.screen.blit(self.background, (0,0))
 	pygame.display.flip()
@@ -89,7 +128,9 @@ class TouchScreen():
 
 if __name__ == "__main__":
     s = TouchScreen()
-    print s.write(show_color = True, time_enabled = 2, color_rgb = (0, 255, 0))
-    time.sleep(2)
+    # print s.write(show_color = True, time_enabled = 2, color_rgb = (0, 255, 0))
+    # time.sleep(2)
     print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
+    print s.write(show_image = True, file_path = "/home/pi/splash.png", time_enabled = 2, touch_enabled = True)
+    print s.write(show_image = True, file_path = "/home/pi/t.png", time_enabled = 5, touch_enabled = True)
     
