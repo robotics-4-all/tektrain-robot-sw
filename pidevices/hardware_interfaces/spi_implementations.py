@@ -16,7 +16,7 @@ class SPIimplementation(SPI):
             raise ImportError('failed to import spidev')
         self._interface = SpiDev()
         self._interface.open(port, device)
-        self._interface.max_speed_hz = 500000
+        self._interface.max_speed_hz = 1000000
 
     def close(self):
         if self._interface is not None:
@@ -25,13 +25,14 @@ class SPIimplementation(SPI):
 
     def read(self, n):
         """Read n words from spi"""
-        return self._transfer([0] * n)
+        return self.interface.readbytes(n)
 
+    # TODO: Check writebytes2 for large lists
     def write(self, data):
         """Write data to spi"""
-        self._transfer(data)
+        self.interface.writebytes2(data)
 
-    def _transfer(self, data):
+    def read_write(self, data):
         """
         Writes data (a list of integer words where each word is assumed to have
         :attr:`bits_per_word` bits or less) to the SPI interface, and reads an
