@@ -25,12 +25,12 @@ class SPIimplementation(SPI):
 
     def read(self, n):
         """Read n words from spi"""
-        return self.interface.readbytes(n)
+        return self._interface.readbytes(n)
 
     # TODO: Check writebytes2 for large lists
     def write(self, data):
         """Write data to spi"""
-        self.interface.writebytes2(data)
+        self._interface.writebytes2(data)
 
     def read_write(self, data):
         """
@@ -63,3 +63,4 @@ class SPIimplementation(SPI):
 
     def _set_bits_per_word(self, value):
         self._interface.bits_per_word = value
+
