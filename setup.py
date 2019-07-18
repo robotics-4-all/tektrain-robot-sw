@@ -4,7 +4,7 @@ REQUIRES = []
 NAME = "pidevices"
 VERSION = "0.0.1"
 
-DEPENDENCIES = ['pyalsaaudio', 'scipy']
+DEPENDENCIES = ['pyalsaaudio', 'scipy', 'numpy']
 
 setup(
     name=NAME,

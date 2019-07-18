@@ -25,7 +25,7 @@ class Mcp3002(Sensor):
     def start(self):
         """Initialize hardware."""
 
-        self._spi = init_interface('spi', port=self.port, device=self.device)
+        self._spi = self.init_interface('spi', port=self.port, device=self.device)
 
     def stop(self):
         """Free hardware and os resources."""
