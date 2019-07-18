@@ -6,30 +6,38 @@ import time
 
 
 # TODO: Initiliazation of adc inside the class or outside.
-class GP2Y0A21YK0F_mcp3002(Sensor):
+class GP2Y0A41SK0F_mcp3002(Sensor):
     """Shaprt gp2y0a21yk0f ir distance sensor."""
 
     # Distance measuring characteristics from datasheet. (voltage, cm)
-    INTER_DATA = numpy.array([[3.3, 7],
-                              [2.4, 10],
-                              [1.4, 20],
-                              [0.95, 30],
-                              [0.8, 40],
-                              [0.6, 50],
-                              [0.52, 60],
-                              [0.475, 70],
-                              [0.46, 80]])
+    INTER_DATA = numpy.array([[3.00, 3],
+                              [2.70, 4],
+                              [2.35, 5],
+                              [2.02, 6],
+                              [1.78, 7],
+                              [1.58, 8],
+                              [1.40, 9],
+                              [1.28, 10],
+                              [1.09, 12],
+                              [0.75, 14],
+                              [0.80, 16],
+                              [0.75, 18],
+                              [0.66, 20],
+                              [0.55, 25],
+                              [0.42, 30],
+                              [0.38, 35],
+                              [0.31, 40]])
 
     _MIN_VOLT = INTER_DATA[len(INTER_DATA) - 1, 0]
     _MAX_VOLT = INTER_DATA[0, 0]
 
     _AVERAGES = 1
-    _INTERVAL = 0.040
+    _INTERVAL = 0.018
 
     def __init__(self, port, device, channel, name='', max_data_length=0):
         """Constructor."""
 
-        super(GP2Y0A21YK0F_mcp3002, self).__init__(name, max_data_length)
+        super(GP2Y0A41SK0F_mcp3002, self).__init__(name, max_data_length)
         self._port = port
         self._device = device
         self._channel = channel
