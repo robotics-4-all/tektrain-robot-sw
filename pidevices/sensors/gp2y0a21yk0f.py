@@ -2,6 +2,7 @@ from ..devices import Sensor
 from .mcp3002 import Mcp3002
 from scipy import interpolate
 import numpy
+import time
 
 
 # TODO: Initiliazation of adc inside the class or outside.
@@ -9,7 +10,7 @@ class GP2Y0A21YK0F_mcp3002(Sensor):
     """Shaprt gp2y0a21yk0f ir distance sensor."""
 
     # Distance measuring characteristics from datasheet. (voltage, cm)
-    inter_data = numpy.array([[3.3, 7],
+    INTER_DATA = numpy.array([[3.3, 7],
                               [2.4, 10],
                               [1.4, 20],
                               [0.95, 30],
@@ -18,6 +19,12 @@ class GP2Y0A21YK0F_mcp3002(Sensor):
                               [0.52, 60],
                               [0.475, 70],
                               [0.46, 80]])
+
+    _MIN_VOLT = INTER_DATA[len(INTER_DATA) - 1, 0]
+    _MAX_VOLT = INTER_DATA[0, 0]
+
+    _AVERAGES = 1
+    _INTERVAL = 0.040
 
     def __init__(self, port, device, channel, name='', max_data_length=0):
         """Constructor."""
@@ -31,8 +38,8 @@ class GP2Y0A21YK0F_mcp3002(Sensor):
         self.start()
 
     def _interpol(self):
-        self.f_int = interpolate.interp1d(self.inter_data[:, 0],
-                                          self.inter_data[:, 1])
+        self.f_int = interpolate.interp1d(self.INTER_DATA[:, 0],
+                                          self.INTER_DATA[:, 1])
 
     def start(self):
         """Init hardware and os resources."""
@@ -42,8 +49,24 @@ class GP2Y0A21YK0F_mcp3002(Sensor):
     def read(self):
         """Read a measurment."""
 
-        adc_val = self.adc.read(channel=self._channel)
-        return self.f_int(adc_val)
+        adc_val = 0
+        for _ in range(self._AVERAGES):
+            adc_val += self.adc.read(channel=self._channel)
+            time.sleep(self._INTERVAL)
+        adc_val /= self._AVERAGES
+
+        # Check thresholds
+        if adc_val < self._MIN_VOLT:
+            # Raise out of max distance
+            pass
+        if adc_val > self._MAX_VOLT:
+            # Raise out of min distance
+            pass
+
+        adc_val = max(adc_val, self._MIN_VOLT)
+        adc_val = min(adc_val, self._MAX_VOLT)
+
+        return round(self.f_int(adc_val).item(0), 4)
 
     def stop(self):
         """Free hardware and os resources."""

@@ -46,7 +46,7 @@ class Mcp3002(Sensor):
         command = [1, (2 + channel) << 6, 0]
         #2 + channel shifted 6 to left
         #10 or 11 << 6 = 1000 0000 or 1100 0000
-        reply = self.hardware_interfaces[self._i2c].read_write(command)
+        reply = self.hardware_interfaces[self._spi].read_write(command)
         """
         Parse right bits from 24 bit package (3*8bit)
         We need only data from last 2 bytes.
