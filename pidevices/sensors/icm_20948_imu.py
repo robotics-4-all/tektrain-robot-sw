@@ -405,7 +405,7 @@ class ICM_20948(Sensor):
     I2C_ID_0 = 0
     I2C_ID_0_BITS = 7
 
-    # I2C_SLV4_CTRL
+    # I2C_SLV1_CTRL
     I2C_SLV0_EN = 7
     I2C_SLV0_EN_BITS = 1
     I2C_SLV0_BYTE_SW = 6
@@ -416,6 +416,78 @@ class ICM_20948(Sensor):
     I2C_SLV0_GRP_BITS = 1
     I2C_SLV0_LENG = 0
     I2C_SLV0_LENG_BITS = 4
+
+    # I2C_SLV1_ADDR
+    I2C_SLV1_RNW = 7
+    I2C_SLV1_RNW_BITS = 1
+    I2C_ID_1 = 0
+    I2C_ID_1_BITS = 7
+
+    # I2C_SLV1_CTRL
+    I2C_SLV1_EN = 7
+    I2C_SLV1_EN_BITS = 1
+    I2C_SLV1_BYTE_SW = 6
+    I2C_SLV1_BYTE_SW_BITS = 1
+    I2C_SLV1_REG_DIS = 5
+    I2C_SLV1_REG_DIS_BITS = 1
+    I2C_SLV1_GRP = 4
+    I2C_SLV1_GRP_BITS = 1
+    I2C_SLV1_LENG = 0
+    I2C_SLV1_LENG_BITS = 4
+
+    # I2C_SLV2_ADDR
+    I2C_SLV2_RNW = 7
+    I2C_SLV2_RNW_BITS = 1
+    I2C_ID_2 = 0
+    I2C_ID_2_BITS = 7
+
+    # I2C_SLV1_CTRL
+    I2C_SLV2_EN = 7
+    I2C_SLV2_EN_BITS = 1
+    I2C_SLV2_BYTE_SW = 6
+    I2C_SLV2_BYTE_SW_BITS = 1
+    I2C_SLV2_REG_DIS = 5
+    I2C_SLV2_REG_DIS_BITS = 1
+    I2C_SLV2_GRP = 4
+    I2C_SLV2_GRP_BITS = 1
+    I2C_SLV2_LENG = 0
+    I2C_SLV2_LENG_BITS = 4
+
+    # I2C_SLV3_ADDR
+    I2C_SLV3_RNW = 7
+    I2C_SLV3_RNW_BITS = 1
+    I2C_ID_3 = 0
+    I2C_ID_3_BITS = 7
+
+    # I2C_SLV1_CTRL
+    I2C_SLV3_EN = 7
+    I2C_SLV3_EN_BITS = 1
+    I2C_SLV3_BYTE_SW = 6
+    I2C_SLV3_BYTE_SW_BITS = 1
+    I2C_SLV3_REG_DIS = 5
+    I2C_SLV3_REG_DIS_BITS = 1
+    I2C_SLV3_GRP = 4
+    I2C_SLV3_GRP_BITS = 1
+    I2C_SLV3_LENG = 0
+    I2C_SLV3_LENG_BITS = 4
+
+    # I2C_SLV4_ADDR
+    I2C_SLV4_RNW = 7
+    I2C_SLV4_RNW_BITS = 1
+    I2C_ID_4 = 0
+    I2C_ID_4_BITS = 7
+
+    # I2C_SLV1_CTRL
+    I2C_SLV4_EN = 7
+    I2C_SLV4_EN_BITS = 1
+    I2C_SLV4_BYTE_SW = 6
+    I2C_SLV4_BYTE_SW_BITS = 1
+    I2C_SLV4_REG_DIS = 5
+    I2C_SLV4_REG_DIS_BITS = 1
+    I2C_SLV4_GRP = 4
+    I2C_SLV4_GRP_BITS = 1
+    I2C_SLV4_LENG = 0
+    I2C_SLV4_LENG_BITS = 4
 
     def __init__(self, name='', max_data_length):
         """Constructor."""
@@ -430,4 +502,156 @@ class ICM_20948(Sensor):
         pass
 
     def stop(self):
+        pass
+
+    # Copy the function names from sparkfun c library
+    def _get_temp_c(self):
+        pass
+
+    def _get_gyr_dps(self, axis):
+        pass
+
+    def _get_acc_mg(self, axis):
+        pass
+
+    def _get_mag_ut(self, axis):
+        pass
+    
+    # Magenetometer in micro teslas
+    def _mag_x(self):
+        pass
+
+    def _mag_y(self):
+        pass
+
+    def _mag_z(self):
+        pass
+
+    # Accel in g's
+    def _acc_x(self):
+        pass
+
+    def _acc_y(self):
+        pass
+
+    def _acc_z(self):
+        pass
+
+    # Gyroscope in degrees per second
+    def _gyr_x(self):
+        pass
+
+    def _gyr_y(self):
+        pass
+
+    def _gyr_z(self):
+        pass
+
+    # Temperature in degrees of celcius
+    def _temp(self):
+        pass
+
+    # Set the bank
+    def _set_bank(self, bank):
+        pass
+
+    def _reset(self):
+        """Software reset."""
+        pass
+
+    def _sleep(self, on=0):
+        """Sleep modoe"""
+        pass
+
+    def _low_power(self, on=1):
+        """Set the low power mode."""
+        pass
+
+    def _set_clock_source(self):
+        pass
+
+    def _data_ready(self):
+        """Return true if data are ready."""
+        pass
+
+    def _set_sample_mode(self, sensor, mode):
+        """Set accelerated sample mode for accel, gyro and i2c."""
+        pass
+
+    def _set_full_scale(self):
+        pass
+
+    def _set_dlpf_cfg(self, value):
+        pass
+
+    def _enable_dlpg(self, enable):
+        pass
+
+    def _set_sample_rate(self, rate):
+        pass
+
+    def _clear_interrupts(self):
+        pass
+
+    def _cfg_int_open_drain(self):
+        pass
+
+    def _cfg_latch(self):
+        pass
+
+    def _cfg_int_any_read_to_clear(self):
+        pass
+
+    def _cfg_fsync_active_low(self):
+        pass
+
+    def _cfg_fsync_int_mode(self):
+        pass
+
+    def _int_enable_i2c(self):
+        pass
+
+    def _int_enable_dmo(self):
+        pass
+
+    def _int_enable_pll(self):
+        pass
+
+    def _int_enbale_wof(self):
+        pass
+
+    def _int_enable_raw_data_ready(self):
+        pass
+
+    def _int_enable_overflow_fifo(self):
+        pass
+
+    def _int_enable_wm_fifo(self):
+        pass
+
+    def _i2c_master_passthrough(self):
+        pass
+    
+    def _i2c_master_enable(self):
+        pass
+
+    def _i2c_master_config_slave(self):
+        pass
+
+    def _i2c_master_slv4_trans(self):
+        pass
+
+    def _i2c_master_single_w(self):
+        pass
+
+    def _i2c_master_single_r(self):
+        pass
+
+    def _startup_def(self):
+        pass
+
+    def _start_magne(self):
+        pass
+
+    def _get_mang_data(self):
         pass
