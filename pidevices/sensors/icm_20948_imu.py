@@ -9,8 +9,8 @@ class ICM_20948(Sensor):
     WHO_AM_I = 0x00
     USER_CTRL = 0x03
     LP_CONFIG = 0x05
-    PWM_MGMT_1 = 0x06
-    PWM_MGMT_2 = 0x07
+    PWR_MGMT_1 = 0x06
+    PWR_MGMT_2 = 0x07
     INT_PIN_CFG = 0x0F
     INT_ENABLE = 0x10
     INT_ENABLE_1 = 0x11
@@ -72,6 +72,174 @@ class ICM_20948(Sensor):
     FIFO_CFG = 0x76
     REG_BANK_SEL = 0x7F
 
+    # Shifts and bits per register
+
+    # USER_CTRL
+    DMP_EN = 7
+    DMP_EN_BITS = 1
+    FIFO_EN = 6
+    FIFO_EN_BITS = 1
+    I2C_MST_EN = 5
+    I2C_MST_EN_BITS = 1
+    I2C_IF_DIS = 4
+    I2C_IF_DIS_BITS = 1
+    DMP_RST = 3
+    DMP_RST_BITS = 1
+    SRAM_RST = 2
+    SRAM_RST_BITS = 1
+    I2C_MST_RST = 1
+    I2C_MST_RST_BITS = 1
+    
+    # LP_CONFIG
+    I2C_MST_CYCLE = 6
+    I2C_MST_CYCLE_BITS = 1
+    ACCEL_CYCLE = 5
+    ACCEL_CYCLE_BITS = 1
+    GYRO_CYCLE = 4
+    GYRO_CYCLE_BITS = 1
+
+    # PWR_MGMT_1
+    DEVICE_RESET = 7
+    DEVICE_RESET_BITS = 1
+    SLEEP = 6
+    SLEEP_BITS = 1
+    LP_EN = 5
+    LP_EN_BITS = 1
+    TEMP_DIS = 3
+    TEMP_DIS_BITS = 1
+    CLKSEL = 0
+    CLKSEL_BITS = 3
+
+    # PWR_MGMT_2
+    DISABLE_ACCEL = 3
+    DISABLE_ACCEL_BITS = 3
+    DISABLE_GYRO = 0
+    DISABLE_GYRO_BITS = 3
+
+    # INT_PIN_CFG
+    INT1_ACTL = 7 
+    INT1_ACTL_BITS = 1
+    INT1_OPEN = 6
+    INT1_OPEN_BITS = 1
+    INT1_LATCH_EN = 5
+    INT1_LATCH_EN_BITS = 1
+    INT1_ANYRD_2CLEAR = 4
+    INT1_ANYRD_2CLEAR_BITS = 1
+    ACTL_FSYNC = 3
+    ACTL_FSYNC_BITS = 1
+    FSYNC_INT_MODE_EN = 2
+    FSYNC_INT_MODE_EN_BITS = 1
+    BYPASS_EN = 1
+    BYPASS_EN_BITS = 1
+
+    # INT_ENABLE
+    REG_WOF_EN = 7
+    REG_WOF_EN_BITS = 1
+    WOM_INT_EN = 3
+    WOM_INT_EN_BITS = 1
+    PLL_RDY_EN = 2
+    PLL_RDY_EN_BITS = 1
+    DMP_INT1_EN = 1
+    DMP_INT1_EN_BITS = 1
+    I2C_MST_INT_EN = 0
+    I2C_MST_INT_EN_BITS = 1
+
+    # INT_ENABLE_1
+    #RAW_DATA_0_RDY_EN = 0
+    #RAW_DATA_0_RDY_EN_BITS = 1
+
+    # INT_ENABLE_2
+    #FIFO_OVERFLOW_EN = 0
+    #FIFO_OVERFLOW_EN_BITS = 5
+
+    # INT_ENABLE_3
+    #FIFO_WM_EN = 0
+    #FIFO_WM_EN_BITS = 5
+
+    # I2C_MST_STATUS
+    PASS_THROUGH = 7
+    PASS_THROUGH_BITS = 1
+    I2C_SLV4_DONE = 6
+    I2C_SLV4_DONE_BITS = 1
+    I2C_LOST_ARB = 5
+    I2C_LOST_ARB_BITS = 1
+    I2C_SLV4_NACK = 4
+    I2C_SLV4_NACK_BITS = 1
+    I2C_SLV3_NACK = 3
+    I2C_SLV3_NACK_BITS = 1
+    I2C_SLV2_NACK = 2
+    I2C_SLV2_NACK_BITS = 1
+    I2C_SLV1_NACK = 1
+    I2C_SLV1_NACK_BITS = 1
+    I2C_SLV0_NACK = 0
+    I2C_SLV0_NACK_BITS = 1
+    
+    # INT_STATUS
+    WOM_INT = 3
+    WOM_INT_BITS = 1
+    PLL_RDY_INT = 2
+    PLL_RDY_INT_BITS = 1
+    DMP_INT1 = 1
+    DMP_INT1_BITS = 1
+    I2C_MST_INT = 0
+    I2C_MST_INT_BITS = 1
+
+    # INT_STATUS_1
+    #RAW_DATA_0_RDY_INT = 0
+    #RAW_DATA_0_RDY_INT_BITS = 1
+
+    # INT_STATUS_2
+    #FIFO_OVERFLOW_INT = 0
+    #FIFO_OVERFLOW_INT_BITS = 5
+
+    # INT_STATUS_3
+    #FIFO_WM_INT = 0
+    #FIFO_WM_INT_BITS = 5
+
+    # FIFO_EN_1
+    SLV_3_FIFO_EN = 3
+    SLV_3_FIFO_EN_BITS = 1
+    SLV_2_FIFO_EN = 2
+    SLV_2_FIFO_EN_BITS = 1
+    SLV_1_FIFO_EN = 1
+    SLV_1_FIFO_EN_BITS = 1
+    SLV_0_FIFO_EN = 0
+    SLV_0_FIFO_EN_BITS = 1
+
+    # FIFO_EN_2
+    ACCEL_FIFO_EN = 4
+    ACCEL_FIFO_EN_BITS = 1
+    GYRO_Z_FIFO_EN = 3
+    GYRO_Z_FIFO_EN_BITS = 1
+    GYRO_Y_FIFO_EN = 2
+    GYRO_Y_FIFO_EN_BITS = 1
+    GYRO_X_FIFO_EN = 1
+    GYRO_X_FIFO_EN_BITS = 1
+    TEMP_FIFO_EN = 0
+    TEMP_FIFO_EN_BITS = 1
+
+    # FIFO_RST
+    #FIFO_RESET = 0
+    #FIFO_RESET_BITS = 5
+
+    # FIFO_MODE
+    #FIFO_MODE = 0
+    #FIFO_MODE_BITS = 5
+
+    # FIFO_COUNT_H
+    #FIFO_CNT = 0
+    #FIFO_CNT_H_BITS = 5
+
+    # DATA_RDY_STATUS
+    WOF_STATUS = 7
+    WOF_STATUS_BITS = 1
+    RAW_DATA_RDY = 0
+    RAW_DATA_RDY_BITS = 4
+
+    # REG_BANK_SEL
+    USER_BANK = 4
+    USER_BANK_BITS = 2
+
     # User bank 1
     SELF_TEST_X_GYRO = 0x02
     SELF_TEST_Y_GYRO = 0x03 
@@ -87,6 +255,20 @@ class ICM_20948(Sensor):
     ZA_OFFS_L = 0x1B 
     TIMEBASE_CORRECTION_PLL = 0x28
     REG_BANK_SEL = 0x7F
+
+    # Bits and shifts
+
+    # XA_OFFS_L
+    XA_OFFS = 1
+    XA_OFFS_BITS = 7
+
+    # YA_OFFS_L
+    YA_OFFS = 1
+    YA_OFFS_BITS = 7
+
+    # ZA_OFFS_L
+    ZA_OFFS = 1
+    ZA_OFFS_BITS = 7
 
     # User bank 2
     GYRO_SMPLRT_DIV = 0x00
@@ -109,6 +291,60 @@ class ICM_20948(Sensor):
     TEMP_CONFIG = 0x53
     MOD_CTRL_USR = 0x54
     REG_BANK_SEL = 0x7F
+
+    # Bits and shifts
+    
+    # GYRO_CONFIG_1
+    GYRO_DLPFCFG = 3
+    GYRO_DLPFCFG_BITS = 3
+    GYRO_FS_SEL = 1
+    GYRO_FS_SEL_BITS = 2
+    GYRO_FCHOICE = 0
+    GYRO_FCHOICE_BITS = 1
+
+    # GYRO_CONFIG_2
+    XGYRO_CTEN = 5
+    XGYRO_CTEN_BITS = 1
+    YGYRO_CTEN = 4
+    YGYRO_CTEN_BITS = 1
+    ZGYRO_CTEN = 3
+    ZGYRO_CTEN_BITS = 1
+    GYRO_AVGCFG = 0
+    GYRO_AVGCFG_BITS = 3
+
+    # ACCEL_INTEL_CTRL
+    ACCEL_INTEL_EN = 1
+    ACCEL_INTEL_EN_BITS = 1
+    ACCEL_INTEL_MODE_INT = 1
+    ACCEL_INTEL_MODE_INT_BITS = 1
+
+    # ACCEL_CONFIG
+    ACCEL_DLPFCFG = 3
+    ACCEL_DLPFCFG_BITS = 3
+    ACCEL_FS_SEL = 1
+    ACCEL_FS_SEL_BITS = 2
+    ACCEL_FCHOICE = 0
+    ACCEL_FCHOICE_BITS = 1
+
+    # ACCEL_CONFIG_2
+    AX_ST_EN_REG = 4
+    AX_ST_EN_REG_BITS = 1
+    AY_ST_EN_REG = 3
+    AY_ST_EN_REG_BITS = 1
+    AZ_ST_EN_REG = 2
+    AZ_ST_EN_REG_BITS = 1
+    DEC_3_CFG = 0
+    DEC_3_CFG_BITS = 2
+
+    # FSYNC_CONFIG
+    DELAY_TIME_EN = 7
+    DELAY_TIME_EN_BITS = 1
+    WOF_DEGLITCH_EN = 5
+    WOF_DEGLITCH_EN_BITS = 1
+    WOF_EDGE_INT = 4
+    WOF_EDGE_INT_BITS = 1
+    EXT_SYNC_SET = 0
+    EXT_SYNC_SET_BITS = 4
 
     # User Bank 3
     I2C_MST_ODR_CONFIG = 0x00
@@ -136,6 +372,50 @@ class ICM_20948(Sensor):
     I2C_SLV4_DO = 0x16
     I2C_SLV4_DI = 0x17
     REG_BANK_SEL = 0x7F
+
+    # Bits and shifts
+
+    # I2C_MST_ODR_CONFIG
+
+    # I2C_MST_CTRL
+    MULT_MST_EN = 7
+    MULT_MST_EN_BITS = 1
+    I2C_MST_P_NSR = 4
+    I2C_MST_P_NSR_BITS = 1
+    I2C_MST_CLK = 0
+    I2C_MST_CLK_BITS = 4
+
+    # I2C_MST_DELAY_CTRL
+    DELAY_ES_SHADOW = 7
+    DELAY_ES_SHADOW_BITS = 1
+    I2C_SLV4_DELAY_EN = 4
+    I2C_SLV4_DELAY_EN_BTIS = 1
+    I2C_SLV3_DELAY_EN = 3
+    I2C_SLV3_DELAY_EN_BTIS = 1
+    I2C_SLV2_DELAY_EN = 2
+    I2C_SLV2_DELAY_EN_BTIS = 1
+    I2C_SLV1_DELAY_EN = 1
+    I2C_SLV1_DELAY_EN_BTIS = 1
+    I2C_SLV0_DELAY_EN = 0
+    I2C_SLV0_DELAY_EN_BTIS = 1
+
+    # I2C_SLV0_ADDR
+    I2C_SLV0_RNW = 7
+    I2C_SLV0_RNW_BITS = 1
+    I2C_ID_0 = 0
+    I2C_ID_0_BITS = 7
+
+    # I2C_SLV4_CTRL
+    I2C_SLV0_EN = 7
+    I2C_SLV0_EN_BITS = 1
+    I2C_SLV0_BYTE_SW = 6
+    I2C_SLV0_BYTE_SW_BITS = 1
+    I2C_SLV0_REG_DIS = 5
+    I2C_SLV0_REG_DIS_BITS = 1
+    I2C_SLV0_GRP = 4
+    I2C_SLV0_GRP_BITS = 1
+    I2C_SLV0_LENG = 0
+    I2C_SLV0_LENG_BITS = 4
 
     def __init__(self, name='', max_data_length):
         """Constructor."""
