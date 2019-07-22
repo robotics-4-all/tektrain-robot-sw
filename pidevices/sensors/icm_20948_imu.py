@@ -357,6 +357,10 @@ class ICM_20948(Sensor):
     # TEMP_CONFIG
     TEMP_DLPFCFG = 0
     TEMP_DLPFCFG_BITS = 4
+    
+    # MOD_CTRL_USR
+    REG_LD_DMP_EN = 0
+    REG_LD_DMP_EN_BITS = 1
 
     # User Bank 3
     I2C_MST_ODR_CONFIG = 0x00
@@ -388,6 +392,8 @@ class ICM_20948(Sensor):
     # Bits and shifts
 
     # I2C_MST_ODR_CONFIG
+    I2C_MST_ODR_CONFIG_SHIFT = 0
+    I2C_MST_ODR_CONFIG_BITS = 4
 
     # I2C_MST_CTRL
     MULT_MST_EN = 7
@@ -417,7 +423,7 @@ class ICM_20948(Sensor):
     I2C_ID_0 = 0
     I2C_ID_0_BITS = 7
 
-    # I2C_SLV1_CTRL
+    # I2C_SLV0_CTRL
     I2C_SLV0_EN = 7
     I2C_SLV0_EN_BITS = 1
     I2C_SLV0_BYTE_SW = 6
@@ -518,21 +524,87 @@ class ICM_20948(Sensor):
     def read(self):
         pass
 
+    def _read_accel(self):
+        """Read accelerometer data
+
+        Returns:
+            Tuple with the accel in (x, y, z) in g's.            
+        """
+        
+        self._set_bank(0)
+        x_val = self._get_bytes(self.ACCEL_XOUT_H, 16, rev=True)
+        y_val = self._get_bytes(self.ACCEL_YOUT_H, 16, rev=True)
+        z_val = self._get_bytes(self.ACCEL_ZOUT_H, 16, rev=True)
+
+        self._set_bank(2)
+        fss = self._get_register(self.ACCEL_CONFIG,
+                                 self.ACCEL_FS_SEL_BITS
+                                 self.ACCEL_FS_SEL)
+
+        if fss == 0:
+            divider = 16.384
+        elif fss == 1:
+            divider = 8.192
+        elif fss == 2:
+            divider = 4.096
+        else:
+            divider = 2.048
+
+        x_val /= divider
+        y_val /= divider
+        z_val /= divider
+
+        return x_val, y_val, z_val
+
+    def _read_gyro(self):
+        """Read gyro data
+
+        Returns:
+            Tuple (x, y, z) in degrees per second.
+        """
+        
+        self._set_bank(0)
+        x_val = self._get_bytes(self.GYRO_XOUT_H, 16, rev=True)
+        y_val = self._get_bytes(self.GYRO_YOUT_H, 16, rev=True)
+        z_val = self._get_bytes(self.GYRO_ZOUT_H, 16, rev=True)
+
+        self._set_bank(2)
+        fss = self._get_register(self.GYRO_CONFIG,
+                                 self.GYRO_FS_SEL_BITS
+                                 self.GYRO_FS_SEL)
+
+        if fss == 0:
+            divider = 131
+        elif fss == 1:
+            divider = 65.5
+        elif fss == 2:
+            divider = 32.8
+        else:
+            divider = 16.4
+
+        x_val /= divider
+        y_val /= divider
+        z_val /= divider
+
+        return x_val, y_val, z_val
+    
+    def _read_temp(self):
+        """Read temperature data.
+
+        Returns:
+            Temperature in celsius.
+        """
+
+        self._set_bank(0)
+        temp = self._get_bytes(self.TEMP_OUT_H, 16, rev=True)
+        temp = temp/333.87 + 21
+
+        return temp
+
     def stop(self):
         pass
 
     # Copy the function names from sparkfun c library
-    def _get_temp_c(self):
-        pass
-
-    def _get_gyr_dps(self, axis):
-        pass
-
-    def _get_acc_mg(self, axis):
-        pass
-
-    def _get_mag_ut(self, axis):
-        pass
     
     # Magenetometer in micro teslas
     def _mag_x(self):
@@ -544,31 +616,6 @@ class ICM_20948(Sensor):
     def _mag_z(self):
         pass
 
-    # Accel in g's
-    def _acc_x(self):
-        pass
-
-    def _acc_y(self):
-        pass
-
-    def _acc_z(self):
-        pass
-
-    # Gyroscope in degrees per second
-    def _gyr_x(self):
-        pass
-
-    def _gyr_y(self):
-        pass
-
-    def _gyr_z(self):
-        pass
-
-    # Temperature in degrees of celcius
-    def _temp(self):
-        pass
-
-    # Set the bank
     def _set_bank(self, bank):
         """Set user bank of the registers.
 
@@ -748,9 +795,26 @@ class ICM_20948(Sensor):
         self._set_register(self.GYRO_CONFIG_1, self.GYRO_FCHOICE_BITS,
                            self.GYRO_FCHOICE, enable)
 
-    def _set_sample_rate(self, rate):
-        pass
+    def _set_accel_sample_rate(self, rate):
+        """Set accel sample rate."""
 
+        self._raise_exc(rate, 0, 2**11, "Sample rate")
+
+        self._set_bank(2)
+        # Set high byte
+        self._set_register(self.ACCEL_SMPLRT_DIV_1, self.ACCEL_SMPLRT_DIV_BITS,
+                           self.ACCEL_SMPLRT_DIV, rate >> 8)
+        # Set low byte
+        self._set_register(self.ACCEL_SMPLRT_DIV_2, 8, 0, rate & 0xFF)
+
+    def _set_gyro_sample_rate(self, rate):
+        """Set gyro sample rate."""
+
+        self._raise_exc(rate, 0, 2*8, "Sample rate")
+
+        self._set_bank(2)
+        self._set_register(self.GYRO_SMPLRT_DIV, 8, 0, rate)
+        
     def _clear_interrupts(self):
         pass
 
@@ -790,11 +854,29 @@ class ICM_20948(Sensor):
     def _int_enable_wm_fifo(self):
         pass
 
-    def _i2c_master_passthrough(self):
-        pass
+    def _i2c_master_passthrough(self, value):
+        """Set i2c master passthrough."""
+
+        self._raise_exc(value, 0, 1, "Pass through")
+        self._set_bank(0)
+        self._set_register(self.INT_PIN_CFG, self.BYPASS_EN_BITS,
+                           self.BYPASS_EN, value)
     
-    def _i2c_master_enable(self):
-        pass
+    def _i2c_master_enable(self, enable):
+        """Enable i2c master."""
+
+        self._raise_exc(enable, 0, 1, "I2c master enable.")
+
+        self._i2c_master_passthrough(0)
+        self._set_bank(3)
+        self._set_register(self.I2C_MST_CTRL, self.I2C_MST_CLK_BITS,
+                           self.I2C_MST_CLK, 7)
+        self._set_register(self.I2C_MST_CTRL, self.I2C_MST_P_NSR_BITS,
+                           self.I2C_MST_P_NSR, 1)
+
+        self._set_bank(0)
+        self._set_register(self.USER_CTRL, self.I2C_MST_EN_BITS,
+                           self.I2C_MST_EN, enable)
 
     def _i2c_master_config_slave(self):
         pass
@@ -924,3 +1006,7 @@ class ICM_20948(Sensor):
         if value < low_lim or value > upper_lim:
             # Raise The value should be between [low, upper]
             pass
+
+    def _find_divider(self, fss):
+
+        return divider
