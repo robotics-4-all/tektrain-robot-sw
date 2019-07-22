@@ -903,26 +903,22 @@ class ICM_20948(Sensor):
         self._set_register(self.INT_ENABLE_1, self.RAW_DATA_0_RDY_EN_BITS,
                            self.RAW_DATA_0_RDY_EN, value)
 
-    def _int_enable_i2c(self):
-        pass
+    def _int_enable_overflow_fifo(self. fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
+        """Enable fifo interrupt."""
 
-    def _int_enable_dmo(self):
-        pass
+        value = (fifo_0 | (fifo_1 << 1) | (fifo_2 << 2) 
+                 | (fifo_3 << 3) | (fifo_4 << 4))
+        self._set_bank(0)
+        self._set_register(self.INT_ENABLE_2, self.FIFO_OVERFLOW_EN_BITS,
+                           self.FIFO_OVERFLOW_EN, value)
 
-    def _int_enable_pll(self):
-        pass
+    def _int_enable_wm_fifo(self. fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
 
-    def _int_enbale_wof(self):
-        pass
-
-    def _int_enable_raw_data_ready(self):
-        pass
-
-    def _int_enable_overflow_fifo(self):
-        pass
-
-    def _int_enable_wm_fifo(self):
-        pass
+        value = (fifo_0 | (fifo_1 << 1) | (fifo_2 << 2) 
+                 | (fifo_3 << 3) | (fifo_4 << 4))
+        self._set_bank(0)
+        self._set_register(self.INT_ENABLE_3, self.FIFO_WM_EN_BITS,
+                           self.FIFO_WM_EN, value)
 
     def _i2c_master_passthrough(self, value):
         """Set i2c master passthrough."""
