@@ -816,22 +816,92 @@ class ICM_20948(Sensor):
         self._set_register(self.GYRO_SMPLRT_DIV, 8, 0, rate)
         
     def _clear_interrupts(self):
-        pass
+        """Clear interrupts."""
 
-    def _cfg_int_open_drain(self):
-        pass
+        self._set_bank(0)
 
-    def _cfg_latch(self):
-        pass
+        # The interrupts are cleared only by reading the registers.
+        value = self._get_register(self.INT_STATUS, 8, 0)
+        value = self._get_register(self.INT_STATUS_1, 8, 0)
 
-    def _cfg_int_any_read_to_clear(self):
-        pass
+    def _cfg_interrupts(self, active_low=None, open_drain=None, latch=None,
+                        anyrd=None, fsync_al=None, fsync_im=None):
+        """Config interrupts.
 
-    def _cfg_fsync_active_low(self):
-        pass
+        Args:
+            active_low:
+            open_drain:
+            latch:
+            anyrd:
+            fsync_al:
+            fsync_im:
+        """
+        
+        self._set_bank(0)
+        register = self._get_register(self.INT_PIN_CFG, 8, 0)
 
-    def _cfg_fsync_int_mode(self):
-        pass
+        if active_low is not None:
+            register = self._set_bits(register, self.INT1_ACTL_BITS,
+                                      self.INT1_ACTL, active_low)
+
+        if open_drain is not None:
+            register = self._set_bits(register, self.INT1_OPEN_BITS,
+                                      self.INT1_OPEN, open_drain)
+
+        if latch is not None:
+            register = self._set_bits(register, self.INT1_LATCH_EN_BITS,
+                                      self.INT1_LATCH_EN, latch)
+
+        if anyrd is not None:
+            register = self._set_bits(register, self.INT1_ANYRD_2CLEAR_BITS,
+                                      self.INT1_ANYRD_2CLEAR, anyrd)
+
+        if fsync_al is not None:
+            register = self._set_bits(register, self.ACTL_FSYNC_BITS,
+                                      self.ACTL_FSYNC, fsync_al)
+
+        if fsync_im is not None:
+            register = self._set_bits(register, self.FSYNC_INT_MODE_EN_BITS,
+                                      self.FSYNC_INT_MODE_EN, fsync_im)
+
+        self._set_register(self.INT_PIN_CFG, 8, 0, register)
+
+    def _set_int_enable(self, reg_wof=None, wom_int=None,
+                        pll_rdy=None, dmp_int=None, i2c_en=None):
+
+        self._set_bank(0)
+        register = self._get_register(self.INT_ENABLE, 8, 0)
+
+        if reg_wof is not None:
+            register = self._set_bits(register, self.REG_WOF_EN_BITS,
+                                      self.REG_WOF_EN, reg_wof)
+
+        if wom_int is not None:
+            register = self._set_bits(register, self.WOM_INT_EN_BITS,
+                                      self.WOM_INT_EN, wom_int)
+
+        if pll_rdy is not None:
+            register = self._set_bits(register, self.PLL_RDY_EN_BITS,
+                                      self.PLL_RDY_EN, pll_rdy)
+
+        if dmp_int is not None:
+            register = self._set_bits(register, self.DMP_INT1_EN_BITS,
+                                      self.DMP_INT1, dmp_int)
+
+        if i2c_en is not None:
+            register = self._set_bits(register, self.I2C_MST_EN_BITS,
+                                      self.I2C_MST_EN, i2c_en)
+
+        self._set_register(self.INT_ENABLE, 8, 0, register)
+
+    def _set_raw_data_en(self, value):
+        """Set raw data ready en"""
+
+        self._raise_exc(value, 0, 1, "Raw data ready enable.")
+
+        self._set_bank(0)
+        self._set_register(self.INT_ENABLE_1, self.RAW_DATA_0_RDY_EN_BITS,
+                           self.RAW_DATA_0_RDY_EN, value)
 
     def _int_enable_i2c(self):
         pass
@@ -1006,7 +1076,3 @@ class ICM_20948(Sensor):
         if value < low_lim or value > upper_lim:
             # Raise The value should be between [low, upper]
             pass
-
-    def _find_divider(self, fss):
-
-        return divider
