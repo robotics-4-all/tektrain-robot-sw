@@ -185,12 +185,12 @@ class ICM_20948(Sensor):
     I2C_MST_INT_BITS = 1
 
     # INT_STATUS_1
-    #RAW_DATA_0_RDY_INT = 0
-    #RAW_DATA_0_RDY_INT_BITS = 1
+    RAW_DATA_0_RDY_INT = 0
+    RAW_DATA_0_RDY_INT_BITS = 1
 
     # INT_STATUS_2
-    #FIFO_OVERFLOW_INT = 0
-    #FIFO_OVERFLOW_INT_BITS = 5
+    FIFO_OVERFLOW_INT = 0
+    FIFO_OVERFLOW_INT_BITS = 5
 
     # INT_STATUS_3
     #FIFO_WM_INT = 0
@@ -317,6 +317,8 @@ class ICM_20948(Sensor):
     ACCEL_INTEL_EN_BITS = 1
     ACCEL_INTEL_MODE_INT = 1
     ACCEL_INTEL_MODE_INT_BITS = 1
+
+    # ACCEL_SMPLRT_DIV_1
 
     # ACCEL_CONFIG
     ACCEL_DLPFCFG = 3
@@ -489,14 +491,19 @@ class ICM_20948(Sensor):
     I2C_SLV4_LENG = 0
     I2C_SLV4_LENG_BITS = 4
 
-    def __init__(self, name='', max_data_length):
+    def __init__(self, bus, name='', max_data_length=0):
         """Constructor."""
 
+        super(ICM_20948, self).__init__(name, max_data_length)
         self.ICM_ADDRESS = 0x68
+        self._bus = bus
+
+        self.start()
 
     def start(self):
         """Initialize hardware and os resources."""
-        pass
+        
+        self._i2c = self.init_interface('i2c', bus=self._bus)
 
     def read(self):
         pass
@@ -553,39 +560,183 @@ class ICM_20948(Sensor):
 
     # Set the bank
     def _set_bank(self, bank):
-        pass
+        """Set user bank of the registers.
+
+        Args:
+            bank: An integer that should be between [0, 3].
+        """
+
+        self._raise_exc(bank, 0, 3, "Bank")
+
+        self._set_register(self.REG_BANK_SEL, self.USER_BANK_BITS, 
+                           self.USER_BANK, bank)
 
     def _reset(self):
         """Software reset."""
-        pass
+        
+        # Set user bank 0
+        self._set_bank(0)
+        self._set_register(self.PWR_MGMT_1, self.DEVICE_RESET_BITS,
+                           self.DEVICE_RESET, 1)
 
     def _sleep(self, on=0):
-        """Sleep modoe"""
-        pass
+        """Sleep modoe.
+
+        When set the chip is set to sleep mode(in sleep mode all analog is 
+        powered off). Clearing the bit wakes the chip from sleep mode.
+
+        Args:
+            on: Integer between [0, 1]
+        """
+        
+        self._raise_exc(on, 0, 1, "Sleep")
+
+        self._set_bank(0)
+        self._set_register(self.PWR_MGMT_1, self.SLEEP_BITS, self.SLEEP, on)
 
     def _low_power(self, on=1):
-        """Set the low power mode."""
-        pass
+        """Set the low power mode.
 
-    def _set_clock_source(self):
-        pass
+        It helps reduce the digital current. The sensors are set in LP mode 
+        by the LP_CONFIG registers. Sensor in lp mode plus the lp_en together
+        help to reduce the digital current.
+        """
+
+        self._raise_exc(on, 0, 1, "Low power")
+
+        self._set_bank(0)
+        self._set_register(self.PWR_MGMT_1, self.LP_EN_BITS, self.LP_EN, on)
+
+    def _set_clock_source(self, clock_source):
+        """Set clock source.
+
+        Set the internal oscilator. 
+            - 0: Internal 20MHz oscilator.
+            - 1-5: Auto selects best available clock source.
+            - 6: Internal 20MHz oscilator.
+            - 7: Stops the clock and keeps timing generator in reset.
+        """
+
+        self._raise_exc(clock_source, 0, 7, "Clock source")
+
+        self._set_bank(0)
+        self._set_register(self.PWR_MGMT_1, self.CLKSEL_BITS,
+                           self.CLKSEL, clock_source)
 
     def _data_ready(self):
         """Return true if data are ready."""
+
+        self._set_bank(0)
+        return self._get_register(self.INT_STATUS_1,
+                                  self.RAW_DATA_0_RDY_INT_BITS,
+                                  self.RAW_DATA_0_RDY_INT) 
+
+    # Interrupt configuration
+    def _int_pin_cfg(self, value):
         pass
 
-    def _set_sample_mode(self, sensor, mode):
-        """Set accelerated sample mode for accel, gyro and i2c."""
+    def _int_enable(self, value):
+        """Configuration of all the registers."""
         pass
 
-    def _set_full_scale(self):
-        pass
+    def _set_i2c_sample_mode(self, mode):
+        """Set i2c duty cycled mode."""
 
-    def _set_dlpf_cfg(self, value):
-        pass
+        self._raise_exc(mode, 0, 1, "Sample mode")
 
-    def _enable_dlpg(self, enable):
-        pass
+        self._set_bank(0)
+        self._set_register(self.LP_CONFIG, self.I2C_MST_CYCLE_BITS,
+                           self.I2C_MST_CYCLE, mode)
+
+    def _set_accel_sample_mode(self, mode):
+        """Set accel duty cycled mode."""
+
+        self._raise_exc(mode, 0, 1, "Sample mode")
+
+        self._set_bank(0)
+        self._set_register(self.LP_CONFIG, self.ACCEL_CYCLE_BITS,
+                           self.ACCEL_CYCLE, mode)
+
+    def _set_gyro_sample_mode(self, mode):
+        """Set accel duty cycled mode."""
+
+        self._raise_exc(mode, 0, 1, "Sample mode")
+
+        self._set_bank(0)
+        self._set_register(self.LP_CONFIG, self.GYRO_CYCLE_BITS,
+                           self.GYRO_CYCLE, mode)
+
+    def _set_gyro_full_scale(self, mode):
+        """Select full scale for gyro
+
+          - 00: +-250dps
+          - 01: +-500dps
+          - 10: +-1000dps
+          - 11: +-2000dps
+
+        Args:
+            mode: Int between [0, 3] 
+        """
+
+        self._raise_exc(mode, 0, 3, "Full scale")
+
+        self._set_bank(2)
+        self._set_register(self.GYRO_CONFIG_1, self.GYRO_FS_SEL_BITS,
+                           self.GYRO_FS_SEL, mode)
+
+    def _set_accel_full_scale(self, mode):
+        """Select full scale for accel
+
+          - 00: +-2g
+          - 01: +-4g
+          - 10: +-8g
+          - 11: +-16g
+
+        Args:
+            mode: Int between [0, 3] 
+        """
+
+        self._raise_exc(mode, 0, 3, "Full scale")
+
+        self._set_bank(2)
+        self._set_register(self.ACCEL_CONFIG, self.ACCEL_FS_SEL_BITS,
+                           self.ACCEL_FS_SEL, mode)
+
+    def _set_accel_dlpf_cfg(self, value):
+        """Set accelerometer low pass filter configuration."""
+
+        self._raise_exc(value, 0, 3, "Dlpg config")
+
+        self._set_bank(2)
+        self._set_register(self.ACCEL_CONFIG, self.ACCEL_DLPFCFG_BITS,
+                           self.ACCEL_DLPFCFG, value)
+
+    def _set_gyro_dlpf_cfg(self, value):
+        """Set gyro low pass filter configuration."""
+
+        self._raise_exc(value, 0, 3, "Dlpg config")
+
+        self._set_bank(2)
+        self._set_register(self.GYRO_CONFIG_1, self.GYRO_DLPFCFG_BITS,
+                           self.GYRO_DLPFCFG, value)
+
+    def _enable_accel_dlpf(self, enable):
+        """Enable accel dlpf"""
+
+        self._raise_exc(enable, 0, 1, "Dlpf enable")
+
+        self._set_bank(2)
+        self._set_register(self.ACCEL_CONFIG, self.ACCEL_FCHOICE_BITS,
+                           self.ACCEL_FCHOICE, enable)
+
+    def _enable_gyro_dlpf(self, enable):
+        """Enable gyro dlpf"""
+
+        self._raise_exc(enable, 0, 1, "Dlpf enable")
+
+        self._set_bank(2)
+        self._set_register(self.GYRO_CONFIG_1, self.GYRO_FCHOICE_BITS,
+                           self.GYRO_FCHOICE, enable)
 
     def _set_sample_rate(self, rate):
         pass
@@ -655,3 +806,111 @@ class ICM_20948(Sensor):
 
     def _get_mang_data(self):
         pass
+
+    # TODO: Check maybe remove the option to get one byte
+    def _get_bytes(self, low_byte_addr, res, signed=False, rev=False):
+        """Get lsb and msb and make a number.
+
+        In order to work the target number should be in consecutive registers.
+        Args:
+            low_byte_addr: The address of the lowest byte
+            res: The bit resolution.
+            signed: If it is signed number.
+            rev: If the address if of the highest byte. In reverse order.
+        """
+
+        byte_num = ceil(res / 8)
+        data = self.hardware_interfaces[self._i2c].read(self.ICM_ADDRESS,
+                                                        low_byte_addr,
+                                                        byte_num=byte_num)
+        # Make it a list if it is one element
+        data = data if isinstance(data, list) else [data]
+        
+        # Reverse it
+        if rev:
+            data.reverse()
+
+        # Find the bit number of the lsb
+        low_res = res % 8
+        low_res = low_res if low_res else 8
+
+        # Get only the bits of interest
+        data[0] = self._get_bits(data[0], low_res, 8-low_res)
+
+        # Compute the whole number from spare bytes
+        num = data[0]
+        for (i, d) in enumerate(data[1:], start=1):
+            num += d << (i*8 - (8-low_res))
+
+        power = res - 1
+        whole = 2**(power+1) - 1
+        if signed:
+            num = num if num < (2**power - 1) else -((whole ^ num) + 1)
+
+        return num
+
+    def _get_bits(self, register, num_bits, shift):
+        """Get specific bits from register
+        
+        Args:
+            register:
+            num_bits:
+            shift:
+        """
+        
+        mask = ((1 << num_bits) - 1) << shift
+
+        return (register & mask) >> shift
+
+    def _get_register(self, register, bits, shift):
+        """Get specific bits from register.
+        
+        Args:
+            register:
+            bits:
+            shift:
+        """
+        r_val = self.hardware_interfaces[self._i2c].read(self.ICM_ADDRESS,
+                                                         register)
+
+        return self._get_bits(r_val, bits, shift)
+
+    def _set_bits(self, register, value, num_bits, shift):
+        """Set shift bits from start of register with value.
+
+        Args:
+            register:
+            value:
+            num_bits: Integer indicating how many bits to set.
+            shift: Integer indicating the starting bit in the number.
+        """
+
+        # Zero target bits
+        mask = ((0xFF << (num_bits + shift)) | ((1 << shift) - 1)) & 0xFF
+        register &= mask
+
+        return register | (value << shift)
+
+    def _set_register(self, register, bits, shift, value):
+        """Write a new value to register.
+        
+        Args:
+            register:
+            bits:
+            shift:
+            value:
+        """
+        
+        r_val = self.hardware_interfaces[self._i2c].read(self.ICM_ADDRESS,
+                                                         register)
+        r_val = self._set_bits(r_val, value, bits, shift)
+        self.hardware_interfaces[self._i2c].write(self.ICM_ADDRESS,
+                                                  register,
+                                                  r_val)
+
+    def _raise_exc(self, value, low_lim, upper_lim, message):
+        """Raise exception for invalid value."""
+
+        if value < low_lim or value > upper_lim:
+            # Raise The value should be between [low, upper]
+            pass
