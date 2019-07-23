@@ -1,4 +1,9 @@
+from collections import namedtuple
 from ..devices import Sensor
+
+
+icm_data = namedtuple('icm_data', ['accel', 'gyro', 'magne', 'temp'])
+meas_data = namedtuple('meas_data', ['x', 'y', 'z'])
 
 
 class ICM_20948(Sensor):
@@ -521,8 +526,44 @@ class ICM_20948(Sensor):
         
         self._i2c = self.init_interface('i2c', bus=self._bus)
 
-    def read(self):
-        pass
+        # Set default values
+        self.reset()
+        self.sleep(0)
+        self.low_power(0)
+        self._set_sample_mode(accel_data=1, gyro_data=1)
+        self._set_accel_full_scale(0)
+        self._set_gyro_full_scale(0)
+        self._set_accel_dlpf_cfg(7)
+        self._set_gyro_dlpf_cfg(7)
+        self._enable_accel_dlpf(1)
+        self._enable_gyro_dlpf(1)
+
+    def read(self, sensors):
+        """Read measuremnets from sensors."""
+        
+        # Init results
+        accel_data = None
+        magne_data = None
+        gyro_data = None
+        temp_data = None
+
+        if 'accel' in sensors:
+            accel_data = self._read_accel()
+
+        if 'gyro' in sensors:
+            gyro_data = self._read_gyro()
+
+        if 'temp' in data:
+            temp_data = self._read_temp()
+
+        if 'magne' in data:
+            pass
+            #magne_data = self._read_magne()
+
+        res = icm_data(accel=accel_data, gyro=gyro_data,
+                       magne=magne_data, temp=temp_data)
+
+        return res
 
     def _read_accel(self):
         """Read accelerometer data
@@ -554,7 +595,9 @@ class ICM_20948(Sensor):
         y_val /= divider
         z_val /= divider
 
-        return x_val, y_val, z_val
+        res = meas_data(x=x_val, y=y_val, z=z_val)
+
+        return res
 
     def _read_gyro(self):
         """Read gyro data
@@ -586,8 +629,10 @@ class ICM_20948(Sensor):
         y_val /= divider
         z_val /= divider
 
-        return x_val, y_val, z_val
+        res = meas_data(x=x_val, y=y_val, z=z_val)
     
+        return res
+
     def _read_temp(self):
         """Read temperature data.
 
@@ -602,19 +647,9 @@ class ICM_20948(Sensor):
         return temp
 
     def stop(self):
-        pass
+        """Free hardware and os resources."""
 
-    # Copy the function names from sparkfun c library
-    
-    # Magenetometer in micro teslas
-    def _mag_x(self):
-        pass
-
-    def _mag_y(self):
-        pass
-
-    def _mag_z(self):
-        pass
+        self.hardware_interfaces[self._i2c].close()
 
     def _set_bank(self, bank):
         """Set user bank of the registers.
@@ -628,7 +663,7 @@ class ICM_20948(Sensor):
         self._set_register(self.REG_BANK_SEL, self.USER_BANK_BITS, 
                            self.USER_BANK, bank)
 
-    def _reset(self):
+    def reset(self):
         """Software reset."""
         
         # Set user bank 0
@@ -636,7 +671,7 @@ class ICM_20948(Sensor):
         self._set_register(self.PWR_MGMT_1, self.DEVICE_RESET_BITS,
                            self.DEVICE_RESET, 1)
 
-    def _sleep(self, on=0):
+    def sleep(self, on=0):
         """Sleep modoe.
 
         When set the chip is set to sleep mode(in sleep mode all analog is 
@@ -651,7 +686,7 @@ class ICM_20948(Sensor):
         self._set_bank(0)
         self._set_register(self.PWR_MGMT_1, self.SLEEP_BITS, self.SLEEP, on)
 
-    def _low_power(self, on=1):
+    def low_power(self, on=1):
         """Set the low power mode.
 
         It helps reduce the digital current. The sensors are set in LP mode 
@@ -696,32 +731,29 @@ class ICM_20948(Sensor):
         """Configuration of all the registers."""
         pass
 
-    def _set_i2c_sample_mode(self, mode):
-        """Set i2c duty cycled mode."""
-
-        self._raise_exc(mode, 0, 1, "Sample mode")
+    def _set_sample_mode(self, i2c_mode=None, accel_mode=None, gyro_mode=None):
+        """Set all flags with one call"""
 
         self._set_bank(0)
-        self._set_register(self.LP_CONFIG, self.I2C_MST_CYCLE_BITS,
-                           self.I2C_MST_CYCLE, mode)
 
-    def _set_accel_sample_mode(self, mode):
-        """Set accel duty cycled mode."""
+        register = self._get_register(self.LP_CONFIG, 8, 0)
 
-        self._raise_exc(mode, 0, 1, "Sample mode")
+        if i2c_mode is not None:
+            self._raise_exc(i2c_mode, 0, 1, "Sample mode")
+            register = self._get_bits(register, self.I2C_MST_CYCLE_BITS,
+                                      self.I2C_MST_CYCLE, i2c_mode)
 
-        self._set_bank(0)
-        self._set_register(self.LP_CONFIG, self.ACCEL_CYCLE_BITS,
-                           self.ACCEL_CYCLE, mode)
+        if accel_mode is not None:
+            self._raise_exc(accel_mode, 0, 1, "Sample mode")
+            register = self._get_bits(register, self.ACCEL_CYCLE_BITS,
+                                      self.ACCEL_CYCLE, accel_mode)
 
-    def _set_gyro_sample_mode(self, mode):
-        """Set accel duty cycled mode."""
+        if gyro_mode is not None:
+            self._raise_exc(gyro_mode, 0, 1, "Sample mode")
+            register = self._get_bits(register, self.GYRO_CYCLE_BITS,
+                                      self.GYRO_CYCLE, gyro_mode)
 
-        self._raise_exc(mode, 0, 1, "Sample mode")
-
-        self._set_bank(0)
-        self._set_register(self.LP_CONFIG, self.GYRO_CYCLE_BITS,
-                           self.GYRO_CYCLE, mode)
+        self._set_register(self.LP_CONFIG, 8, 0, register)
 
     def _set_gyro_full_scale(self, mode):
         """Select full scale for gyro
