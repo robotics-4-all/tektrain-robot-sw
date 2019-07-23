@@ -588,7 +588,7 @@ class ICM_20948(Sensor):
         
         # Init results
         accel_data = None
-        magne_data = None
+        magn_data = None
         gyro_data = None
         temp_data = None
 
@@ -601,12 +601,11 @@ class ICM_20948(Sensor):
         if 'temp' in data:
             temp_data = self._read_temp()
 
-        if 'magne' in data:
-            pass
-            #magne_data = self._read_magne()
+        if 'magn' in data:
+            magn_data = self._read_magn()
 
         res = icm_data(accel=accel_data, gyro=gyro_data,
-                       magne=magne_data, temp=temp_data)
+                       magne=magn_data, temp=temp_data)
 
         return res
 
@@ -693,7 +692,7 @@ class ICM_20948(Sensor):
 
         return temp
 
-    # TODO: Test if it needs signle read and write.
+    # TODO: Test if it needs single read and write.
     def _read_magn(self):
         """Get magnetometer data."""
 
