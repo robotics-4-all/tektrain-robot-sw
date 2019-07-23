@@ -187,27 +187,84 @@ class TouchScreen():
 		(self.screen_w / 2, 0), (self.screen_w / 2, self.screen_h - 1), 1)
 
 	pygame.font.init()
-	myfont = pygame.font.SysFont('Comic Sans MS', 30)
+	myfont = pygame.font.SysFont('Comic Sans MS', 200)
 	if len(options) >= 1:
 		tw, th = myfont.size(options[0])
-		print tw, th
+		wr = self.screen_w / 2 * 1.0 / tw
+		hr = self.screen_h / 2 * 1.0 / th
+		print tw, th, self.screen_w, self.screen_h
+		rate = wr
+		if wr >= hr:
+			rate = hr
+		rate *= 0.5
+		padding_w = 0
+		padding_h = 0
+		if wr >= hr:
+			padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
+		else:
+			padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+
 		mytext = myfont.render(options[0], 1, (255, 255, 255))
-		self.screen.blit(mytext, (self.screen_w / 4 - tw / 2, self.screen_h / 4 - th / 2))
+		mytext = pygame.transform.scale(mytext, (int(tw * rate), int(th * rate)))
+		self.screen.blit(mytext, (self.screen_w / 4 - tw * rate / 2, self.screen_h / 4 - th * rate / 2))
 	if len(options) >= 2:
 		tw, th = myfont.size(options[1])
-		print tw, th
+		wr = self.screen_w / 2 * 1.0 / tw
+		hr = self.screen_h / 2 * 1.0 / th
+		print tw, th, self.screen_w, self.screen_h
+		rate = wr
+		if wr >= hr:
+			rate = hr
+		rate *= 0.5
+		padding_w = 0
+		padding_h = 0
+		if wr >= hr:
+			padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
+		else:
+			padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+
 		mytext = myfont.render(options[1], 1, (255, 255, 255))
-		self.screen.blit(mytext, (3 * self.screen_w / 4 - tw / 2, self.screen_h / 4 - th / 2))
+		mytext = pygame.transform.scale(mytext, (int(tw * rate), int(th * rate)))
+		self.screen.blit(mytext, (3 * self.screen_w / 4 - tw * rate / 2, self.screen_h / 4 - th * rate / 2))
 	if len(options) >= 3:
 		tw, th = myfont.size(options[2])
-		print tw, th
+		wr = self.screen_w / 2 * 1.0 / tw
+		hr = self.screen_h / 2 * 1.0 / th
+		print tw, th, self.screen_w, self.screen_h
+		rate = wr
+		if wr >= hr:
+			rate = hr
+		rate *= 0.5
+		padding_w = 0
+		padding_h = 0
+		if wr >= hr:
+			padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
+		else:
+			padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+
 		mytext = myfont.render(options[2], 1, (255, 255, 255))
-		self.screen.blit(mytext, (self.screen_w / 4 - tw / 2, 3 * self.screen_h / 4 - th / 2))
+		mytext = pygame.transform.scale(mytext, (int(tw * rate), int(th * rate)))
+		self.screen.blit(mytext, (self.screen_w / 4 - tw * rate / 2, 3 * self.screen_h / 4 - th * rate / 2))
+
 	if len(options) >= 4:
 		tw, th = myfont.size(options[3])
-		print tw, th
+		wr = self.screen_w / 2 * 1.0 / tw
+		hr = self.screen_h / 2 * 1.0 / th
+		print tw, th, self.screen_w, self.screen_h
+		rate = wr
+		if wr >= hr:
+			rate = hr
+		rate *= 0.5
+		padding_w = 0
+		padding_h = 0
+		if wr >= hr:
+			padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
+		else:
+			padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+
 		mytext = myfont.render(options[3], 1, (255, 255, 255))
-		self.screen.blit(mytext, (3 * self.screen_w / 4 - tw / 2, 3 * self.screen_h / 4 - th / 2))
+		mytext = pygame.transform.scale(mytext, (int(tw * rate), int(th * rate)))
+		self.screen.blit(mytext, (3 * self.screen_w / 4 - tw * rate / 2, 3 * self.screen_h / 4 - th * rate / 2))
 
 	pygame.display.flip()
 	t_start = time.time()
