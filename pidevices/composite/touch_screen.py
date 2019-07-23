@@ -186,7 +186,6 @@ class TouchScreen():
 		tw, th = myfont.size(options[0])
 		wr = self.screen_w / 2 * 1.0 / tw
 		hr = self.screen_h / 2 * 1.0 / th
-		print tw, th, self.screen_w, self.screen_h
 		rate = wr
 		if wr >= hr:
 			rate = hr
@@ -205,7 +204,6 @@ class TouchScreen():
 		tw, th = myfont.size(options[1])
 		wr = self.screen_w / 2 * 1.0 / tw
 		hr = self.screen_h / 2 * 1.0 / th
-		print tw, th, self.screen_w, self.screen_h
 		rate = wr
 		if wr >= hr:
 			rate = hr
@@ -224,7 +222,6 @@ class TouchScreen():
 		tw, th = myfont.size(options[2])
 		wr = self.screen_w / 2 * 1.0 / tw
 		hr = self.screen_h / 2 * 1.0 / th
-		print tw, th, self.screen_w, self.screen_h
 		rate = wr
 		if wr >= hr:
 			rate = hr
@@ -244,7 +241,6 @@ class TouchScreen():
 		tw, th = myfont.size(options[3])
 		wr = self.screen_w / 2 * 1.0 / tw
 		hr = self.screen_h / 2 * 1.0 / th
-		print tw, th, self.screen_w, self.screen_h
 		rate = wr
 		if wr >= hr:
 			rate = hr
@@ -306,4 +302,4 @@ if __name__ == "__main__":
     time.sleep(1)
     print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 10, touch_enabled = True)
     time.sleep(1)
-    print s.write(show_options = True, options = ['1', '2', 'test', 'pikatsou'], time_enabled = 5, multiple_options = False) 
+    print s.write(show_options = True, options = ['Option 1', 'Just 2', 'PikaPikaTsou'], time_enabled = 5, multiple_options = False) 
