@@ -112,9 +112,7 @@ class TouchScreen():
 	running = True
 	while time.time() - t_start < time_enabled and running:
 		for event in pygame.event.get():
-			print event
 			if event.type == pygame.MOUSEBUTTONDOWN and touch_enabled == True:
-				print("Touched")
 				running = False
 				break
 	self._show_black()
@@ -134,9 +132,7 @@ class TouchScreen():
 	running = True
 	while time.time() - t_start < time_enabled and running:
 		for event in pygame.event.get():
-			print event
 			if event.type == pygame.MOUSEBUTTONDOWN and touch_enabled == True:
-				print("Touched")
 				running = False
 				break
 	self._show_black()
@@ -158,9 +154,7 @@ class TouchScreen():
 
 	while time.time() - t_start < time_window and running:
 		for event in pygame.event.get():
-			print event
 			if event.type == pygame.MOUSEBUTTONDOWN and touch_enabled == True:
-				print("Touched")
 				running = False
 				player.quit()
 				break
@@ -272,9 +266,7 @@ class TouchScreen():
 	final_option = None
 	while time.time() - t_start < time_enabled and running:
 		for event in pygame.event.get():
-			print event
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				print("Touched")
 				position = event.pos
 				if event.pos[0] <= self.screen_w / 2 and event.pos[1] <= self.screen_h / 2:
 					if len(options) >= 1:
@@ -306,12 +298,12 @@ class TouchScreen():
 
 if __name__ == "__main__":
     s = TouchScreen()
-    # print s.write(show_color = True, time_enabled = 2, color_rgb = (0, 255, 0))
-    #time.sleep(1)
-    #print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
-    #time.sleep(1)
-    #print s.write(show_image = True, file_path = "/home/pi/t.png", time_enabled = 5, touch_enabled = True)
-    #time.sleep(1)
-    #print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 10, touch_enabled = True)
+    print s.write(show_color = True, time_enabled = 2, color_rgb = (0, 255, 0))
+    time.sleep(1)
+    print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
+    time.sleep(1)
+    print s.write(show_image = True, file_path = "/home/pi/t.png", time_enabled = 5, touch_enabled = True)
+    time.sleep(1)
+    print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 10, touch_enabled = True)
     time.sleep(1)
     print s.write(show_options = True, options = ['1', '2', 'test', 'pikatsou'], time_enabled = 5, multiple_options = False) 
