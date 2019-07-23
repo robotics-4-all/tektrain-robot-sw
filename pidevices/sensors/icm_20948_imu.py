@@ -412,15 +412,15 @@ class ICM_20948(Sensor):
     DELAY_ES_SHADOW = 7
     DELAY_ES_SHADOW_BITS = 1
     I2C_SLV4_DELAY_EN = 4
-    I2C_SLV4_DELAY_EN_BTIS = 1
+    I2C_SLV4_DELAY_EN_BITS = 1
     I2C_SLV3_DELAY_EN = 3
-    I2C_SLV3_DELAY_EN_BTIS = 1
+    I2C_SLV3_DELAY_EN_BITS = 1
     I2C_SLV2_DELAY_EN = 2
-    I2C_SLV2_DELAY_EN_BTIS = 1
+    I2C_SLV2_DELAY_EN_BITS = 1
     I2C_SLV1_DELAY_EN = 1
-    I2C_SLV1_DELAY_EN_BTIS = 1
+    I2C_SLV1_DELAY_EN_BITS = 1
     I2C_SLV0_DELAY_EN = 0
-    I2C_SLV0_DELAY_EN_BTIS = 1
+    I2C_SLV0_DELAY_EN_BITS = 1
 
     # I2C_SLV0_ADDR
     I2C_SLV0_RNW = 7
@@ -512,11 +512,49 @@ class ICM_20948(Sensor):
     I2C_SLV4_LENG = 0
     I2C_SLV4_LENG_BITS = 4
 
+    # Magnetometer registers.
+    MAG_DEVICE_ID = 0x01
+    MAG_STATUS_1 = 0x10
+    MAG_XOUT_L = 0x11
+    MAG_XOUT_H = 0x12
+    MAG_YOUT_L = 0x13
+    MAG_YOUT_H = 0x14
+    MAG_ZOUT_L = 0x15
+    MAG_ZOUT_H = 0x16
+    MAG_STATUS_2 = 0x18
+    MAG_CONTROL_2 = 0x31
+    MAG_CONTROL_3 = 0x32
+
+    # MAG_STATUS_1
+    DRDY = 0
+    DRDY_BITS = 1
+    DOR = 1
+    DOR_BITS = 1
+
+    # MAG_STATUS_2
+    HOFL = 3
+    HOFL_BITS = 1
+    RSV28 = 4
+    RSV28_BITS = 1
+    RSV29 = 5
+    RSV29_BITS = 1
+    RSV30 = 6
+    RSV30_BITS = 1
+
+    # MAG_CONTROL_2
+    MODE = 0
+    MODE_BITS = 5
+
+    # MAG_CONTROL_3
+    SRST = 0
+    SRST_BITS = 1
+
     def __init__(self, bus, name='', max_data_length=0):
         """Constructor."""
 
         super(ICM_20948, self).__init__(name, max_data_length)
         self.ICM_ADDRESS = 0x68
+        self.MAG_AKO9916 = 0x0C
         self._bus = bus
 
         self.start()
@@ -537,6 +575,13 @@ class ICM_20948(Sensor):
         self._set_gyro_dlpf_cfg(7)
         self._enable_accel_dlpf(1)
         self._enable_gyro_dlpf(1)
+        self._init_magne()
+
+    def _init_magne(self):
+        """Start magnetometer."""
+
+        self._i2c_master_passthrough(1)
+        self._set_magn_mode(8)
 
     def read(self, sensors):
         """Read measuremnets from sensors."""
@@ -578,7 +623,8 @@ class ICM_20948(Sensor):
         z_val = self._get_bytes(self.ACCEL_ZOUT_H, 16, rev=True)
 
         self._set_bank(2)
-        fss = self._get_register(self.ACCEL_CONFIG,
+        fss = self._get_register(self.ICM_ADDRESS,
+                                 self.ACCEL_CONFIG,
                                  self.ACCEL_FS_SEL_BITS
                                  self.ACCEL_FS_SEL)
 
@@ -612,7 +658,8 @@ class ICM_20948(Sensor):
         z_val = self._get_bytes(self.GYRO_ZOUT_H, 16, rev=True)
 
         self._set_bank(2)
-        fss = self._get_register(self.GYRO_CONFIG,
+        fss = self._get_register(self.ICM_ADDRESS,
+                                 self.GYRO_CONFIG,
                                  self.GYRO_FS_SEL_BITS
                                  self.GYRO_FS_SEL)
 
@@ -646,6 +693,18 @@ class ICM_20948(Sensor):
 
         return temp
 
+    # TODO: Test if it needs signle read and write.
+    def _read_magn(self):
+        """Get magnetometer data."""
+
+        x_val = self._get_bytes(self.MAG_AKO9916, MAG_XOUT_L, 16, signed=True)
+        y_val = self._get_bytes(self.MAG_AKO9916, MAG_YOUT_L, 16, signed=True)
+        z_val = self._get_bytes(self.MAG_AKO9916, MAG_ZOUT_L, 16, signed=True)
+
+        res = meas_data(x=x_val, y=y_val, z=z_val)
+    
+        return res
+
     def stop(self):
         """Free hardware and os resources."""
 
@@ -660,16 +719,16 @@ class ICM_20948(Sensor):
 
         self._raise_exc(bank, 0, 3, "Bank")
 
-        self._set_register(self.REG_BANK_SEL, self.USER_BANK_BITS, 
-                           self.USER_BANK, bank)
+        self._set_register(self.ICM_ADDRESS, self.REG_BANK_SEL,
+                           self.USER_BANK_BITS, self.USER_BANK, bank)
 
     def reset(self):
         """Software reset."""
         
         # Set user bank 0
         self._set_bank(0)
-        self._set_register(self.PWR_MGMT_1, self.DEVICE_RESET_BITS,
-                           self.DEVICE_RESET, 1)
+        self._set_register(self.ICM_ADDRESS, self.PWR_MGMT_1,
+                           self.DEVICE_RESET_BITS, self.DEVICE_RESET, 1)
 
     def sleep(self, on=0):
         """Sleep modoe.
@@ -684,7 +743,8 @@ class ICM_20948(Sensor):
         self._raise_exc(on, 0, 1, "Sleep")
 
         self._set_bank(0)
-        self._set_register(self.PWR_MGMT_1, self.SLEEP_BITS, self.SLEEP, on)
+        self._set_register(self.ICM_ADDRESS, self.PWR_MGMT_1,
+                           self.SLEEP_BITS, self.SLEEP, on)
 
     def low_power(self, on=1):
         """Set the low power mode.
@@ -697,7 +757,8 @@ class ICM_20948(Sensor):
         self._raise_exc(on, 0, 1, "Low power")
 
         self._set_bank(0)
-        self._set_register(self.PWR_MGMT_1, self.LP_EN_BITS, self.LP_EN, on)
+        self._set_register(self.ICM_ADDRESS, self.PWR_MGMT_1,
+                           self.LP_EN_BITS, self.LP_EN, on)
 
     def _set_clock_source(self, clock_source):
         """Set clock source.
@@ -712,14 +773,15 @@ class ICM_20948(Sensor):
         self._raise_exc(clock_source, 0, 7, "Clock source")
 
         self._set_bank(0)
-        self._set_register(self.PWR_MGMT_1, self.CLKSEL_BITS,
+        self._set_register(self.ICM_ADDRESS, self.PWR_MGMT_1, self.CLKSEL_BITS,
                            self.CLKSEL, clock_source)
 
     def _data_ready(self):
         """Return true if data are ready."""
 
         self._set_bank(0)
-        return self._get_register(self.INT_STATUS_1,
+        return self._get_register(self.ICM_ADDRESS,
+                                  self.INT_STATUS_1,
                                   self.RAW_DATA_0_RDY_INT_BITS,
                                   self.RAW_DATA_0_RDY_INT) 
 
@@ -736,7 +798,7 @@ class ICM_20948(Sensor):
 
         self._set_bank(0)
 
-        register = self._get_register(self.LP_CONFIG, 8, 0)
+        register = self._get_register(self.ICM_ADDRESS, self.LP_CONFIG, 8, 0)
 
         if i2c_mode is not None:
             self._raise_exc(i2c_mode, 0, 1, "Sample mode")
@@ -753,7 +815,7 @@ class ICM_20948(Sensor):
             register = self._get_bits(register, self.GYRO_CYCLE_BITS,
                                       self.GYRO_CYCLE, gyro_mode)
 
-        self._set_register(self.LP_CONFIG, 8, 0, register)
+        self._set_register(self.ICM_ADDRESS, self.LP_CONFIG, 8, 0, register)
 
     def _set_gyro_full_scale(self, mode):
         """Select full scale for gyro
@@ -770,8 +832,8 @@ class ICM_20948(Sensor):
         self._raise_exc(mode, 0, 3, "Full scale")
 
         self._set_bank(2)
-        self._set_register(self.GYRO_CONFIG_1, self.GYRO_FS_SEL_BITS,
-                           self.GYRO_FS_SEL, mode)
+        self._set_register(self.ICM_ADDRESS, self.GYRO_CONFIG_1, 
+                           self.GYRO_FS_SEL_BITS, self.GYRO_FS_SEL, mode)
 
     def _set_accel_full_scale(self, mode):
         """Select full scale for accel
@@ -788,8 +850,8 @@ class ICM_20948(Sensor):
         self._raise_exc(mode, 0, 3, "Full scale")
 
         self._set_bank(2)
-        self._set_register(self.ACCEL_CONFIG, self.ACCEL_FS_SEL_BITS,
-                           self.ACCEL_FS_SEL, mode)
+        self._set_register(self.ICM_ADDRESS, self.ACCEL_CONFIG,
+                           self.ACCEL_FS_SEL_BITS, self.ACCEL_FS_SEL, mode)
 
     def _set_accel_dlpf_cfg(self, value):
         """Set accelerometer low pass filter configuration."""
@@ -797,8 +859,8 @@ class ICM_20948(Sensor):
         self._raise_exc(value, 0, 3, "Dlpg config")
 
         self._set_bank(2)
-        self._set_register(self.ACCEL_CONFIG, self.ACCEL_DLPFCFG_BITS,
-                           self.ACCEL_DLPFCFG, value)
+        self._set_register(self.ICM_ADDRESS, self.ACCEL_CONFIG,
+                           self.ACCEL_DLPFCFG_BITS, self.ACCEL_DLPFCFG, value)
 
     def _set_gyro_dlpf_cfg(self, value):
         """Set gyro low pass filter configuration."""
@@ -806,8 +868,8 @@ class ICM_20948(Sensor):
         self._raise_exc(value, 0, 3, "Dlpg config")
 
         self._set_bank(2)
-        self._set_register(self.GYRO_CONFIG_1, self.GYRO_DLPFCFG_BITS,
-                           self.GYRO_DLPFCFG, value)
+        self._set_register(self.ICM_ADDRESS, self.GYRO_CONFIG_1, 
+                           self.GYRO_DLPFCFG_BITS, self.GYRO_DLPFCFG, value)
 
     def _enable_accel_dlpf(self, enable):
         """Enable accel dlpf"""
@@ -815,8 +877,8 @@ class ICM_20948(Sensor):
         self._raise_exc(enable, 0, 1, "Dlpf enable")
 
         self._set_bank(2)
-        self._set_register(self.ACCEL_CONFIG, self.ACCEL_FCHOICE_BITS,
-                           self.ACCEL_FCHOICE, enable)
+        self._set_register(self.ICM_ADDRESS, self.ACCEL_CONFIG,
+                           self.ACCEL_FCHOICE_BITS, self.ACCEL_FCHOICE, enable)
 
     def _enable_gyro_dlpf(self, enable):
         """Enable gyro dlpf"""
@@ -824,8 +886,8 @@ class ICM_20948(Sensor):
         self._raise_exc(enable, 0, 1, "Dlpf enable")
 
         self._set_bank(2)
-        self._set_register(self.GYRO_CONFIG_1, self.GYRO_FCHOICE_BITS,
-                           self.GYRO_FCHOICE, enable)
+        self._set_register(self.ICM_ADDRESS, self.GYRO_CONFIG_1,
+                           self.GYRO_FCHOICE_BITS, self.GYRO_FCHOICE, enable)
 
     def _set_accel_sample_rate(self, rate):
         """Set accel sample rate."""
@@ -834,10 +896,12 @@ class ICM_20948(Sensor):
 
         self._set_bank(2)
         # Set high byte
-        self._set_register(self.ACCEL_SMPLRT_DIV_1, self.ACCEL_SMPLRT_DIV_BITS,
-                           self.ACCEL_SMPLRT_DIV, rate >> 8)
+        self._set_register(self.ICM_ADDRESS, self.ACCEL_SMPLRT_DIV_1, 
+                           self.ACCEL_SMPLRT_DIV_BITS, self.ACCEL_SMPLRT_DIV, 
+                           rate >> 8)
         # Set low byte
-        self._set_register(self.ACCEL_SMPLRT_DIV_2, 8, 0, rate & 0xFF)
+        self._set_register(self.ICM_ADDRESS, self.ACCEL_SMPLRT_DIV_2,
+                           8, 0, rate & 0xFF)
 
     def _set_gyro_sample_rate(self, rate):
         """Set gyro sample rate."""
@@ -845,7 +909,7 @@ class ICM_20948(Sensor):
         self._raise_exc(rate, 0, 2*8, "Sample rate")
 
         self._set_bank(2)
-        self._set_register(self.GYRO_SMPLRT_DIV, 8, 0, rate)
+        self._set_register(self.ICM_ADDRESS, self.GYRO_SMPLRT_DIV, 8, 0, rate)
         
     def _clear_interrupts(self):
         """Clear interrupts."""
@@ -853,8 +917,8 @@ class ICM_20948(Sensor):
         self._set_bank(0)
 
         # The interrupts are cleared only by reading the registers.
-        value = self._get_register(self.INT_STATUS, 8, 0)
-        value = self._get_register(self.INT_STATUS_1, 8, 0)
+        value = self._get_register(self.ICM_ADDRESS, self.INT_STATUS, 8, 0)
+        value = self._get_register(self.ICM_ADDRESS, self.INT_STATUS_1, 8, 0)
 
     def _cfg_interrupts(self, active_low=None, open_drain=None, latch=None,
                         anyrd=None, fsync_al=None, fsync_im=None):
@@ -870,7 +934,7 @@ class ICM_20948(Sensor):
         """
         
         self._set_bank(0)
-        register = self._get_register(self.INT_PIN_CFG, 8, 0)
+        register = self._get_register(self.ICM_ADDRESS, self.INT_PIN_CFG, 8, 0)
 
         if active_low is not None:
             register = self._set_bits(register, self.INT1_ACTL_BITS,
@@ -896,13 +960,13 @@ class ICM_20948(Sensor):
             register = self._set_bits(register, self.FSYNC_INT_MODE_EN_BITS,
                                       self.FSYNC_INT_MODE_EN, fsync_im)
 
-        self._set_register(self.INT_PIN_CFG, 8, 0, register)
+        self._set_register(self.ICM_ADDRESS, self.INT_PIN_CFG, 8, 0, register)
 
     def _set_int_enable(self, reg_wof=None, wom_int=None,
                         pll_rdy=None, dmp_int=None, i2c_en=None):
 
         self._set_bank(0)
-        register = self._get_register(self.INT_ENABLE, 8, 0)
+        register = self._get_register(self.ICM_ADDRESS, self.INT_ENABLE, 8, 0)
 
         if reg_wof is not None:
             register = self._set_bits(register, self.REG_WOF_EN_BITS,
@@ -924,7 +988,7 @@ class ICM_20948(Sensor):
             register = self._set_bits(register, self.I2C_MST_EN_BITS,
                                       self.I2C_MST_EN, i2c_en)
 
-        self._set_register(self.INT_ENABLE, 8, 0, register)
+        self._set_register(self.ICM_ADDRESS, self.INT_ENABLE, 8, 0, register)
 
     def _set_raw_data_en(self, value):
         """Set raw data ready en"""
@@ -932,8 +996,9 @@ class ICM_20948(Sensor):
         self._raise_exc(value, 0, 1, "Raw data ready enable.")
 
         self._set_bank(0)
-        self._set_register(self.INT_ENABLE_1, self.RAW_DATA_0_RDY_EN_BITS,
-                           self.RAW_DATA_0_RDY_EN, value)
+        self._set_register(self.ICM_ADDRESS, self.INT_ENABLE_1,
+                           self.RAW_DATA_0_RDY_EN_BITS, self.RAW_DATA_0_RDY_EN, 
+                           value)
 
     def _int_enable_overflow_fifo(self. fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
         """Enable fifo interrupt."""
@@ -941,24 +1006,25 @@ class ICM_20948(Sensor):
         value = (fifo_0 | (fifo_1 << 1) | (fifo_2 << 2) 
                  | (fifo_3 << 3) | (fifo_4 << 4))
         self._set_bank(0)
-        self._set_register(self.INT_ENABLE_2, self.FIFO_OVERFLOW_EN_BITS,
-                           self.FIFO_OVERFLOW_EN, value)
+        self._set_register(self.ICM_ADDRESS, self.INT_ENABLE_2,
+                           self.FIFO_OVERFLOW_EN_BITS, self.FIFO_OVERFLOW_EN, 
+                           value)
 
     def _int_enable_wm_fifo(self. fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
 
         value = (fifo_0 | (fifo_1 << 1) | (fifo_2 << 2) 
                  | (fifo_3 << 3) | (fifo_4 << 4))
         self._set_bank(0)
-        self._set_register(self.INT_ENABLE_3, self.FIFO_WM_EN_BITS,
-                           self.FIFO_WM_EN, value)
+        self._set_register(self.ICM_ADDRESS, self.INT_ENABLE_3,
+                           self.FIFO_WM_EN_BITS, self.FIFO_WM_EN, value)
 
     def _i2c_master_passthrough(self, value):
         """Set i2c master passthrough."""
 
         self._raise_exc(value, 0, 1, "Pass through")
         self._set_bank(0)
-        self._set_register(self.INT_PIN_CFG, self.BYPASS_EN_BITS,
-                           self.BYPASS_EN, value)
+        self._set_register(self.ICM_ADDRESS, self.INT_PIN_CFG, 
+                           self.BYPASS_EN_BITS, self.BYPASS_EN, value)
     
     def _i2c_master_enable(self, enable):
         """Enable i2c master."""
@@ -967,13 +1033,13 @@ class ICM_20948(Sensor):
 
         self._i2c_master_passthrough(0)
         self._set_bank(3)
-        self._set_register(self.I2C_MST_CTRL, self.I2C_MST_CLK_BITS,
-                           self.I2C_MST_CLK, 7)
-        self._set_register(self.I2C_MST_CTRL, self.I2C_MST_P_NSR_BITS,
-                           self.I2C_MST_P_NSR, 1)
+        self._set_register(self.ICM_ADDRESS, self.I2C_MST_CTRL, 
+                           self.I2C_MST_CLK_BITS, self.I2C_MST_CLK, 7)
+        self._set_register(self.ICM_ADDRESS, self.I2C_MST_CTRL, 
+                           self.I2C_MST_P_NSR_BITS, self.I2C_MST_P_NSR, 1)
 
         self._set_bank(0)
-        self._set_register(self.USER_CTRL, self.I2C_MST_EN_BITS,
+        self._set_register(self.ICM_ADDRESS, self.USER_CTRL, self.I2C_MST_EN_BITS,
                            self.I2C_MST_EN, enable)
 
     def _i2c_master_config_slave(self):
@@ -997,8 +1063,25 @@ class ICM_20948(Sensor):
     def _get_mang_data(self):
         pass
 
+    def _set_magn_mode(self, value):
+        """Set magnetometer mode.
+
+        Args:
+            value: Possible values:
+                                    - 0: Powerdown
+                                    - 1: Single measurement
+                                    - 2: Continuous measurment mode 1
+                                    - 4: Continuous measurment mode 2
+                                    - 6: Continuous measurment mode 3
+                                    - 8: Continuous measurment mode 4
+                                    - 16: Self test mode
+        """
+
+        self._set_register(self.MAG_AKO9916, self.MAG_CONTROL_2,
+                           self.MODE_BITS, self.MODE, value)
+
     # TODO: Check maybe remove the option to get one byte
-    def _get_bytes(self, low_byte_addr, res, signed=False, rev=False):
+    def _get_bytes(self, i2c_addr, low_byte_addr, res, signed=False, rev=False):
         """Get lsb and msb and make a number.
 
         In order to work the target number should be in consecutive registers.
@@ -1010,7 +1093,7 @@ class ICM_20948(Sensor):
         """
 
         byte_num = ceil(res / 8)
-        data = self.hardware_interfaces[self._i2c].read(self.ICM_ADDRESS,
+        data = self.hardware_interfaces[self._i2c].read(i2c_addr,
                                                         low_byte_addr,
                                                         byte_num=byte_num)
         # Make it a list if it is one element
@@ -1052,7 +1135,7 @@ class ICM_20948(Sensor):
 
         return (register & mask) >> shift
 
-    def _get_register(self, register, bits, shift):
+    def _get_register(self, i2c_addr, register, bits, shift):
         """Get specific bits from register.
         
         Args:
@@ -1060,7 +1143,7 @@ class ICM_20948(Sensor):
             bits:
             shift:
         """
-        r_val = self.hardware_interfaces[self._i2c].read(self.ICM_ADDRESS,
+        r_val = self.hardware_interfaces[self._i2c].read(i2c_addr,
                                                          register)
 
         return self._get_bits(r_val, bits, shift)
@@ -1081,7 +1164,7 @@ class ICM_20948(Sensor):
 
         return register | (value << shift)
 
-    def _set_register(self, register, bits, shift, value):
+    def _set_register(self, i2c_addr, register, bits, shift, value):
         """Write a new value to register.
         
         Args:
@@ -1091,10 +1174,10 @@ class ICM_20948(Sensor):
             value:
         """
         
-        r_val = self.hardware_interfaces[self._i2c].read(self.ICM_ADDRESS,
+        r_val = self.hardware_interfaces[self._i2c].read(i2c_addr,
                                                          register)
         r_val = self._set_bits(r_val, value, bits, shift)
-        self.hardware_interfaces[self._i2c].write(self.ICM_ADDRESS,
+        self.hardware_interfaces[self._i2c].write(i2c_addr,
                                                   register,
                                                   r_val)
 
