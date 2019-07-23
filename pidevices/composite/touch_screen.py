@@ -73,7 +73,13 @@ class TouchScreen():
 		if file_path == None or time_window == None:	
 			self.turnScreenOff()
 			raise Exception("show_video called without video URI or waiting time")
-		ret = self._show_video(file_path, time_window, touch_enabled, text)		
+		ret = self._show_video(file_path, time_window, touch_enabled, text)			
+	elif show_options == True:
+		if time_enabled == None or options == None:	
+			self.turnScreenOff()
+			raise Exception("show_options called without options or waiting time")
+		ret = self._show_options(options, time_enabled, multiple_options)		
+
 
 	#self.turnScreenOff()
 	return ret
@@ -112,7 +118,7 @@ class TouchScreen():
 				running = False
 				break
 	self._show_black()
-	return time.time() - t_start
+	return {'reaction_time': time.time() - t_start}
 	
 
     def _show_black(self):
@@ -134,7 +140,7 @@ class TouchScreen():
 				running = False
 				break
 	self._show_black()
-	return time.time() - t_start
+	return {'reaction_time': time.time() - t_start}
 	
 
     def _show_video(self, video_uri, time_window, touch_enabled, text):
@@ -171,10 +177,70 @@ class TouchScreen():
 		pass
 
 	self._show_black()
-	return time.time() - t_start
+	return {'reaction_time': time.time() - t_start}
 
     def _show_options(self, options, time_enabled, multiple):
-	pass
+	self._show_black()
+	pygame.draw.line(self.screen, (255, 255, 255), \
+		(0, self.screen_h / 2), (self.screen_w - 1, self.screen_h / 2), 1)
+	pygame.draw.line(self.screen, (255, 255, 255), \
+		(self.screen_w / 2, 0), (self.screen_w / 2, self.screen_h - 1), 1)
+
+	pygame.font.init()
+	myfont = pygame.font.SysFont('Comic Sans MS', 30)
+	if len(options) >= 1:
+		tw, th = myfont.size(options[0])
+		print tw, th
+		mytext = myfont.render(options[0], 1, (255, 255, 255))
+		self.screen.blit(mytext, (self.screen_w / 4 - tw / 2, self.screen_h / 4 - th / 2))
+	if len(options) >= 2:
+		tw, th = myfont.size(options[1])
+		print tw, th
+		mytext = myfont.render(options[1], 1, (255, 255, 255))
+		self.screen.blit(mytext, (3 * self.screen_w / 4 - tw / 2, self.screen_h / 4 - th / 2))
+	if len(options) >= 3:
+		tw, th = myfont.size(options[2])
+		print tw, th
+		mytext = myfont.render(options[2], 1, (255, 255, 255))
+		self.screen.blit(mytext, (self.screen_w / 4 - tw / 2, 3 * self.screen_h / 4 - th / 2))
+	if len(options) >= 4:
+		tw, th = myfont.size(options[3])
+		print tw, th
+		mytext = myfont.render(options[3], 1, (255, 255, 255))
+		self.screen.blit(mytext, (3 * self.screen_w / 4 - tw / 2, 3 * self.screen_h / 4 - th / 2))
+
+	pygame.display.flip()
+	t_start = time.time()
+	running = True
+	final_option = None
+	while time.time() - t_start < time_enabled and running:
+		for event in pygame.event.get():
+			print event
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				print("Touched")
+				position = event.pos
+				if event.pos[0] <= self.screen_w / 2 and event.pos[1] <= self.screen_h / 2:
+					if len(options) >= 1:
+						final_option = options[0]
+				elif event.pos[0] >= self.screen_w / 2 and event.pos[1] <= self.screen_h / 2:
+					if len(options) >= 2:
+						final_option = options[1]
+				elif event.pos[0] <= self.screen_w / 2 and event.pos[1] >= self.screen_h / 2:
+					if len(options) >= 3:
+						final_option = options[2]
+				elif event.pos[0] >= self.screen_w / 2 and event.pos[1] >= self.screen_h / 2:
+					if len(options) >= 4:
+						final_option = options[3]
+						
+				running = False
+				break
+	self._show_black()
+	return {
+		'reaction_time': time.time() - t_start,
+		'selected': final_option
+	}
+
+	
 
     def stop(self):
         """Clean hardware and os resources."""
@@ -184,10 +250,11 @@ class TouchScreen():
 if __name__ == "__main__":
     s = TouchScreen()
     # print s.write(show_color = True, time_enabled = 2, color_rgb = (0, 255, 0))
+    #time.sleep(1)
+    #print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
+    #time.sleep(1)
+    #print s.write(show_image = True, file_path = "/home/pi/t.png", time_enabled = 5, touch_enabled = True)
+    #time.sleep(1)
+    #print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 10, touch_enabled = True)
     time.sleep(1)
-    print s.write(show_color = True, time_enabled = 2, color_rgb = (255, 255, 0), touch_enabled = True)
-    time.sleep(1)
-    print s.write(show_image = True, file_path = "/home/pi/t.png", time_enabled = 5, touch_enabled = True)
-    time.sleep(1)
-    print s.write(show_video = True, file_path = "/home/pi/video.mp4", time_window = 10, touch_enabled = True)
-    
+    print s.write(show_options = True, options = ['1', '2', 'test', 'pikatsou'], time_enabled = 5, multiple_options = False) 
