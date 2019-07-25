@@ -8,7 +8,6 @@ class MCP23x17(Device):
     # They control the direction of pins
     IODIRA = 0x00
     IODIRB = 0x01
-
     IPOLA = 0x02
     IPOLB = 0x03
     GPINTENA = 0x04
