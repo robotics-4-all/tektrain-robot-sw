@@ -6,18 +6,18 @@ from pygame.locals import *
 from evdev import InputDevice, list_devices
 import threading
 # from subprocess import *
-# from ..devices import Composite
+from ..devices import Actuator
 from omxplayer.player import OMXPlayer
 
 
 #class TouchScreen(Composite):
-class TouchScreen():
+class TouchScreen(Actuator):
     """Class representing a touch screen."""
 
     def __init__(self, dev_name='touch_screen', name="", max_data_length=0):
         """Constructor"""
 
-        #super(Composite, self).__init__(name, max_data_length)
+        super(Composite, self).__init__(name, max_data_length)
         self.dev_name = dev_name
         self.screen_w = 800
         self.screen_h = 480
