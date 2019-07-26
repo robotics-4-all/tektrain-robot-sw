@@ -197,18 +197,7 @@ class TouchScreen():
         myfont = pygame.font.SysFont('Comic Sans MS', 200)
         if len(options) >= 1:
             tw, th = myfont.size(options[0])
-            wr = self.screen_w / 2 * 1.0 / tw
-            hr = self.screen_h / 2 * 1.0 / th
-            rate = wr
-            if wr >= hr:
-                rate = hr
-            rate *= 0.5
-            padding_w = 0  # Is it needed?
-            padding_h = 0
-            if wr >= hr:
-                padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
-            else:
-                padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+            rate = self._compute_rate(tw, th)
 
             mytext = myfont.render(options[0], 1, (255, 255, 255))
             mytext = pygame.transform.scale(mytext, 
@@ -218,18 +207,7 @@ class TouchScreen():
                               self.screen_h / 4 - th * rate / 2))
         if len(options) >= 2:
             tw, th = myfont.size(options[1])
-            wr = self.screen_w / 2 * 1.0 / tw
-            hr = self.screen_h / 2 * 1.0 / th
-            rate = wr
-            if wr >= hr:
-                rate = hr
-            rate *= 0.5
-            padding_w = 0
-            padding_h = 0
-            if wr >= hr:
-                padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
-            else:
-                padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+            rate = self._compute_rate(tw, th)
 
             mytext = myfont.render(options[1], 1, (255, 255, 255))
             mytext = pygame.transform.scale(mytext,
@@ -239,18 +217,7 @@ class TouchScreen():
                               self.screen_h / 4 - th * rate / 2))
         if len(options) >= 3:
             tw, th = myfont.size(options[2])
-            wr = self.screen_w / 2 * 1.0 / tw
-            hr = self.screen_h / 2 * 1.0 / th
-            rate = wr
-            if wr >= hr:
-                rate = hr
-            rate *= 0.5
-            padding_w = 0
-            padding_h = 0
-            if wr >= hr:
-                padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
-            else:
-                padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+            rate = self._compute_rate(tw, th)
 
             mytext = myfont.render(options[2], 1, (255, 255, 255))
             mytext = pygame.transform.scale(mytext,
@@ -261,18 +228,7 @@ class TouchScreen():
 
         if len(options) >= 4:
             tw, th = myfont.size(options[3])
-            wr = self.screen_w / 2 * 1.0 / tw
-            hr = self.screen_h / 2 * 1.0 / th
-            rate = wr
-            if wr >= hr:
-                rate = hr
-            rate *= 0.5
-            padding_w = 0
-            padding_h = 0
-            if wr >= hr:
-                padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
-            else:
-                padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+            rate = self._compute_rate(tw, th)
 
             mytext = myfont.render(options[3], 1, (255, 255, 255))
             mytext = pygame.transform.scale(mytext,
@@ -313,6 +269,24 @@ class TouchScreen():
             'reaction_time': time.time() - t_start,
             'selected': final_option
         }
+
+    def _compute_rate(self, tw, th):
+        """Compute screen rate."""
+
+        wr = self.screen_w / 2 * 1.0 / tw
+        hr = self.screen_h / 2 * 1.0 / th
+        rate = wr
+        if wr >= hr:
+            rate = hr
+        rate *= 0.5
+        padding_w = 0
+        padding_h = 0
+        if wr >= hr:
+            padding_w = (self.screen_w / 2.0 - int(tw * rate)) / 2
+        else:
+            padding_h = (self.screen_h / 2.0 - int(th * rate)) / 2
+
+        return rate
 
     def stop(self):
         """Clean hardware and os resources."""
