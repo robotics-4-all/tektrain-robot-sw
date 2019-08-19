@@ -3,8 +3,15 @@ from importlib import import_module
 
 
 class Device(object):
-    """Base class for sensors and actuators."""
+    """Base class for sensors and actuators.
+    
+    Attributes:
+        data: A deque that saves the latest measurments or commands.
+    """
 
+    """ Dictionary with the implemented implementations for every 
+    hardware interface.
+    """
     _IMPLEMENTATIONS = {
         'GPIO': ["RPiGPIO"],
         'SPI': ["SPIimplementation"],
@@ -13,6 +20,7 @@ class Device(object):
         'HPWM': ["HPWMPeriphery"]
     }
 
+    # Dictionary with implementation modules.
     _MODULES = {
         'GPIO': "pidevices.hardware_interfaces.gpio_implementations",
         'SPI': "pidevices.hardware_interfaces.spi_implementations",
@@ -22,6 +30,13 @@ class Device(object):
     }
 
     def __init__(self, name="", max_data_length=100):
+        """Constructor of the class.
+        
+        Args:
+            name (str): The optional name of the device.
+            max_dat_length (int): The max length of the data deque.
+        """
+
         if not isinstance(name, str):
             raise TypeError("Invalid name type, should be string.")
         if not isinstance(max_data_length, int):
@@ -30,7 +45,9 @@ class Device(object):
         self._id = name
         self._max_data_length = max_data_length
         self.data = deque()
-        self._hardware_interfaces = []
+
+        # A list with the hardware interfaces objects.
+        self._hardware_interfaces = []  
 
     # TODO: see if it is better practice to remove **kwargs from the function
     # and call the constructors with no arguments.
@@ -40,13 +57,19 @@ class Device(object):
         Args:
             name: The interface name.
             interface: String representing the hardware interface type, it should
-                     be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm
+                be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm.
             impl: The specific implementation to be used. If it is none the 
-                 first that is installed will be used.
+                first that is installed will be used.
             **kwargs: Keyword arguments for the constructor of the chosen 
-                     interface.
+                interface.
+
         Returns:
             int: Representing the interface's index in the list.
+
+        Raises:
+            InvalidInterface: An error occured accessing the _MODULES attribute.
+            NotInstalledInterface: An error occured creating the hardware
+                interface implementation object.
         """
 
         if not isinstance(interface, str):
@@ -85,20 +108,15 @@ class Device(object):
             self.data.append(value)
 
     def start(self):
-        """Empty function for starting devices, which will be
-            overloaded.
-        """
+        """Empty function for starting devices, which will be overloaded."""
         pass
 
     def stop(self):
-        """Empty function for stopping devices, which will be
-            overloaded.
-        """
+        """Empty function for stopping devices, which will be overloaded."""
         pass
 
     def restart(self):
         """Empty function for restarting devices, which will be overloaded."""
-        """Function for restarting devices."""
         self.stop()
         self.start()
 
@@ -106,7 +124,7 @@ class Device(object):
 
     @property
     def max_data_length(self):
-        """Get max data length."""
+        """The max length of the data deque."""
         return self._max_data_length
 
     @max_data_length.setter
@@ -118,7 +136,7 @@ class Device(object):
 
     @property
     def id(self):
-        """Get id."""
+        """The name of the device."""
         return self._id
 
     @id.setter
@@ -130,6 +148,7 @@ class Device(object):
 
     @property
     def hardware_interfaces(self):
+        """A list with the objects of the device's used hardware interfaces."""
         return self._hardware_interfaces
 
 
