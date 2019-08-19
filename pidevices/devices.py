@@ -57,60 +57,24 @@ class Device(object):
             # Raise not supported interface
             pass
 
+        module = import_module(self._MODULES[interface])
+        obj = None
         if impl is not None:
-            self._hardware_interfaces.append(self._unwrap(interface,
-                                                          impl,
-                                                          **kwargs))
+            obj = getattr(module, impl)(**kwargs)
         else:
-            self._hardware_interfaces.append(self._choose_def(interface, 
-                                                              **kwargs))
+            for impls in self._IMPLEMENTATIONS[interface]:
+                try:
+                    obj = getattr(module, impls)(**kwargs)
+                except ImportError:
+                    continue
+
+            if obj is None:
+                # Raise not installed error.
+                pass
+
+        self._hardware_interfaces.append(obj)
 
         return len(self._hardware_interfaces) - 1
-
-    def _choose_def(self, interface, **kwargs):
-        """Choose default implementation.
-        
-        Iterate through the implemtations and choose the first one that is 
-        installed.
-
-        Args:
-            interface: String representing the hardware interface to be 
-                     initialized.
-            impl: The specific implementation to be used. If it is none the 
-                 first that is installed will be used.
-            **kwargs: Keyword arguments for the constructor of the chosen 
-                     interface.
-        """
-
-        module = import_module(self._MODULES[interface])
-        for impls in self._IMPLEMENTATIONS[interface]:
-            try:
-                return getattr(module, impls)(**kwargs)
-            except ImportError:
-                continue
-        # Raise library not installed
-        print("Not installed")
-
-    def _unwrap(self, interface, impl, **kwargs):
-        """From string impl get the implemented class.
-
-        Args:
-            interface: String representing the hardware interface to be 
-                     initialized.
-            impl: The specific implementation to be used. If it is none the 
-                 first that is installed will be used.
-            **kwargs: Keyword arguments for the constructor of the chosen 
-                     interface.
-        """
-
-        if not isinstance(impl, str):
-            raise TypeError("Wrong impl type, should be str.")
-
-        if impl not in self._IMPLEMENTATIONS[interface]:
-            # raise not supported
-            pass
-
-        return getattr(import_module(self._MODULES[interface]), impl)(**kwargs)
 
     def update_data(self, value):
         """Insert an element to the end of the data deque."""
