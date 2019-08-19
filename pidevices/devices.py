@@ -183,3 +183,11 @@ class Actuator(Device):
     def write(self):
         """Abstact method for driving an actuator."""
         pass
+
+
+class Composite(Device):
+    """ Docstring for composite class"""
+
+    def write(self):
+        """Abstact method for driving and reading from a composite device."""
+        pass
