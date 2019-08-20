@@ -294,20 +294,20 @@ class TouchScreen(Actuator):
         #self.device.close()
 
 
-if __name__ == "__main__":
-    s = TouchScreen()
-    print s.write(show_color=True, time_enabled=2, color_rgb=(0, 255, 0))
-    time.sleep(1)
-    print s.write(show_color=True, time_enabled=2,
-                  color_rgb=(255, 255, 0), touch_enabled=True)
-    time.sleep(1)
-    print s.write(show_image=True, file_path="/home/pi/t.png", 
-                  time_enabled=5, touch_enabled=True)
-    time.sleep(1)
-    print s.write(show_video=True, file_path="/home/pi/video.mp4", 
-                  time_window=10, touch_enabled=True)
-    time.sleep(1)
-    print s.write(show_options=True,
-                  options=['Option 1', 'Just 2', 'PikaPikaTsou'],
-                  time_enabled=5,
-                  multiple_options=False) 
+#if __name__ == "__main__":
+#    s = TouchScreen()
+#    print s.write(show_color=True, time_enabled=2, color_rgb=(0, 255, 0))
+#    time.sleep(1)
+#    print s.write(show_color=True, time_enabled=2,
+#                  color_rgb=(255, 255, 0), touch_enabled=True)
+#    time.sleep(1)
+#    print s.write(show_image=True, file_path="/home/pi/t.png", 
+#                  time_enabled=5, touch_enabled=True)
+#    time.sleep(1)
+#    print s.write(show_video=True, file_path="/home/pi/video.mp4", 
+#                  time_window=10, touch_enabled=True)
+#    time.sleep(1)
+#    print s.write(show_options=True,
+#                  options=['Option 1', 'Just 2', 'PikaPikaTsou'],
+#                  time_enabled=5,
+#                  multiple_options=False) 

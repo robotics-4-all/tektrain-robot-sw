@@ -4,7 +4,11 @@ REQUIRES = []
 NAME = "pidevices"
 VERSION = "0.0.1"
 
-DEPENDENCIES = ['pyalsaaudio', 'scipy', 'numpy']
+DEPENDENCIES = ['pyalsaaudio', 'scipy', 'numpy', 'picamera', 'rpi_ws281x',
+                'pygame', 'evdev', 'omxplayer-wrapper']
+
+# Build vl531l
+# Lib sdl install
 
 setup(
     name=NAME,
