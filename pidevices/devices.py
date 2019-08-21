@@ -8,6 +8,7 @@ class Device(object):
     
     Attributes:
         data: A deque that saves the latest measurments or commands.
+
     """
 
     """ Dictionary with the implemented implementations for every 
@@ -56,9 +57,8 @@ class Device(object):
         """Choose an implementation for an interface.
 
         Args:
-            name: The interface name.
-            interface: String representing the hardware interface type, it should
-                be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm.
+            interface: String representing the hardware interface type,
+                it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.
             impl: The specific implementation to be used. If it is none the 
                 first that is installed will be used.
             **kwargs: Keyword arguments for the constructor of the chosen 
@@ -68,9 +68,13 @@ class Device(object):
             int: Representing the interface's index in the list.
 
         Raises:
-            InvalidInterface: An error occured accessing the _MODULES attribute.
-            NotInstalledInterface: An error occured creating the hardware
-                interface implementation object.
+            TypeError: Wrong interface type.
+
+            NotSupportedInterface: An error occured accessing modules.
+
+            NotInstalledInterface: An error occured when there isn't any 
+                supported library installed for the current interface.
+
         """
 
         if not isinstance(interface, str):
@@ -122,8 +126,6 @@ class Device(object):
         """Empty function for restarting devices, which will be overloaded."""
         self.stop()
         self.start()
-
-    # Setters and getters
 
     @property
     def max_data_length(self):

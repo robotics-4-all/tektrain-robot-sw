@@ -10,6 +10,8 @@ Welcome to pidevices's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   getting_started.rst
+   devices_api.rst
 
 
 Indices and tables
