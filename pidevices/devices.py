@@ -97,7 +97,6 @@ class Device(object):
                 raise NotInstalledInterface("A supported library in not found"
                                             " for the {}"
                                             " interface".format(interface))
-                pass
 
         self._hardware_interfaces.append(obj)
 

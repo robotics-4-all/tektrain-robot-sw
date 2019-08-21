@@ -5,3 +5,8 @@ class PidevicesError(Exception):
 
 class NotSupportedInterface(PidevicesError):
     """Error when an invalid interface name is used."""
+
+class NotInstalledInterface(PidevicesError):
+    """Error when there isn't any supported library installed for the 
+       currrent interface."""
+    pass
