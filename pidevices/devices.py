@@ -1,5 +1,6 @@
 from collections import deque
 from importlib import import_module
+from .exceptions import NotSupportedInterface, NotInstalledInterface
 
 
 class Device(object):
@@ -77,8 +78,8 @@ class Device(object):
 
         interface = interface.upper()
         if interface not in self._MODULES:
-            # Raise not supported interface
-            pass
+            raise NotSupportedInterface("{} is invalid name "
+                                        "for interface.".format(interface))
 
         module = import_module(self._MODULES[interface])
         obj = None
@@ -93,6 +94,9 @@ class Device(object):
 
             if obj is None:
                 # Raise not installed error.
+                raise NotInstalledInterface("A supported library in not found"
+                                            " for the {}"
+                                            " interface".format(interface))
                 pass
 
         self._hardware_interfaces.append(obj)
