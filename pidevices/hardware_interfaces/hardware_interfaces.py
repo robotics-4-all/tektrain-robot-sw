@@ -1,26 +1,19 @@
 # TODO: Check pins global pins availability
 
 
-class HardwareInterface(object):
-    """Abstract class representing a hardware interface
-
-    Methods:
-        initilize: Initialize hardware resources.
-        read: Read from the hardware. Descendants should ovevwrite this method.
-        write: Write to rhe hardware. Descendants should overwrite this method.
-        close: Free hardware resources.
-    """
+class HardwareInterface():
+    """Abstract class representing a hardware interface."""
 
     def initialize():
         """Initialize hardware resources."""
         pass
 
     def read():
-        """Read data from hardware"""
+        """Read data from hardware."""
         raise NotImplementedError("This method has not been implemented.")
 
     def write():
-        """Write data to hardware"""
+        """Write data to hardware."""
         raise NotImplementedError("This method has not been implemented.")
 
     def close():
@@ -29,21 +22,7 @@ class HardwareInterface(object):
 
 
 class GPIOPin(HardwareInterface):
-    """Class representing a gpio pin.
-
-    Attributes:
-        pin_num: An integer indicating the bcm pin number.
-        function: A string that could be input or output.
-        pull: A string indicating the pull up state of the pin. It could be
-            up, down or floating.
-        frequency: An integer indicating the frequency of the pin, if it is 
-                 a pwm pin. 
-        pwm: A boolean that indicates if the pin is pwm or not.
-        duty_cycle: Float for the percentage of the pwm cycle.
-        event: A function to be called with a new edge signal.
-        edge: Could be rising, falling or both.
-        bounce: Integer representing the bounce time in ms.
-    """
+    """Class representing a gpio pin defining it's attributes."""
 
     def __init__(self, number):
         """Constructor"""
@@ -63,7 +42,9 @@ class GPIOPin(HardwareInterface):
     def _get_pin_num(self):
         return self._pin_num
 
-    pin_num = property(_get_pin_num, _set_pin_num)
+    pin_num = property(_get_pin_num, _set_pin_num, doc="""
+            An integer representing the bcm number of the pin.
+            """)
 
     def _set_function(self, function):
         self._function = function
@@ -71,7 +52,11 @@ class GPIOPin(HardwareInterface):
     def _get_function(self):
         return self._function
 
-    function = property(_get_function, _set_function)
+    function = property(_get_function, _set_function, doc="""
+            This attribute represents the function of the pin, it could be
+            input for reading from the gpio pin or output for writting
+            to it.
+            """)
 
     def _set_pull(self, pull):
         self._pull = pull
@@ -79,7 +64,11 @@ class GPIOPin(HardwareInterface):
     def _get_pull(self):
         return self._pull
 
-    pull = property(_get_pull, _set_pull)
+    pull = property(_get_pull, _set_pull, doc="""
+            A string for the pull resistor of the pin, it could be up, down
+            or floating. If the pin's function is output this attribute can't
+            be set.
+            """)
 
     def _set_frequency(self, frequency):
         self._frequency = frequency
@@ -87,7 +76,9 @@ class GPIOPin(HardwareInterface):
     def _get_frequency(self):
         return self._frequency
 
-    frequency = property(_get_frequency, _set_frequency)
+    frequency = property(_get_frequency, _set_frequency, doc="""
+            Integer value representing the frequency of the pwm pulse.
+            """)
 
     def _set_pwm(self, pwm):
         self._pwm = pwm
@@ -95,7 +86,10 @@ class GPIOPin(HardwareInterface):
     def _get_pwm(self):
         return self._pwm
 
-    pwm = property(_get_pwm, _set_pwm)
+    pwm = property(_get_pwm, _set_pwm, doc="""
+            Boolean that indicates if the pin has pwm output. If the pin's 
+            function is input this attribute can't be set.
+            """)
 
     def _set_duty_cycle(self, duty_cycle):
         self._duty_cycle = duty_cycle
@@ -103,7 +97,9 @@ class GPIOPin(HardwareInterface):
     def _get_duty_cycle(self):
         return self._duty_cycle
 
-    duty_cycle = property(_get_duty_cycle, _set_duty_cycle)
+    duty_cycle = property(_get_duty_cycle, _set_duty_cycle, doc="""
+            Float value between [0, 1] representing the pwm's duty cycle.
+            """)
 
     def _set_edge(self, edge):
         self._edge = edge
@@ -111,7 +107,7 @@ class GPIOPin(HardwareInterface):
     def _get_edge(self):
         return self._edge
 
-    edge = property(_get_edge, _set_edge)
+    edge = property(_get_edge, _set_edge, doc="""""")
 
     def _set_event(self, event):
         self._event = event
