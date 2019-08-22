@@ -29,3 +29,10 @@ GPIOPin
 
 .. autoclass:: pidevices.GPIOPin
    :members:
+
+GPIO
+----
+
+.. autoclass:: pidevices.GPIO
+   :members:
+

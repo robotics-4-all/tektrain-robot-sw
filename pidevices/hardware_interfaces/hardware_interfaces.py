@@ -134,11 +134,13 @@ class GPIOPin(HardwareInterface):
 # TODO: catch exceptions if the pin for get functions if the pins has not that
 # attribute
 class GPIO(HardwareInterface):
-    """GPIO
+    """Abstract class representing the GPIO hardware interface.
+    
+    The pupropse of this class is to handle every pin from the gpio pins set 
+    that a device needs to use. The implementations of this class in the 
+    implementations of the abstract classes they wrap the specific library
+    functions for handling the gpio pins.
 
-    Attributes:
-        pins: A dictionary that has as keys the pin's name and as value the 
-            GPIOPin instance.
     """
     
     def __init__(self, **kwargs):
@@ -146,18 +148,29 @@ class GPIO(HardwareInterface):
 
         Args:
             **kwargs: Keyword arguments pin_name=pin_number. For example 
-                    echo=1, trigger=2
+                echo=1, trigger=2
         """ 
         
         self._pins = {}
         self.add_pins(**kwargs)
 
+    def _set_pins(self, pins):
+        self._pins = pins
+
+    def _get_pins(self):
+        return self._pins
+
+    pins = property(_get_pins, _set_pins, doc="""
+            A dictionary that has the GPIOPin objects that represent each pin.
+            Keys are the pin names and values the objects.
+            """)
+
     def add_pins(self, **kwargs):
-        """Add new pins.
+        """Add new pins to the pins dictionary.
         
         Args:
-            **kwargs: Keyword arguments pin_name=pin_number. For example 
-                    echo=1, trigger=2
+            `**kwargs`: Keyword arguments pin_name=pin_number. 
+                For example echo=1, trigger=2.
         """
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
@@ -167,17 +180,37 @@ class GPIO(HardwareInterface):
         pass
 
     def init_input(self, pin, pull):
-        """Initialize a pin to input with initial pull up value."""
+        """Initialize a pin to input with initial pull up value.
+
+        Args:
+            pin: The pin name.
+            pull: The pull up value.
+        """
+
         self.set_pin_function(pin, "input")
         self.set_pin_pull(pin, pull)
     
     def init_output(self, pin, value):
-        """Initialize a pin to output with an output value."""
+        """Initialize a pin to output with an output value.
+
+        Args:
+            pin: The pin name.
+            value: The output value.
+        """
+
         self.set_pin_function(pin, "output")
         self.write(pin, value)
 
     def init_pwm(self, pin, frequency, duty_cycle=0):
-        """Initialize a pin to pwm with frequency and duty cycle."""
+        """Initialize a pin to pwm with frequency and duty cycle.
+
+        Args:
+            pin: The pin name.
+            frequency: The pwm frequency.
+            duty_cycle: Optional parameter for initializing duty_cycle. The 
+            default value is 0.
+        """
+
         self.set_pin_function(pin, "output")
         self.set_pin_pwm(pin, True)
         self.set_pin_frequency(pin, frequency)
@@ -187,65 +220,153 @@ class GPIO(HardwareInterface):
         """Write a value to the specific pin
         
         Args:
-            pin: An integer indicating the pin number
+            pin: A string indicating the pin name.
             value: A float that should be between [0, 1]
         """
         pass
 
-    def _set_pins(self, pins):
-        self._pins = pins
-
-    def _get_pins(self):
-        return self._pins
-
-    pins = property(_get_pins, _set_pins)
-
     def set_pin_function(self, pin, function):
+        """Set a pin's function.
+
+        Args:
+            pin: The pin name.
+            function: The function value.
+        """
         pass
 
     def get_pin_function(self, pin):
+        """Get the pin's function.
+
+        Args:
+            pin: The pin name.
+        """
+
         return self._pins[pin].function
 
     def set_pin_pull(self, pin, pull):
+        """Set a pin's pull up.
+
+        Args:
+            pin: The pin name.
+            pull: The pull up value.
+        """
         pass
 
     def get_pin_pull(self, pin):
+        """Get a pin's pull up.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].pull
 
     def set_pin_frequency(self, pin, frequency):
+        """Set a pwm pin's frequency.
+
+        Args:
+            pin: The pin's name.
+            frequency: The frequency value.
+        """
         pass
 
     def get_pin_frequency(self, pin):
+        """Get a pin's frequency.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].frequency
 
-    def set_pin_pwm(self, pin, frequency):
+    def set_pin_pwm(self, pin, pwm):
+        """Set a pwm pin.
+        
+        Args:
+            pin: The pin's name.
+            pwm: The pwm value.
+        """
         pass
 
     def get_pin_pwm(self, pin):
+        """Get a pin's pwm value.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].pwm
 
     def set_pin_duty_cycle(self, pin, duty_cycle):
+        """Set a pwm pin's duty_cycle.
+        
+        Args:
+            pin: The pin's name.
+            duty_cycle: The duty_cycle value.
+        """
         pass
 
     def get_pin_duty_cycle(self, pin):
+        """Get a pin's duty_cycle value.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].duty_cycle
-    
+
     def set_pin_edge(self, pin, edge):
+        """Set a pin's edge value.
+        
+        Args:
+            pin: The pin's name.
+            edge: The edge value.
+        """
         pass
 
     def get_pin_edge(self, pin):
+        """Get a pin's edge value.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].edge
 
     def set_pin_event(self, pin, event):
+        """Set a pin's event function.
+        
+        Args:
+            pin: The pin's name.
+            event: The event function.
+        """
         pass
 
     def get_pin_event(self, pin):
+        """Get a pin's event function.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].event
 
     def set_pin_bounce(self, pin, bounce):
+        """Set a pin's bounce time.
+        
+        Args:
+            pin: The pin's name.
+            bounce: The bounce value.
+        """
         pass
 
     def get_pin_bounce(self, pin):
+        """Get a pin's bounce value.
+
+        Args:
+            pin: The pin's name.
+        """
+
         return self._pins[pin].bounce
     
 
