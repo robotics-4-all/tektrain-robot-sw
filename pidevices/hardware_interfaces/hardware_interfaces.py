@@ -1,3 +1,4 @@
+from pidevices.exceptions import InvalidHPWMPin
 # TODO: Check pins global pins availability
 
 
@@ -39,11 +40,11 @@ class GPIOPin(HardwareInterface):
         self._duty_cycle = None
         self._event = None
         self._edge = None
-        self._bounce = None 
+        self._bounce = None
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
-    
+
     def _get_pin_num(self):
         return self._pin_num
 
@@ -92,7 +93,7 @@ class GPIOPin(HardwareInterface):
         return self._pwm
 
     pwm = property(_get_pwm, _set_pwm, doc="""
-            Boolean that indicates if the pin has pwm output. If the pin's 
+            Boolean that indicates if the pin has pwm output. If the pin's
             function is input this attribute can't be set.
             """)
 
@@ -135,22 +136,22 @@ class GPIOPin(HardwareInterface):
 # attribute
 class GPIO(HardwareInterface):
     """Abstract class representing the GPIO hardware interface.
-    
-    The pupropse of this class is to handle every pin from the gpio pins set 
-    that a device needs to use. The implementations of this class in the 
+
+    The pupropse of this class is to handle every pin from the gpio pins set
+    that a device needs to use. The implementations of this class in the
     implementations of the abstract classes they wrap the specific library
     functions for handling the gpio pins.
 
     """
-    
+
     def __init__(self, **kwargs):
         """Constructor
 
         Args:
-            **kwargs: Keyword arguments pin_name=pin_number. For example 
+            **kwargs: Keyword arguments pin_name=pin_number. For example
                 echo=1, trigger=2
-        """ 
-        
+        """
+
         self._pins = {}
         self.add_pins(**kwargs)
 
@@ -160,21 +161,22 @@ class GPIO(HardwareInterface):
     def _get_pins(self):
         return self._pins
 
-    pins = property(_get_pins, _set_pins, doc="""
-            A dictionary that has the GPIOPin objects that represent each pin.
-            Keys are the pin names and values the objects.
-            """)
+    pins = property(lambda self: self._get_pins(),
+                    lambda self, value: self._set_pins(value),
+                    doc="""A dictionary that has the GPIOPin objects that
+                           represent each pin. Keys are the pin names and values
+                           the objects.""")
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
-        
+
         Args:
-            `**kwargs`: Keyword arguments pin_name=pin_number. 
+            `**kwargs`: Keyword arguments pin_name=pin_number.
                 For example echo=1, trigger=2.
         """
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
-    
+
     def remove_pins(self, *args):
         """Remove a pin/pins from the dictionary and free the resources."""
         pass
@@ -189,7 +191,7 @@ class GPIO(HardwareInterface):
 
         self.set_pin_function(pin, "input")
         self.set_pin_pull(pin, pull)
-    
+
     def init_output(self, pin, value):
         """Initialize a pin to output with an output value.
 
@@ -207,7 +209,7 @@ class GPIO(HardwareInterface):
         Args:
             pin: The pin name.
             frequency: The pwm frequency.
-            duty_cycle: Optional parameter for initializing duty_cycle. The 
+            duty_cycle: Optional parameter for initializing duty_cycle. The
             default value is 0.
         """
 
@@ -218,7 +220,7 @@ class GPIO(HardwareInterface):
 
     def write(self, pin, value):
         """Write a value to the specific pin
-        
+
         Args:
             pin: A string indicating the pin name.
             value: A float that should be between [0, 1]
@@ -281,7 +283,7 @@ class GPIO(HardwareInterface):
 
     def set_pin_pwm(self, pin, pwm):
         """Set a pwm pin.
-        
+
         Args:
             pin: The pin's name.
             pwm: The pwm value.
@@ -299,7 +301,7 @@ class GPIO(HardwareInterface):
 
     def set_pin_duty_cycle(self, pin, duty_cycle):
         """Set a pwm pin's duty_cycle.
-        
+
         Args:
             pin: The pin's name.
             duty_cycle: The duty_cycle value.
@@ -317,7 +319,7 @@ class GPIO(HardwareInterface):
 
     def set_pin_edge(self, pin, edge):
         """Set a pin's edge value.
-        
+
         Args:
             pin: The pin's name.
             edge: The edge value.
@@ -335,7 +337,7 @@ class GPIO(HardwareInterface):
 
     def set_pin_event(self, pin, event):
         """Set a pin's event function.
-        
+
         Args:
             pin: The pin's name.
             event: The event function.
@@ -353,7 +355,7 @@ class GPIO(HardwareInterface):
 
     def set_pin_bounce(self, pin, bounce):
         """Set a pin's bounce time.
-        
+
         Args:
             pin: The pin's name.
             bounce: The bounce value.
@@ -368,99 +370,123 @@ class GPIO(HardwareInterface):
         """
 
         return self._pins[pin].bounce
-    
+
 
 class SPI(HardwareInterface):
     """Abstract class representing spi hardware interface."""
-    
+
     def _get_clock_polarity(self):
         pass
 
     def _set_clock_polarity(self, clock_polarity):
         pass
-    
-    clock_polarity = property(_get_clock_polarity, _set_clock_polarity, doc="""
-        Boolean representing the polarity of the SPI clock. 
-        If it is False the clock will idle low and pulse high. 
-        Else it will idle high and pulse low.""")
+
+    clock_polarity = property(lambda self: self._get_clock_polarity(),
+                              lambda self, value: self._set_clock_polarity(value),
+                              doc="""Boolean representing the polarity of the
+                                     SPI clock. If it is False the clock will
+                                     idle low and pulse high. Else it will idle
+                                     high and pulse low.""")
 
     def _get_clock_phase(self):
         pass
 
     def _set_clock_phase(self, clock_phase):
         pass
-    
-    clock_phase = property(_get_clock_phase, _set_clock_phase, doc="""
-        Boolean representing the phase of the SPI clock. If it is 
-        False the data will be read from the MISO pin when the clock
-        pin activates. Else it the data will be read from the MISO
-        pin when the clock pin deactivates.""")
+
+    clock_phase = property(lambda self: self._get_clock_phase(),
+                           lambda self, value: self._set_clock_phase(value),
+                           doc="""Boolean representing the phase of the SPI
+                                  clock. If it is False the data will be read
+                                  from the MISO pin when the clock pin activates.
+                                  Else it the data will be read from the MISO
+                                  pin when the clock pin deactivates.""")
 
     def _get_clock_mode(self):
         pass
 
     def _set_clock_mode(self, clock_phase):
         pass
-    
-    clock_mode = property(_get_clock_mode, _set_clock_mode, doc="""
-        Integer representing the four combinations of clock_polarity
-        and clock_phase.""")
+
+    clock_mode = property(lambda self: self._get_clock_mode(),
+                          lambda self, value: self._set_clock_mode(value),
+                          doc="""Integer representing the four combinations of
+                                 clock_polarity and clock_phase.""")
 
     def _get_lsb_first(self):
         pass
 
     def _set_lsb_first(self, lsb_first):
         pass
-    
-    lsb_first = property(_get_lsb_first, _set_lsb_first, doc="""
-        Boolean that controls if the data are read and written in LSB.""")
+
+    lsb_first = property(lambda self: self._get_lsb_first(),
+                         lambda self, value: self._set_lsb_first(value),
+                         doc="""Boolean that controls if the data are read and
+                                written in LSB.""")
 
     def _get_select_high(self):
         pass
 
     def _set_select_high(self, select_high):
         pass
-    
-    select_high = property(_get_select_high, _set_select_high, doc="""
-        Boolean that indicates if the chip select line is considered
-        active when it is pulled down.""")
+
+    select_high = property(lambda self: self._get_select_high(),
+                           lambda self, value: self._set_select_high(value),
+                           doc="""
+                                  Boolean that indicates if the chip select line
+                                  is considered active when it is pulled down.""")
 
     def _get_bit_per_word(self):
         pass
 
     def _set_bit_per_word(self, bit_per_word):
         pass
-    
-    bit_per_word = property(_get_bit_per_word, _set_bit_per_word, doc="""
-        An integer representing the number of bits that make up a word.""")
+
+    bit_per_word = property(lambda self: self._get_bit_per_word(),
+                            lambda self, value: self._set_bit_per_word(value),
+                            doc="""An integer representing the number of bits
+                                   that make up a word.""")
 
     def _get_max_speed_hz(self):
         pass
 
     def _set_max_speed_hz(self, max_speed_hz):
         pass
-    
-    max_speed_hz = property(_get_max_speed_hz, _set_max_speed_hz, doc="""
-        Integer that sets the maximum bus speed in Hz.""")
+
+    max_speed_hz = property(lambda self: self._get_max_speed_hz(),
+                            lambda self, value: self._set_max_speed_hz(value),
+                            doc="""Integer that sets the maximum bus speed
+                                   in Hz.""")
 
 
 class HPWM(HardwareInterface):
-    """Abstract class representing hardware pwm."""
+    """Abstract class representing hardware pwm.
+
+    The raspberry pi has two channels of hardware pwm. This channels comes
+    in pairs that only one could be activated. This pairs are pins (12, 13),
+    (18, 19), (40, 41), (52, 53).
+    """
 
     _VALID_COMBS = [(12, 13), (18, 19), (40, 41), (52, 53)]
-    _SELECTED_COMB = None 
-    
+    _SELECTED_COMB = None
+
     def __init__(self, pin):
+        """Constructor.
+
+        Args:
+            pin: The pin number.
+
+        Raises:
+            InvalidHPWMPin: Error with invalid pwm pin.
+        """
         if not self._check_valid(pin):
-            # Raise exception
-            print("Invalid pin")
-            pass
+            raise InvalidHPWMPin("Invalid hardware pwm pin.")
 
     def _check_valid(self, pin):
         """Check if the pin is pwm"""
 
         ret_val = False
-        if not HPWM._SELECTED_COMB: 
+        if not HPWM._SELECTED_COMB:
             for comb in self._VALID_COMBS:
                 if pin in comb:
                     HPWM._SELECTED_COMB = comb
@@ -478,7 +504,8 @@ class HPWM(HardwareInterface):
         pass
 
     frequency = property(lambda self: self._get_frequency(),
-                         lambda self, value: self._set_frequency(value))
+                         lambda self, value: self._set_frequency(value),
+                         doc="""Frequency of the pwm pulse.""")
 
     def _get_duty_cycle(self):
         pass
@@ -487,7 +514,8 @@ class HPWM(HardwareInterface):
         pass
 
     duty_cycle = property(lambda self: self._get_duty_cycle(),
-                          lambda self, value: self._set_duty_cycle(value))
+                          lambda self, value: self._set_duty_cycle(value),
+                          doc="""Duty cycle of the pwm pulse.""")
 
     def _get_enable(self):
         pass
@@ -496,7 +524,8 @@ class HPWM(HardwareInterface):
         pass
 
     enable = property(lambda self: self._get_enable(),
-                      lambda self, value: self._set_enable(value))
+                      lambda self, value: self._set_enable(value),
+                      doc="""Enable hardware pwm.""")
 
     def _get_polarity(self):
         pass
@@ -505,12 +534,13 @@ class HPWM(HardwareInterface):
         pass
 
     polarity = property(lambda self: self._get_polarity(),
-                        lambda self, value: self._set_polarity(value))
+                        lambda self, value: self._set_polarity(value),
+                        doc="""Polarity of the pulse.""")
 
 
 class I2C(HardwareInterface):
     """Abstract base class representing i2c hardware interface."""
-    
+
     def _set_bus(self, bus):
         pass
 
@@ -518,4 +548,5 @@ class I2C(HardwareInterface):
         pass
 
     bus = property(lambda self: self._get_bus(),
-                   lambda self, value: self._set_bus(value))
+                   lambda self, value: self._set_bus(value),
+                   doc="""Hardware bus of the i2c interface.""")

@@ -7,7 +7,7 @@ Welcome to pidevices's documentation!
 =====================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 5
    :caption: Contents:
 
    devices_api.rst

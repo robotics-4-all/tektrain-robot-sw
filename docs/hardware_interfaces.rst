@@ -33,16 +33,32 @@ GPIOPin
 
 .. autoclass:: pidevices.GPIOPin
    :members:
+   :inherited-members:
 
 GPIO
 ----
 
 .. autoclass:: pidevices.GPIO
    :members:
+   :inherited-members:
 
 SPI
 ---
 
 .. autoclass:: pidevices.SPI
    :members:
+   :inherited-members:
 
+HPWM
+----
+
+.. autoclass:: pidevices.HPWM
+   :members:
+   :inherited-members:
+
+I2C
+---
+
+.. autoclass:: pidevices.I2C
+   :members:
+   :inherited-members:
