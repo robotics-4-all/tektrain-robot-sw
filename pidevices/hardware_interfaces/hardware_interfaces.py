@@ -22,10 +22,15 @@ class HardwareInterface():
 
 
 class GPIOPin(HardwareInterface):
-    """Class representing a gpio pin defining it's attributes."""
+    """Class representing a gpio pin by defining it's attributes."""
 
     def __init__(self, number):
-        """Constructor"""
+        """Constructor
+
+        Args:
+            number: The bcm number of the pin.
+        """
+
         self._pin_num = number
         self._function = None
         self._pull = None
