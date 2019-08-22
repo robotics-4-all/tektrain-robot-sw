@@ -1,10 +1,11 @@
 .. .hardware_interfaces.rst
 
+===================
 Hardware Interfaces
 ===================
 
 Overview
---------
+========
 
 A hardware interface is an architecture used to interconnect two devices 
 together. The main hardware interfaces that are supported by the raspberry 
@@ -24,6 +25,9 @@ protocol library e.x. spidev2. Basically the implementations are wrappers of the
 specific library but they follow a common interface so the programmer doesn't 
 have to know how to use the specific protocol libraries.
 
+Classes
+=======
+
 GPIOPin 
 -------
 
@@ -34,5 +38,11 @@ GPIO
 ----
 
 .. autoclass:: pidevices.GPIO
+   :members:
+
+SPI
+---
+
+.. autoclass:: pidevices.SPI
    :members:
 

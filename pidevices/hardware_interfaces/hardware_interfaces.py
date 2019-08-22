@@ -371,26 +371,7 @@ class GPIO(HardwareInterface):
     
 
 class SPI(HardwareInterface):
-    """Abstract class representing spi hardware interface.
-
-    Attributes:
-        clock_polarity: Boolean representing the polarity of the SPI clock. 
-                      If it is False the clock will idle low and pulse high. 
-                      Else it will idle high and pulse low.
-        clock_phase: Boolean representing the phase of the SPI clock. If it is 
-                   False the data will be read from the MISO pin when the clock
-                   pin activates. Else it the data will be read from the MISO
-                   pin when the clock pin deactivates.
-        clock_mode: Integer representing the four combinations of clock_polarity
-                  and clock_phase.
-        lsb_first: Boolean that controls if the data are read and written in 
-                  LSB.
-        select_high: Boolean that indicates if the chip select line is considered
-                   active when it is pulled down.
-        bit_per_word: An integer representing the number of bits that make up 
-                    a word.
-        max_speed_hz: Integer that sets the maximum bus speed in Hz.
-    """
+    """Abstract class representing spi hardware interface."""
     
     def _get_clock_polarity(self):
         pass
@@ -398,7 +379,10 @@ class SPI(HardwareInterface):
     def _set_clock_polarity(self, clock_polarity):
         pass
     
-    clock_polarity = property(_get_clock_polarity, _set_clock_polarity)
+    clock_polarity = property(_get_clock_polarity, _set_clock_polarity, doc="""
+        Boolean representing the polarity of the SPI clock. 
+        If it is False the clock will idle low and pulse high. 
+        Else it will idle high and pulse low.""")
 
     def _get_clock_phase(self):
         pass
@@ -406,7 +390,11 @@ class SPI(HardwareInterface):
     def _set_clock_phase(self, clock_phase):
         pass
     
-    clock_phase = property(_get_clock_phase, _set_clock_phase)
+    clock_phase = property(_get_clock_phase, _set_clock_phase, doc="""
+        Boolean representing the phase of the SPI clock. If it is 
+        False the data will be read from the MISO pin when the clock
+        pin activates. Else it the data will be read from the MISO
+        pin when the clock pin deactivates.""")
 
     def _get_clock_mode(self):
         pass
@@ -414,7 +402,9 @@ class SPI(HardwareInterface):
     def _set_clock_mode(self, clock_phase):
         pass
     
-    clock_phase = property(_get_clock_mode, _set_clock_mode)
+    clock_mode = property(_get_clock_mode, _set_clock_mode, doc="""
+        Integer representing the four combinations of clock_polarity
+        and clock_phase.""")
 
     def _get_lsb_first(self):
         pass
@@ -422,7 +412,8 @@ class SPI(HardwareInterface):
     def _set_lsb_first(self, lsb_first):
         pass
     
-    lsb_first = property(_get_lsb_first, _set_lsb_first)
+    lsb_first = property(_get_lsb_first, _set_lsb_first, doc="""
+        Boolean that controls if the data are read and written in LSB.""")
 
     def _get_select_high(self):
         pass
@@ -430,7 +421,9 @@ class SPI(HardwareInterface):
     def _set_select_high(self, select_high):
         pass
     
-    select_high = property(_get_select_high, _set_select_high)
+    select_high = property(_get_select_high, _set_select_high, doc="""
+        Boolean that indicates if the chip select line is considered
+        active when it is pulled down.""")
 
     def _get_bit_per_word(self):
         pass
@@ -438,7 +431,8 @@ class SPI(HardwareInterface):
     def _set_bit_per_word(self, bit_per_word):
         pass
     
-    bit_per_word = property(_get_bit_per_word, _set_bit_per_word)
+    bit_per_word = property(_get_bit_per_word, _set_bit_per_word, doc="""
+        An integer representing the number of bits that make up a word.""")
 
     def _get_max_speed_hz(self):
         pass
@@ -446,7 +440,8 @@ class SPI(HardwareInterface):
     def _set_max_speed_hz(self, max_speed_hz):
         pass
     
-    max_speed_hz = property(_get_max_speed_hz, _set_max_speed_hz)
+    max_speed_hz = property(_get_max_speed_hz, _set_max_speed_hz, doc="""
+        Integer that sets the maximum bus speed in Hz.""")
 
 
 class HPWM(HardwareInterface):
