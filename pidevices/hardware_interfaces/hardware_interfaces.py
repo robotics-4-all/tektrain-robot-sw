@@ -142,6 +142,10 @@ class GPIO(HardwareInterface):
     implementations of the abstract classes they wrap the specific library
     functions for handling the gpio pins.
 
+    Args:
+        `**kwargs`: Could be multiple keyword arguments in the form of 
+            pin_name=pin_number(pin_number is the bcm number of the board).
+            For example for the hc-sr04 sonar, it would be echo=14, trigger=25.
     """
 
     def __init__(self, **kwargs):
