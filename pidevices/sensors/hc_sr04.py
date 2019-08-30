@@ -12,7 +12,7 @@ class HcSr04(Sensor):
 
     def __init__(self, name="",
                  max_data_length=100,
-                 trigger_pin=23, echo_pin=24):
+                 trigger_pin=24, echo_pin=23):
         # Set id and max data length.
         super(HcSr04, self).__init__(name, max_data_length)
 
@@ -67,13 +67,14 @@ class HcSr04(Sensor):
         t_start = time.time()
 
         counter = 0
-        limit = 300
+        limit = 100
         while self.hardware_interfaces[self._gpio].read('echo'):
             counter += 1
             if counter == limit:
+                print("Out")
                 self.restart()
                 return -1
-            time.sleep(0.00001)
+            time.sleep(0.0001)
 
         pulse_time = time.time() - t_start
 
