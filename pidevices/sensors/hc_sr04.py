@@ -49,7 +49,10 @@ class HcSr04(Sensor):
         self.hardware_interfaces[self._gpio].close()
 
     def read(self, SAVE=False):
-        """Get sonar distance measurement."""
+        """Get sonar distance measurement.
+        
+        Max echo signal = 0.024s
+        """
 
         # Send 10us pulse to trigger
         self.hardware_interfaces[self._gpio].write('trigger', 1)
@@ -57,8 +60,13 @@ class HcSr04(Sensor):
         self.hardware_interfaces[self._gpio].write('trigger', 0)
 
         self.out = False
+        # If wait time is more than 
+        count = 0
         while not self.out:
-            time.sleep(0.00001)
+            if count == 10:
+                return -1
+            time.sleep(0.003)
+            count += 1
 
         # Distance is the time that the pulse travelled
         # multiplied by the speed of sound
@@ -66,8 +74,6 @@ class HcSr04(Sensor):
 
         # Half the distance
         distance = round(distance_of_pulse / 2., ndigits=4)
-        # TODO: Maybe add exception for max distance.
-        distance = -1 if distance > 400 else distance
 
         # Add measurment to data deque
         if SAVE:
