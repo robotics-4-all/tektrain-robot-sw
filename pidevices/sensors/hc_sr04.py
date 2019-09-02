@@ -32,6 +32,9 @@ class HcSr04(Sensor):
                                          trigger=self.trigger_pin,
                                          echo=self.echo_pin)
         self.hardware_interfaces[self._gpio].set_pin_function('echo', 'input')
+        self.hardware_interfaces[self._gpio].set_pin_edge('echo', 'both')
+        self.hardware_interfaces[self._gpio].set_pin_event('echo',
+                                                           self._async_measure)
         self.hardware_interfaces[self._gpio].set_pin_function('trigger', 'output')
 
         # Allow module to settle
@@ -53,43 +56,37 @@ class HcSr04(Sensor):
         time.sleep(0.000015)
         self.hardware_interfaces[self._gpio].write('trigger', 0)
 
-        # Wait for the echo pin to read high
-        counter = 0
-        limit = 200
-        while not self.hardware_interfaces[self._gpio].read('echo'):
-            # If the echo signal doesn't trigger until 200us restart the module.
-            counter += 1
-            if counter == limit:
-                self.restart()
-                return -1
+        self.out = False
+        while not self.out:
             time.sleep(0.00001)
-
-        t_start = time.time()
-
-        counter = 0
-        limit = 100
-        while self.hardware_interfaces[self._gpio].read('echo'):
-            counter += 1
-            if counter == limit:
-                print("Out")
-                self.restart()
-                return -1
-            time.sleep(0.0001)
-
-        pulse_time = time.time() - t_start
 
         # Distance is the time that the pulse travelled
         # multiplied by the speed of sound
-        distance_of_pulse = pulse_time * self._SPEED_OF_SOUND
+        distance_of_pulse = self.duration * self._SPEED_OF_SOUND
 
         # Half the distance
         distance = round(distance_of_pulse / 2., ndigits=4)
+        # TODO: Maybe add exception for max distance.
+        distance = -1 if distance > 400 else distance
 
         # Add measurment to data deque
         if SAVE:
             self.update_data(distance)
 
         return distance
+
+    def _async_measure(self):
+        """Function to be called with edge signals.
+        
+        With rising signal start measure time and with falling signal stop
+        save signal duration.
+        """
+
+        if self.hardware_interfaces[self._gpio].read('echo'):
+            self.t_start = time.time()
+        else:
+            self.duration = time.time() - self.t_start
+            self.out = True
 
     # Setter's and getter's
 

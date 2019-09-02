@@ -9,8 +9,10 @@ class TestHcSr04(unittest.TestCase):
         sonar = HcSr04(echo_pin=23, trigger_pin=24)
 
         while True:
-            print(sonar.read())
-            time.sleep(0.1)
+            distance = sonar.read()
+            if distance < 20 and distance > 0:
+                print(distance)
+            time.sleep(0.07)
 
 
 if __name__ == "__main__":
