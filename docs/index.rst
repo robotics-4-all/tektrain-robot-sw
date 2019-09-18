@@ -12,6 +12,7 @@ Welcome to pidevices's documentation!
 
    devices_api.rst
    hardware_interfaces.rst
+   gpio_implementations.rst
 
 
 Indices and tables

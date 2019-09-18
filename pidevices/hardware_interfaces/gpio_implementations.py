@@ -1,17 +1,18 @@
+"""gpio_implementations.py"""
+
 from .hardware_interfaces import GPIO
 
 try:
     import RPi.GPIO as RPIGPIO
 except ImportError:
     RPIGPIO = None
-    print("RPi.GPIO is not installed.")
 
 
 class RPiGPIO(GPIO):
-    """GPIO class implementation using RPi.GPIO library
+    """GPIO hardware interface implementation using RPi.GPIO library
 
-    Attributes:
-    Methods:
+    Raises:
+        ImportError: If the rpigpio library is not installed.
     """
 
     # Maybe make them class attributes and with inheritance change the values
@@ -43,28 +44,36 @@ class RPiGPIO(GPIO):
         # Specific pwm pin instances of RPi.GPIO library.
         self._pwm_pins = {}
 
+    @property
+    def pwm_pins(self):
+        """A dictionary that contains instances of RPi.GPIO's pwm class.""" 
+        return self._pwm_pins
+
     def initialize(self):
-        # Set RPi.GPIO mode
+        """Initialize RPi.GPIO mode. By default it inializes to RPi.GPIO.BCM"""
+
         if RPIGPIO.getmode() is None:
             RPIGPIO.setmode(RPIGPIO.BCM)
 
     def read(self, pin):
+        pin = self.pins[pin]
+        if pin.function not "input":
+            raise NotInputPin("Can't read from non input pin.")
+
         return RPIGPIO.input(self.pins[pin].pin_num)
 
     def write(self, pin, value):
-        # Check for value type
         if isinstance(value, int):
             value = float(value)
 
         if not isinstance(value, float):
             raise TypeError("Invalid value type, should be float or int.")
 
-        value = abs(value)    # Make it positive
-        # Move it in range [0, 1], it may be with no reason
-        try:
-            value = (value - int(value)) if value % 1 != 0 else value/value
-        except ZeroDivisionError:
-            value = 0
+        if value < 0:
+            raise TypeError("The value should be positive.")
+
+        if value > 1:
+            raise TypeError("The value should be less or equal than 1.")
 
         pin_name = pin
         pin = self.pins[pin]
@@ -78,18 +87,9 @@ class RPiGPIO(GPIO):
                 value = int(round(value))
                 RPIGPIO.output(pin.pin_num, value)
         else:
-            # Can't drive an input pin.
-            pass
-
-    def close(self):
-        self.remove_pins(*self.pins.keys())
+            raise NotOutputPin("Can't write to a non output pin.")
 
     def remove_pins(self, *args):
-        """Remove a pin/pins
-        
-        Args:
-            *args: String with the pin's name, it could be more than one.
-        """
         for pin in args:
             if self.pins[pin].pwm:
                 self.set_pin_pwm(pin, False)
@@ -97,11 +97,17 @@ class RPiGPIO(GPIO):
             del self.pins[pin]
 
     def set_pin_function(self, pin, function):
+        if function not in self.RPIGPIO_FUNCTIONS:
+            raise TypeError("Invalid function name should be input or output.")
+
         pin = self.pins[pin]
         RPIGPIO.setup(pin.pin_num, self.RPIGPIO_FUNCTIONS[function]) 
         pin.function = function
 
     def set_pin_pull(self, pin, pull):
+        if pull not in self.RPIGPIO_PULLS:
+            raise TypeError("Invalid pull name, should be up, dowm or floating.")
+
         pin = self.pins[pin]
         if pin.function is 'input':
             RPIGPIO.setup(pin.pin_num,
@@ -109,21 +115,17 @@ class RPiGPIO(GPIO):
                           self.RPIGPIO_PULLS[pull])
             pin.pull = pull
         else:
-            # Raise exception for invalid function for pin
-            pass
+            raise NotInputPin("Can't set pull up resistor to a non input pin.")
 
     def set_pin_pwm(self, pin, pwm):
-        """Sets the pwm attribute and initialize pwm with frequency 0 and 
-           duty cycle 0.
-            
-            Args:
-                pwm: A boolean indicating the state of the pin.
-        """
         if not isinstance(pwm, bool):
             raise TypeError("Invalid pwm type, should be boolean.")
 
         pin_name = pin
         pin = self.pins[pin]
+        
+        if pin.function not 'output':
+            raise NotOutputPin("Can't set pwm to a non output pin.")
 
         if not pin.pwm and pwm:
             # The pwm is deactivated and it will be activated.
@@ -147,28 +149,21 @@ class RPiGPIO(GPIO):
             pin.frequency = frequency
             self.pwm_pins[pin_name].ChangeFrequency(frequency)
         else:
-            # Raise exception that this pin isn't pwm
-            pass
+            raise NotPwmPin("Can't set frequency to a non pwm pin.")
     
     def set_pin_edge(self, pin, edge):
         pin = self.pins[pin]
-        if not edge in self.RPIGPIO_EDGES:
-            # Raise exception not valid name
-            pass
-        pin.edge = self.RPIGPIO_EDGES[edge]
+        if edge not in self.RPIGPIO_EDGES:
+            raise TypeError("Wrong edge name, should be rising, falling or both")
+        if pin.function is 'input':
+            pin.edge = self.RPIGPIO_EDGES[edge]
+        else:
+            raise NotInputPin("Can't set edge to a non input pin.")
 
     def set_pin_bounce(self, pin, bounce):
         self.pins[pin].bounce = bounce
 
     def set_pin_event(self, pin, event, *args):
-        """Set the function that will be called with a new edge.
-        
-        Args:
-            pin: Pin name
-            event: Function pointer to the target function.
-            *args: The arguments of the target function.
-        """
-
         # The function which needs the arguments
         def callback(channel):
             event(*args)
@@ -179,16 +174,23 @@ class RPiGPIO(GPIO):
             if pin.bounce is None:
                 RPIGPIO.add_event_detect(pin.pin_num, pin.edge)
             else:
-                RPIGPIO.add_event_detect(pin.pin_num, pin.edge, bouncetime=pin.bounce)
+                RPIGPIO.add_event_detect(pin.pin_num,
+                                         pin.edge,
+                                         bouncetime=pin.bounce)
 
             pin.event = event
             RPIGPIO.add_event_callback(pin.pin_num, callback)
         else:
             # Raise exception output pin
-            pass
+            raise NotInputPin("Can's set event to a non input pin.")
 
     def wait_pin_for_edge(self, pin, timeout=None):
-        """Wait pin for an edge detection."""
+        """Wait pin for an edge detection.
+
+        Args:
+            pin (str): Pin name.
+            timeout (int): The time until it stops waiting for an edge signal.
+        """
         
         pin = self.pins[pin]
         if pin.function is'input':
@@ -197,9 +199,9 @@ class RPiGPIO(GPIO):
             else:
                 RPIGPIO.wait_for_edge(pin.pin_num, pin.edge, timeout=timeout)
         else:
-            # Raise exception
-            pass
+            raise NotInputPin("Can's wait for an event to a non input pin.")
 
-    @property
-    def pwm_pins(self):
-        return self._pwm_pins
+    def close(self):
+        """Close interface.input"""
+
+        self.remove_pins(*self.pins.keys())
