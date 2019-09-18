@@ -23,14 +23,14 @@ class HardwareInterface():
 
 
 class GPIOPin(HardwareInterface):
-    """Class representing a gpio pin by defining it's attributes."""
+    """Class representing a gpio pin by defining it's attributes.
+
+    Args:
+        number: The bcm number of the pin.
+    """
 
     def __init__(self, number):
-        """Constructor
-
-        Args:
-            number: The bcm number of the pin.
-        """
+        """Constructor"""
 
         self._pin_num = number
         self._function = None
@@ -60,8 +60,8 @@ class GPIOPin(HardwareInterface):
 
     function = property(_get_function, _set_function, doc="""
             This attribute represents the function of the pin, it could be
-            input for reading from the gpio pin or output for writting
-            to it.
+            :data:`input` for reading from the gpio pin or :data:`output` for
+            writting to the pin.
             """)
 
     def _set_pull(self, pull):
@@ -71,9 +71,9 @@ class GPIOPin(HardwareInterface):
         return self._pull
 
     pull = property(_get_pull, _set_pull, doc="""
-            A string for the pull resistor of the pin, it could be up, down
-            or floating. If the pin's function is output this attribute can't
-            be set.
+            A str for the pull resistor of the pin, it could be 
+            :data:`up`, :data:`down` or :data:`floating`. If the pin's function
+            is output this attribute can't be set.
             """)
 
     def _set_frequency(self, frequency):
@@ -113,7 +113,11 @@ class GPIOPin(HardwareInterface):
     def _get_edge(self):
         return self._edge
 
-    edge = property(_get_edge, _set_edge, doc="""""")
+    edge = property(_get_edge, _set_edge, doc="""
+            String that represents on which edge signal the pin whould trigger
+            a function call or a specific action. The value should be 
+            :data:`rising`, :data:`falling` or :data:`both`.
+            """)
 
     def _set_event(self, event):
         self._event = event
@@ -121,7 +125,10 @@ class GPIOPin(HardwareInterface):
     def _get_event(self):
         return self._event
 
-    event = property(_get_event, _set_event)
+    event = property(_get_event, _set_event, doc="""
+            The event is a function that whould be called when an edge signal 
+            have occured.
+            """)
 
     def _set_bounce(self, bounce):
         self._bounce = bounce
@@ -129,7 +136,11 @@ class GPIOPin(HardwareInterface):
     def _get_bounce(self):
         return self._bounce
 
-    bounce = property(_get_bounce, _set_bounce)
+    bounce = property(_get_bounce, _set_bounce, doc="""
+            Integer representing the time intervel in miliseconds after an 
+            edge signal that the event function doesn't get called with the 
+            occurence of a new edge signal.
+            """)
 
 
 # TODO: catch exceptions if the pin for get functions if the pins has not that
@@ -138,23 +149,17 @@ class GPIO(HardwareInterface):
     """Abstract class representing the GPIO hardware interface.
 
     The pupropse of this class is to handle every pin from the gpio pins set
-    that a device needs to use. The implementations of this class in the
-    implementations of the abstract classes they wrap the specific library
-    functions for handling the gpio pins.
+    that a device needs to use. The implementations of this class 
+    wrap the specific library functions for handling the gpio pins.
 
     Args:
-        `**kwargs`: Could be multiple keyword arguments in the form of 
+        **kwargs: Could be multiple keyword arguments in the form of 
             pin_name=pin_number(pin_number is the bcm number of the board).
             For example for the hc-sr04 sonar, it would be echo=14, trigger=25.
     """
 
     def __init__(self, **kwargs):
-        """Constructor
-
-        Args:
-            **kwargs: Keyword arguments pin_name=pin_number. For example
-                echo=1, trigger=2
-        """
+        """Constructor"""
 
         self._pins = {}
         self.add_pins(**kwargs)
@@ -167,30 +172,64 @@ class GPIO(HardwareInterface):
 
     pins = property(lambda self: self._get_pins(),
                     lambda self, value: self._set_pins(value),
-                    doc="""A dictionary that has the GPIOPin objects that
-                           represent each pin. Keys are the pin names and values
-                           the objects.""")
+                    doc="""
+                    A dictionary that has attributes of type 
+                    :class:`GPIOPin` that represent
+                    each pin. Keys are the pin names and values the objects.""")
+
+    def write(self, pin, value):
+        """Write a value to an output pin.
+
+        Args:
+            pin: The pin's name.
+            value: The output value. The value should be 0 or 1 for a simple
+                output pin and if it is pwm should be between [0, 1].
+
+        Raises:
+            TypeError: Try to write non arithmetic value or use value greater
+                than 1 or use negative value.
+            NotOutputPin: Try to write to an input pin.
+        """
+        pass
+
+    def read(self, pin):
+        """Read the value of an input pin.
+
+        Args:
+            pin: The pin's name.
+
+        Returns:
+            An int that is 1 for high voltage, 0 for low voltage.
+
+        Raises:
+            NotInputPin: Try to read from non input pin.
+        """
+        pass
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
 
         Args:
-            `**kwargs`: Keyword arguments pin_name=pin_number.
-                For example echo=1, trigger=2.
+            **kwargs: Keyword arguments pin_name=pin_number. For example echo=1,
+                trigger=2.
         """
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(value)
 
     def remove_pins(self, *args):
-        """Remove a pin/pins from the dictionary and free the resources."""
+        """Remove a pin/pins from the dictionary and free the resources.
+
+        Args:
+            *args: String with the pin's name, it could be more than one.
+        """
         pass
 
     def init_input(self, pin, pull):
         """Initialize a pin to input with initial pull up value.
 
         Args:
-            pin: The pin name.
-            pull: The pull up value.
+            pin (str): The pin name.
+            pull (str): The pull up value.
         """
 
         self.set_pin_function(pin, "input")
@@ -200,8 +239,8 @@ class GPIO(HardwareInterface):
         """Initialize a pin to output with an output value.
 
         Args:
-            pin: The pin name.
-            value: The output value.
+            pin (str): The pin name.
+            value (float): The output value.
         """
 
         self.set_pin_function(pin, "output")
@@ -211,10 +250,10 @@ class GPIO(HardwareInterface):
         """Initialize a pin to pwm with frequency and duty cycle.
 
         Args:
-            pin: The pin name.
-            frequency: The pwm frequency.
-            duty_cycle: Optional parameter for initializing duty_cycle. The
-            default value is 0.
+            pin (str): The pin name.
+            frequency (int): The pwm frequency.
+            duty_cycle (int): Optional parameter for initializing duty_cycle.
+                Defaults to 0.
         """
 
         self.set_pin_function(pin, "output")
@@ -222,21 +261,15 @@ class GPIO(HardwareInterface):
         self.set_pin_frequency(pin, frequency)
         self.write(pin, duty_cycle)
 
-    def write(self, pin, value):
-        """Write a value to the specific pin
-
-        Args:
-            pin: A string indicating the pin name.
-            value: A float that should be between [0, 1]
-        """
-        pass
-
     def set_pin_function(self, pin, function):
         """Set a pin's function.
 
         Args:
-            pin: The pin name.
-            function: The function value.
+            pin (str): The pin name.
+            function (str): The function value.
+
+        Raises:
+            TypeError: Error occured using invalid function name.
         """
         pass
 
@@ -244,7 +277,10 @@ class GPIO(HardwareInterface):
         """Get the pin's function.
 
         Args:
-            pin: The pin name.
+            pin (str): The pin name.
+
+        Returns:
+            A string containing the pin's function.
         """
 
         return self._pins[pin].function
@@ -253,8 +289,11 @@ class GPIO(HardwareInterface):
         """Set a pin's pull up.
 
         Args:
-            pin: The pin name.
-            pull: The pull up value.
+            pin (str): The pin name.
+            pull (str): The pull up value.
+
+        Raises:
+            TypeError: Error occured using invalid pull name.
         """
         pass
 
@@ -263,6 +302,9 @@ class GPIO(HardwareInterface):
 
         Args:
             pin: The pin's name.
+
+        Returns:
+            A string containing the pin's pull.
         """
 
         return self._pins[pin].pull
@@ -271,8 +313,12 @@ class GPIO(HardwareInterface):
         """Set a pwm pin's frequency.
 
         Args:
-            pin: The pin's name.
-            frequency: The frequency value.
+            pin (str): The pin's name.
+            frequency (int): The frequency value.
+
+        Raises:
+            NotPwmPin: Error occured trying to set pwm frequency to a non pwm
+                pin.
         """
         pass
 
@@ -280,7 +326,10 @@ class GPIO(HardwareInterface):
         """Get a pin's frequency.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
+
+        Returns:
+            An int with the pin's pwm frequency.
         """
 
         return self._pins[pin].frequency
@@ -289,8 +338,12 @@ class GPIO(HardwareInterface):
         """Set a pwm pin.
 
         Args:
-            pin: The pin's name.
-            pwm: The pwm value.
+            pin (str): The pin's name.
+            pwm (int): The pwm value.
+
+        Raises:
+            TypeError: Invalid pwm type.
+            NotOutputPin: Error occured trying to drive a non output pin.
         """
         pass
 
@@ -298,17 +351,21 @@ class GPIO(HardwareInterface):
         """Get a pin's pwm value.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
+
+        Returns:
+            Boolean that represents if the pin is pwm.
         """
 
         return self._pins[pin].pwm
 
+    # TODO: check if it is uneccessary atttibute.
     def set_pin_duty_cycle(self, pin, duty_cycle):
         """Set a pwm pin's duty_cycle.
 
         Args:
-            pin: The pin's name.
-            duty_cycle: The duty_cycle value.
+            pin (str): The pin's name.
+            duty_cycle (int): The duty_cycle value.
         """
         pass
 
@@ -316,7 +373,7 @@ class GPIO(HardwareInterface):
         """Get a pin's duty_cycle value.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
         """
 
         return self._pins[pin].duty_cycle
@@ -325,8 +382,8 @@ class GPIO(HardwareInterface):
         """Set a pin's edge value.
 
         Args:
-            pin: The pin's name.
-            edge: The edge value.
+            pin (str): The pin's name.
+            edge (str): The edge value.
         """
         pass
 
@@ -334,7 +391,10 @@ class GPIO(HardwareInterface):
         """Get a pin's edge value.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
+
+        Returns:
+            A str with the pin's edge.
         """
 
         return self._pins[pin].edge
@@ -343,8 +403,8 @@ class GPIO(HardwareInterface):
         """Set a pin's event function.
 
         Args:
-            pin: The pin's name.
-            event: The event function.
+            pin (str): The pin's name.
+            event (function): The event function.
         """
         pass
 
@@ -352,7 +412,10 @@ class GPIO(HardwareInterface):
         """Get a pin's event function.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
+
+        Returns:
+            The function that is called when an edge signal occurs.
         """
 
         return self._pins[pin].event
@@ -361,8 +424,8 @@ class GPIO(HardwareInterface):
         """Set a pin's bounce time.
 
         Args:
-            pin: The pin's name.
-            bounce: The bounce value.
+            pin (str): The pin's name.
+            bounce (int): The bounce value.
         """
         pass
 
@@ -370,7 +433,10 @@ class GPIO(HardwareInterface):
         """Get a pin's bounce value.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
+
+        Returns:
+            Int representing the pin's bounce time.
         """
 
         return self._pins[pin].bounce
@@ -388,9 +454,9 @@ class SPI(HardwareInterface):
     clock_polarity = property(lambda self: self._get_clock_polarity(),
                               lambda self, value: self._set_clock_polarity(value),
                               doc="""Boolean representing the polarity of the
-                                     SPI clock. If it is False the clock will
-                                     idle low and pulse high. Else it will idle
-                                     high and pulse low.""")
+                                     SPI clock. If it is :data:`False` the clock
+                                     will idle low and pulse high. Otherwise it
+                                     will idle high and pulse low.""")
 
     def _get_clock_phase(self):
         pass
@@ -401,10 +467,10 @@ class SPI(HardwareInterface):
     clock_phase = property(lambda self: self._get_clock_phase(),
                            lambda self, value: self._set_clock_phase(value),
                            doc="""Boolean representing the phase of the SPI
-                                  clock. If it is False the data will be read
-                                  from the MISO pin when the clock pin activates.
-                                  Else it the data will be read from the MISO
-                                  pin when the clock pin deactivates.""")
+                                  clock. If it is :data:`False` the data will be
+                                  read from the MISO pin when the clock pin 
+                                  activates. Else it the data will be read from
+                                  the MISO pin when the clock pin deactivates.""")
 
     def _get_clock_mode(self):
         pass
@@ -469,20 +535,20 @@ class HPWM(HardwareInterface):
     The raspberry pi has two channels of hardware pwm. This channels comes
     in pairs that only one could be activated. This pairs are pins (12, 13),
     (18, 19), (40, 41), (52, 53).
+
+    Args:
+        pin: The pin number.
+
+    Raises:
+        InvalidHPWMPin: Error with invalid pwm pin.
     """
 
     _VALID_COMBS = [(12, 13), (18, 19), (40, 41), (52, 53)]
     _SELECTED_COMB = None
 
     def __init__(self, pin):
-        """Constructor.
+        """Constructor"""
 
-        Args:
-            pin: The pin number.
-
-        Raises:
-            InvalidHPWMPin: Error with invalid pwm pin.
-        """
         if not self._check_valid(pin):
             raise InvalidHPWMPin("Invalid hardware pwm pin.")
 
