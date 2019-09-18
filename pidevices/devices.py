@@ -5,11 +5,17 @@ from .exceptions import NotSupportedInterface, NotInstalledInterface
 
 class Device(object):
     """Base class for sensors and actuators.
+
+    The purpose of this class is to provide the tools for the easy implementation
+    of a new device. Every device uses at least one hardware interface to 
+    talk with the hardware.
     
-    **Args**:
+    Args:
         name: The optional name of the device.
-        
         max_data_length: The max length of the data deque.
+
+    Raises:
+        TypeError: Invalid name type, or invalud max_data_length type.
     """
 
     """ Dictionary with the implemented implementations for every 
@@ -48,6 +54,11 @@ class Device(object):
         self._hardware_interfaces = []  
 
     @property
+    def hardware_interfaces(self):
+        """A list with the objects of the device's used hardware interfaces."""
+        return self._hardware_interfaces
+
+    @property
     def max_data_length(self):
         """The max length of the data deque."""
         return self._max_data_length
@@ -71,17 +82,12 @@ class Device(object):
             raise TypeError("Invalid name type, should be string.")
         self._id = name
 
-    @property
-    def hardware_interfaces(self):
-        """A list with the objects of the device's used hardware interfaces."""
-        return self._hardware_interfaces
-
     # TODO: see if it is better practice to remove **kwargs from the function
     # and call the constructors with no arguments.
     def init_interface(self, interface: str, impl=None, **kwargs):
         """Choose an implementation for an interface.
 
-        **Args**:
+        Args:
             interface: String representing the hardware interface type,
                 it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.
             impl: The specific implementation to be used. If it is none the 
@@ -89,14 +95,12 @@ class Device(object):
             **kwargs: Keyword arguments for the constructor of the chosen 
                 interface.
 
-        **Returns**:
-            int: Representing the interface's index in the list.
+        Returns:
+            Int representing the interface's index in the list.
 
-        **Raises**:
+        Raises:
             TypeError: Wrong interface type.
-
             NotSupportedInterface: An error occured accessing modules.
-
             NotInstalledInterface: An error occured when there isn't any 
                 supported library installed for the current interface.
 
@@ -154,6 +158,7 @@ class Device(object):
 
 
 class Sensor(Device):
+
     def read(self):
         """Empty function for reading from devices, which will be
             overloaded.
