@@ -17,6 +17,11 @@ RPi.GPIO implementation
 I2C Implementations
 ===================
 
+SMBus2 implementation
+---------------------
+
+.. autoclass:: pidevices.SMBus2
+   :members:
 
 HWPM Implementations
 ====================
@@ -29,3 +34,4 @@ Python periphery HPWM
 
 SPI Implementations
 ===================
+

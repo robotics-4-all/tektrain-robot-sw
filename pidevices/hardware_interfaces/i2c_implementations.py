@@ -1,3 +1,5 @@
+"""i2c_implementations.py"""
+
 from .hardware_interfaces import I2C
 
 try:
@@ -7,7 +9,11 @@ except ImportError:
 
 
 class SMBus2(I2C):
-    """Wrapper for smbus2 library."""
+    """Wrapper for smbus2 library extends :class:`I2C`
+    
+    Args:
+        bus (int): The i2c bus of the raspberry pi. The pi has two buses.
+    """
 
     def __init__(self, bus):
         """Constructor"""
@@ -17,13 +23,21 @@ class SMBus2(I2C):
             raise ImportError("failed to import smbus2")
         self._smbus = SMBus(bus)
 
+    @property
+    def smbus(self):
+        """Object of the smbus2 library."""
+        return self._smbus
+
     def read(self, address, register, byte_num=1):
-        """Read
+        """Read using the smbus protocol.
 
         Args:
-            address:
-            register:
+            address: The address of the spi slave
+            register: The register's address.
             byte_num: How many bytes to read from the device. Max 32
+
+        Returns:
+            A list with byte_num elements.
         """
         
         byte_num = min(byte_num, 32)
@@ -35,10 +49,11 @@ class SMBus2(I2C):
         return data
 
     def write(self, address, register, data):
-        """Write
+        """Write using the smbus protocol.
 
         Args:
             address: The address of the spi slave
+            register: The address of the register inside the slave.
             data: A list or a single byte, if it is a list max length 32 bytes.
                 It is error prone so write less and make consecutive calls.
         """
@@ -49,11 +64,28 @@ class SMBus2(I2C):
         write_func(address, register, data)
     
     def write_i2c(self, address, register, data):
+        """Write using the i2c protocol
+
+        Args:
+            address: The address of the spi slave
+            register: The address of the register inside the slave.
+            data: A list or a single byte, if it is a list max length 32 bytes.
+        """
         data = data if isinstance(data, list) else [data]
         msg = i2c_msg.write(address, [register] + data)
         self.smbus.i2c_rdwr(msg)
 
     def read_i2c(self, address, byte_num):
+        """Read using the i2c protocol.
+
+        Args:
+            address: The address of the spi slave
+            byte_num: How many bytes to read from the device. Max 32
+
+        Returns:
+            A list with byte_num elements.
+        """
+
         msg = i2c_msg.read(address, byte_num)
         self.smbus.i2c_rdwr(msg)
         res = [ord(read.buf[i]) for i in range(byte_num)]
@@ -61,7 +93,17 @@ class SMBus2(I2C):
         return res
 
     def read_write(self, address, register, data, byte_num):
-        """Combined read and write command."""
+        """Combined read and write command using the i2c protocol.
+        
+        Args:
+            address: The address of the spi slave
+            register: The address of the register inside the slave.
+            data: A list or a single byte, if it is a list max length 32 bytes.
+            byte_num: How many bytes to read from the device. Max 32
+
+        Returns:
+            A list with byte_num elements.
+        """
 
         data = data if isinstance(data, list) else [data]
         write = i2c_msg.write(address, [register] + data)
@@ -81,6 +123,3 @@ class SMBus2(I2C):
     def _get_bus(self):
         return self._bus
 
-    @property
-    def smbus(self):
-        return self._smbus
