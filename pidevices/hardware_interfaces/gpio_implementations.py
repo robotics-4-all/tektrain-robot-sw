@@ -9,7 +9,8 @@ except ImportError:
 
 
 class RPiGPIO(GPIO):
-    """GPIO hardware interface implementation using RPi.GPIO library
+    """GPIO hardware interface implementation using RPi.GPIO library extends
+    :class:`GPIO`.
 
     Raises:
         ImportError: If the rpigpio library is not installed.
