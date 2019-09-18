@@ -8,6 +8,16 @@ except ImportError:
 
 # Got gpiozero's spi implementation
 class SPIimplementation(SPI):
+    """SPI imlementation wrapping spidev library. Extends :class:`SPI`.
+    
+    Args:
+        port (int): SPI port on raspberry pi.
+        devive (int): SPI device of raspberry.
+
+    Raises:
+        ImportError: If spidev is not installed.
+    """
+
     def __init__(self, port, device):
         self._port = port
         self._device = device
@@ -18,18 +28,22 @@ class SPIimplementation(SPI):
         self._interface.open(port, device)
         self._interface.max_speed_hz = 1000000
 
-    def close(self):
-        if self._interface is not None:
-            self._interface.close()
-        self._interface = None
-
     def read(self, n):
-        """Read n words from spi"""
+        """Read n words from spi
+        
+        Args:
+            n (int): The number of bytes to read from spi.
+        """
         return self._interface.readbytes(n)
 
     # TODO: Check writebytes2 for large lists
     def write(self, data):
-        """Write data to spi"""
+        """Write data to spi
+        
+        Args:
+            data (list): A list with integers to be writter to the device.
+        """
+
         self._interface.writebytes2(data)
 
     def read_write(self, data):
@@ -39,6 +53,11 @@ class SPIimplementation(SPI):
         equivalent number of words, returning them as a list of integers.
         """
         return self._interface.xfer2(data)
+
+    def close(self):
+        if self._interface is not None:
+            self._interface.close()
+        self._interface = None
 
     def _get_clock_mode(self):
         return self._interface.mode
