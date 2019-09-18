@@ -6,9 +6,10 @@ from .exceptions import NotSupportedInterface, NotInstalledInterface
 class Device(object):
     """Base class for sensors and actuators.
     
-    Attributes:
-        data: A deque that saves the latest measurments or commands.
-
+    **Args**:
+        name: The optional name of the device.
+        
+        max_data_length: The max length of the data deque.
     """
 
     """ Dictionary with the implemented implementations for every 
@@ -32,12 +33,7 @@ class Device(object):
     }
 
     def __init__(self, name="", max_data_length=100):
-        """Constructor of the class.
-        
-        Args:
-            name (str): The optional name of the device.
-            max_dat_length (int): The max length of the data deque.
-        """
+        """Constructor of the class."""
 
         if not isinstance(name, str):
             raise TypeError("Invalid name type, should be string.")
@@ -51,12 +47,41 @@ class Device(object):
         # A list with the hardware interfaces objects.
         self._hardware_interfaces = []  
 
+    @property
+    def max_data_length(self):
+        """The max length of the data deque."""
+        return self._max_data_length
+
+    @max_data_length.setter
+    def max_data_length(self, max_data_length):
+        """Set max data length."""
+        if not isinstance(max_data_length, int):
+            raise TypeError("Invalid max_data_length type, should be integer.")
+        self._max_data_length = max_data_length
+
+    @property
+    def id(self):
+        """The name of the device."""
+        return self._id
+
+    @id.setter
+    def id(self, name):
+        """Set id."""
+        if not isinstance(name, str):
+            raise TypeError("Invalid name type, should be string.")
+        self._id = name
+
+    @property
+    def hardware_interfaces(self):
+        """A list with the objects of the device's used hardware interfaces."""
+        return self._hardware_interfaces
+
     # TODO: see if it is better practice to remove **kwargs from the function
     # and call the constructors with no arguments.
     def init_interface(self, interface: str, impl=None, **kwargs):
         """Choose an implementation for an interface.
 
-        Args:
+        **Args**:
             interface: String representing the hardware interface type,
                 it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.
             impl: The specific implementation to be used. If it is none the 
@@ -64,10 +89,10 @@ class Device(object):
             **kwargs: Keyword arguments for the constructor of the chosen 
                 interface.
 
-        Returns:
+        **Returns**:
             int: Representing the interface's index in the list.
 
-        Raises:
+        **Raises**:
             TypeError: Wrong interface type.
 
             NotSupportedInterface: An error occured accessing modules.
@@ -126,35 +151,6 @@ class Device(object):
         """Empty function for restarting devices, which will be overloaded."""
         self.stop()
         self.start()
-
-    @property
-    def max_data_length(self):
-        """The max length of the data deque."""
-        return self._max_data_length
-
-    @max_data_length.setter
-    def max_data_length(self, max_data_length):
-        """Set max data length."""
-        if not isinstance(max_data_length, int):
-            raise TypeError("Invalid max_data_length type, should be integer.")
-        self._max_data_length = max_data_length
-
-    @property
-    def id(self):
-        """The name of the device."""
-        return self._id
-
-    @id.setter
-    def id(self, name):
-        """Set id."""
-        if not isinstance(name, str):
-            raise TypeError("Invalid name type, should be string.")
-        self._id = name
-
-    @property
-    def hardware_interfaces(self):
-        """A list with the objects of the device's used hardware interfaces."""
-        return self._hardware_interfaces
 
 
 class Sensor(Device):
