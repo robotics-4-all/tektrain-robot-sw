@@ -22,18 +22,22 @@ from ...devices import Sensor
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ctypes import CDLL, CFUNCTYPE, POINTER, c_int, c_uint, pointer, c_ubyte, c_uint8, c_uint32
+from ctypes import CDLL, CFUNCTYPE, POINTER, c_int, c_uint, pointer, c_ubyte
+from ctypes import c_uint8, c_uint32
 import os
 import site
 import glob
 
+
 class VL53L1xError(RuntimeError):
     pass
+
 
 class VL53L1xDistanceMode:
     SHORT = 1
     MEDIUM = 2
     LONG = 3
+
 
 # Read/write function pointer types.
 _I2C_READ_FUNC = CFUNCTYPE(c_int, c_ubyte, c_ubyte, POINTER(c_ubyte), c_ubyte)
@@ -57,8 +61,26 @@ _TOF_LIBRARY = CDLL(dir_path + '/test.so')
 
 
 class VL53L1X(Sensor):
-    """VL53L1X ToF."""
-    def __init__(self, bus=1, VL53L1X_ADDRESS=0x29, tca9548a_num=255, tca9548a_addr=0):
+    """VL53L1X ToF.
+
+    Hardware: 
+        - voltage: 2.6V-5.5V
+        - max_distance: 4m
+
+    The VL53L1X offers three distance modes: short, medium, and long. Long
+    distance mode allows the longest possible ranging distance of 4 m, but the
+    maximum range is significantly affected by ambient light. Short distance
+    mode is mostly immune to ambient light, but the maximum ranging distance is
+    typically limited to 1.3 m (4.4 ft). The maximum sampling rate in short
+    distance mode is 50 Hz while the maximum sampling rate for medium and long
+    distance modes is 30 Hz. Performance can be improved in all modes by using
+    lower sampling rates and longer timing budgets. 
+
+    First call start_ranging function and then read.
+    """
+
+    def __init__(self, bus=1, VL53L1X_ADDRESS=0x29, 
+                 tca9548a_num=255, tca9548a_addr=0):
         """Initialize the VL53L1X ToF Sensor from ST"""
         super(VL53L1X, self).__init__(name='', max_data_length=0)
 
@@ -68,11 +90,13 @@ class VL53L1X(Sensor):
         self._tca9548a_addr = tca9548a_addr
         self._dev = None
         # Resgiter Address
-        self.ADDR_UNIT_ID_HIGH = 0x16 # Serial number high byte
-        self.ADDR_UNIT_ID_LOW = 0x17 # Serial number low byte
-        self.ADDR_I2C_ID_HIGH = 0x18 # Write serial number high byte for I2C address unlock
-        self.ADDR_I2C_ID_LOW = 0x19 # Write serial number low byte for I2C address unlock
-        self.ADDR_I2C_SEC_ADDR = 0x8a # Write new I2C address after unlock
+        self.ADDR_UNIT_ID_HIGH = 0x16  # Serial number high byte
+        self.ADDR_UNIT_ID_LOW = 0x17  # Serial number low byte
+        # Write serial number high byte for I2C address unlock
+        self.ADDR_I2C_ID_HIGH = 0x18  
+        # Write serial number low byte for I2C address unlock
+        self.ADDR_I2C_ID_LOW = 0x19  
+        self.ADDR_I2C_SEC_ADDR = 0x8a  # Write new I2C address after unlock
 
         self.start()
 
@@ -114,8 +138,8 @@ class VL53L1X(Sensor):
             register = reg >> 8
             data = [reg & 0xFF] + data
             self.hardware_interfaces[self._i2c].write_i2c(address,
-                                                             register,
-                                                             data)
+                                                          register,
+                                                          data)
 
             return ret_val
 
@@ -141,7 +165,8 @@ class VL53L1X(Sensor):
     #def get_timing(self):
     #    budget = c_uint(0)
     #    budget_p = pointer(budget)
-    #    status = _TOF_LIBRARY.VL53L1_GetMeasurementTimingBudgetMicroSeconds(self._dev, budget_p)
+    #    status = _TOF_LIBRARY.VL53L1_GetMeasurementTimingBudgetMicroSeconds(\
+    #            self._dev, budget_p)
     #    if status == 0:
     #        return budget.value + 1000
     #    else:
