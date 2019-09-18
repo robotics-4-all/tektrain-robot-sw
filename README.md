@@ -5,6 +5,6 @@ How to generate docs
 
 ```
 cd docs
-make htlml
+make html
 firefox _build/html/index.html
 ```
