@@ -1,4 +1,5 @@
 from .hardware_interfaces import HPWM
+from ..exceptions import InvalidHPWMPin
 
 try:
     from periphery import PWM
@@ -7,26 +8,47 @@ except ImportError:
 
 
 class HPWMPeriphery(HPWM):
-    """Wrapper around python periphery pwm implementation."""
+    """Wrapper around python periphery pwm implementation extends :class:`HPWM`.
+    
+    Args:
+        pin (int): The pin number in bcm mode.
+
+    Raises:
+        ImportError: Error if the periphery library is not installed.
+    """
 
     _chip = 0  # PWM chip
 
     def __init__(self, pin):
         # Check if the pin is valid
-        try:
-            super(HPWMPeriphery, self).__init__(pin)
-        except:
-            pass
+        super(HPWMPeriphery, self).__init__(pin)
         
         if PWM is None:
             raise ImportError("Failed to import PWM from periphery.")
 
         self._pwm = PWM(self._chip, self._SELECTED_COMB.index(pin))
 
+    @property
+    def pwm(self):
+        """Periphery pwm object."""
+        return self._pwm
+
     def read(self):
+        """Read from hardware pwm pin.
+        
+        Returns:
+            The duty cycle of the pwm pin.
+        """
+
         return self.duty_cycle
 
     def write(self, value):
+        """Write to the pwm pin.
+        
+        Args:
+            value (float): The new duty cycle value.
+        """
+
         self.duty_cycle = value
     
     def close(self):
@@ -65,7 +87,3 @@ class HPWMPeriphery(HPWM):
 
     def _set_polarity(self, polarity):
         pass
-
-    @property
-    def pwm(self):
-        return self._pwm

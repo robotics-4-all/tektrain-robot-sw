@@ -19,8 +19,13 @@ I2C Implementations
 
 
 HWPM Implementations
-===================
+====================
 
+Python periphery HPWM
+---------------------
+
+.. autoclass:: pidevices.HPWMPeriphery
+   :members:
 
 SPI Implementations
 ===================
