@@ -57,7 +57,7 @@ class RPiGPIO(GPIO):
 
     def read(self, pin):
         pin = self.pins[pin]
-        if pin.function not "input":
+        if pin.function is not "input":
             raise NotInputPin("Can't read from non input pin.")
 
         return RPIGPIO.input(self.pins[pin].pin_num)
@@ -124,7 +124,7 @@ class RPiGPIO(GPIO):
         pin_name = pin
         pin = self.pins[pin]
         
-        if pin.function not 'output':
+        if pin.function is not 'output':
             raise NotOutputPin("Can't set pwm to a non output pin.")
 
         if not pin.pwm and pwm:
