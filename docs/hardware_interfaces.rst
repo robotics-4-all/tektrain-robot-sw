@@ -33,7 +33,6 @@ GPIOPin
 
 .. autoclass:: pidevices.GPIOPin
    :members:
-   :inherited-members:
 
 GPIO
 ----
