@@ -16,4 +16,15 @@ class NotInstalledInterface(PidevicesError):
 
 class InvalidHPWMPin(PidevicesError):
     """Error with invalid hardware pwm pin."""
+
+
+class NotOutputPin(PidevicesError):
+    """Error when try to use non output pin for an output function."""
+
+
+class NotPwmPin(PidevicesError):
+    """Error when try to use a non pwm pin for a pwm function."""
+
+class NotInputPin(PidevicesError):
+    """Error when try to use non input pin for an input function."""
     pass
