@@ -294,6 +294,7 @@ class GPIO(HardwareInterface):
 
         Raises:
             TypeError: Error occured using invalid pull name.
+            NotInputPin: Try to set pull up resistor to a non input pin.
         """
         pass
 
@@ -308,31 +309,6 @@ class GPIO(HardwareInterface):
         """
 
         return self._pins[pin].pull
-
-    def set_pin_frequency(self, pin, frequency):
-        """Set a pwm pin's frequency.
-
-        Args:
-            pin (str): The pin's name.
-            frequency (int): The frequency value.
-
-        Raises:
-            NotPwmPin: Error occured trying to set pwm frequency to a non pwm
-                pin.
-        """
-        pass
-
-    def get_pin_frequency(self, pin):
-        """Get a pin's frequency.
-
-        Args:
-            pin (str): The pin's name.
-
-        Returns:
-            An int with the pin's pwm frequency.
-        """
-
-        return self._pins[pin].frequency
 
     def set_pin_pwm(self, pin, pwm):
         """Set a pwm pin.
@@ -359,6 +335,31 @@ class GPIO(HardwareInterface):
 
         return self._pins[pin].pwm
 
+    def set_pin_frequency(self, pin, frequency):
+        """Set a pwm pin's frequency.
+
+        Args:
+            pin (str): The pin's name.
+            frequency (int): The frequency value.
+
+        Raises:
+            NotPwmPin: Error occured trying to set pwm frequency to a non pwm
+                pin.
+        """
+        pass
+
+    def get_pin_frequency(self, pin):
+        """Get a pin's frequency.
+
+        Args:
+            pin (str): The pin's name.
+
+        Returns:
+            An int with the pin's pwm frequency.
+        """
+
+        return self._pins[pin].frequency
+
     # TODO: check if it is uneccessary atttibute.
     def set_pin_duty_cycle(self, pin, duty_cycle):
         """Set a pwm pin's duty_cycle.
@@ -384,6 +385,9 @@ class GPIO(HardwareInterface):
         Args:
             pin (str): The pin's name.
             edge (str): The edge value.
+
+        Raises:
+            NotInputPin: Try to set edge to a non input pin.
         """
         pass
 
@@ -399,12 +403,16 @@ class GPIO(HardwareInterface):
 
         return self._pins[pin].edge
 
-    def set_pin_event(self, pin, event):
-        """Set a pin's event function.
+    def set_pin_event(self, pin, event, *args):
+        """Set the function that will be called with a new edge.
 
         Args:
-            pin (str): The pin's name.
-            event (function): The event function.
+            pin (str): Pin name
+            event: Function pointer to the target function.
+            *args: The arguments of the target function.
+
+        Raises:
+            NotInputPin: Try to set event to a non input pin.
         """
         pass
 
