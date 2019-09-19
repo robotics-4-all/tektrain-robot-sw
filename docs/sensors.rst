@@ -75,3 +75,12 @@ Camera
 
 .. autoclass:: pidevices.Camera
    :members:
+
+ADC
+===
+
+MCP-3002
+--------
+
+.. autoclass:: pidevices.Mcp3002
+   :members:

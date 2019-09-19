@@ -1,9 +1,17 @@
+"""mcp3002.py"""
+
 from ..devices import Sensor
 from time import sleep
 
 
 class Mcp3002(Sensor):
-    """Mcp3002 adc implementation"""
+    """Mcp3002 adc implementation extends :class:`Sensor`
+    
+    Args:
+        port: spi port.
+        device: spi device.
+        v_ref: The reference voltage. Defaults to 3.3V.
+    """
 
     _AVERAGES = 100
     _VALUE_REF = 1024
@@ -22,8 +30,28 @@ class Mcp3002(Sensor):
 
         self.start()
 
+    @property
+    def port(self):
+        """Spi chip"""
+        return self._port
+
+    @port.setter
+    def port(self, chip):
+        """Set spi chip"""
+        self._port = chip
+
+    @property
+    def device(self):
+        """Spi device"""
+        return self._device
+
+    @device.setter
+    def device(self, chip):
+        """Set spi chip"""
+        self._device = chip
+    
     def start(self):
-        """Initialize hardware."""
+        """Initialize hardware and os resources."""
 
         self._spi = self.init_interface('spi', port=self.port, device=self.device)
 
@@ -69,7 +97,15 @@ class Mcp3002(Sensor):
         return value
 
     def read(self, channel, SAVE=False):
-        """Read adc value."""
+        """Read adc value.
+        
+        Args:
+            channel: The adc channel. Valid values 0 and 1.
+            SAVE: Flag for saving to data list.
+
+        Returns:
+            The digital value.
+        """
 
         value = 0
         for _ in range(self._AVERAGES):
@@ -84,22 +120,3 @@ class Mcp3002(Sensor):
 
         return value
 
-    @property
-    def port(self):
-        """Get spi chip"""
-        return self._port
-
-    @port.setter
-    def port(self, chip):
-        """Set spi chip"""
-        self._port = chip
-
-    @property
-    def device(self):
-        """Get spi chip"""
-        return self._device
-
-    @device.setter
-    def device(self, chip):
-        """Set spi chip"""
-        self._device = chip
