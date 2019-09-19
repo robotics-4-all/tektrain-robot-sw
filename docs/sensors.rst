@@ -51,3 +51,9 @@ Line follower
 
 Cytron lss05
 ------------
+
+BME-680
+=======
+
+.. autoclass:: pidevices.BME680
+   :members:

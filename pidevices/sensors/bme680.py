@@ -1,3 +1,5 @@
+"""bme680.py"""
+
 import time
 from math import ceil
 from .humidity_sensor import HumiditySensor
@@ -16,11 +18,25 @@ h_cal = namedtuple('h_cal', ['par_h1', 'par_h2', 'par_h3',
 g_cal = namedtuple('g_cal', ['par_g1', 'par_g2', 'par_g3', 'res_heat_range',
                              'res_heat_val'])
 
-bme860_data = namedtuple('bme860_data', ['temp', 'pres', 'hum', 'gas'])
+bme680_data = namedtuple('bme680_data', ['temp', 'pres', 'hum', 'gas'])
 
 
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
-    """Class implementing BME680 sensor."""
+    """Class implementing BME680 sensor.
+    
+    Args:
+        bus: The i2c bus.
+        slave: The slave address. Should be 0 or 1
+        t_oversample (int): How many measurements to average for temperature
+            , valid values 0(no measurment), 1, 2, 4, 8, 16. Defaults to 1.
+        p_oversample (int): How many measurements to average for pressure
+            , valid values 0(no measurment), 1, 2, 4, 8, 16. Defaults to 0.
+        h_oversample (int): How many measurements to average for humidity
+            , valid values 0(no measurment), 1, 2, 4, 8, 16. Defaults to 0.
+        iir_coef (int): Coefficient for hardware iir filter. Valid values
+            0, 1, 2, 3, 7, 15, 31, 63, 127.
+        gas_status (int): 0 or 1 for activating gas measurment.
+    """
 
     # I2C Registers
     STATUS = 0x73
@@ -155,17 +171,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                  p_oversample=0, h_oversample=0,
                  iir_coef=0, gas_status=0,
                  name="", max_data_length=1):
-        """Constructor
-
-        Args:
-            bus: The i2c bus.
-            slave: The slave address. Should be 0 or 1
-            t_oversample (int):
-            p_oversample (int):
-            h_oversample (int):
-            iir_coef (int):
-            gas_status (int):
-        """
+        """Constructor"""
 
         super(BME680, self).__init__(name, max_data_length)
         self._bus = bus
@@ -186,6 +192,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     @property
     def t_oversample(self):
+        """
+        How many measurements to average for temperature. Valid values
+        0(no measurment), 1, 2, 4, 8, 16.
+        """
         return self._t_oversample
 
     @t_oversample.setter
@@ -198,6 +208,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     @property
     def p_oversample(self):
+        """
+        How many measurements to average for pressure. Valid values
+        0(no measurment), 1, 2, 4, 8, 16.
+        """
         return self._p_oversample
 
     @p_oversample.setter
@@ -210,6 +224,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     @property
     def h_oversample(self):
+        """
+        How many measurements to average for humidity. Valid values
+        0(no measurment), 1, 2, 4, 8, 16.
+        """
         return self._h_oversample
 
     @h_oversample.setter
@@ -222,6 +240,10 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     @property
     def iir_coef(self):
+        """
+        Coefficient for hardware iir filter. Valid values 0, 1, 2, 3, 7, 15,
+        31, 63, 127.
+        """
         return self._iir_coef
 
     @iir_coef.setter
@@ -234,6 +256,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     @property
     def gas_status(self):
+        """Enable or disable gas measurment."""
         return self._gas_status
 
     @gas_status.setter
@@ -261,10 +284,6 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         return self._g_calib
 
     @property
-    def t_fine(self):
-        return self._t_fine
-
-    @property
     def res_heat_range(self):
         return self._res_heat_range
 
@@ -277,7 +296,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Get a measurment.
         
         Args:
-            meas: String that could be temperature, humidity, pressure or gas.
+            TEMP (boolean): Flag for enabling temperature measurment.
+                Defaults to :data:`True`.
+            HUM (boolean): Flag for enabling humidity measurment.
+                Defaults to :data:`True`.
+            PRES (boolean): Flag for enabling pressure measurment.
+                Defaults to :data:`True`.
+            GAS (boolean): Flag for enabling gas measurment.
+                Defaults to :data:`True`.
+        
+        Returns:
+            A named tuple of type (temp, pres, hum, gas)
         """
 
         if not HUM:
@@ -307,7 +336,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         humi = self._read_humi()
         gas = self._read_gas()
 
-        data = bme860_data(temp=temp/100, pres=pres/100, hum=humi/1000, gas=gas)
+        data = bme680_data(temp=temp/100, pres=pres/100, hum=humi/1000, gas=gas)
         return data
 
     # TODO: check if multiple returns is a good practice
@@ -348,7 +377,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         
         Args:
             register: The result msb
-            calculator the function for computing the result from adc
+            calculator: the function for computing the result from adc
         """
         
         # If iir is enable then the result resolution is 20 bits
@@ -374,12 +403,12 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         var_3 = ((var_3) * (self.t_calib.par_t3 << 4)) >> 14
         self._t_fine = var_2 + var_3
 
-        return ((self.t_fine * 5) + 128) >> 8
+        return ((self._t_fine * 5) + 128) >> 8
 
     def _calc_pres(self, pres_adc, INT=True):
         """Convert the raw pressure using calibration data."""
 
-        var_1 = ((self.t_fine) >> 1) - 64000
+        var_1 = ((self._t_fine) >> 1) - 64000
         var_2 = ((((var_1 >> 2) * (var_1 >> 2)) >> 11) * self.p_calib.par_p6) >> 2
         var_2 = var_2 + ((var_1 * self.p_calib.par_p5) << 1)
         var_2 = (var_2 >> 2) + (self.p_calib.par_p4 << 16)
@@ -410,7 +439,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     def _calc_humi(self, humidity_adc, INT=True):
         """Convert the raw humidity using calibration data."""
-        temp_scaled = ((self.t_fine * 5) + 128) >> 8
+        temp_scaled = ((self._t_fine * 5) + 128) >> 8
         var_1 = (humidity_adc - ((self.h_calib.par_h1 * 16))) 
         var -= (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
         var_2 = (self.h_calib.par_h2
@@ -442,6 +471,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         return calc_gas_res
 
     def stop(self):
+        """Free hardware and os resources."""
         self._reset()
         self.hardware_interfaces[self._i2c].close()
     
@@ -502,9 +532,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Set gas wait registers.
 
         Args:
-            indexes:
-            values,:
-            multis:
+            values: List with the values
+            indexes: List with indexes
         """
 
         for val, i in zip(values, indexes):
@@ -526,9 +555,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         return 0xff
 
     def set_heater_off(self, value):
-        """Set heater of bit
-
-        """
+        """Set heater of bit"""
 
         self._set_register(self.CTRL_GAS_0, self.HEAT_OFF_BITS, 
                            self.HEAT_OFF, value)
@@ -688,4 +715,3 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         self.hardware_interfaces[self._i2c].write(self.BME_ADDRESS,
                                                   register,
                                                   r_val)
-
