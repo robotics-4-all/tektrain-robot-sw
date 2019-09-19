@@ -18,6 +18,7 @@ g_cal = namedtuple('g_cal', ['par_g1', 'par_g2', 'par_g3', 'res_heat_range',
 
 bme860_data = namedtuple('bme860_data', ['temp', 'pres', 'hum', 'gas'])
 
+
 class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     """Class implementing BME680 sensor."""
 
@@ -136,7 +137,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
     MODES = {"sleep": 0, "forced": 1}
     OVERSAMPLING = {0: 0, 1: 1, 2: 2, 4: 3, 8: 4, 16: 5}
-    IIR = {0: 0, 1: 1, 3: 2, 7: 3, 15: 4, 31: 5, 63:6, 127:7}
+    IIR = {0: 0, 1: 1, 3: 2, 7: 3, 15: 4, 31: 5, 63: 6, 127: 7}
 
     # TODO: Make it one list
     lookupTable1 = [2147483647, 2147483647, 2147483647, 2147483647,
@@ -159,6 +160,11 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         Args:
             bus: The i2c bus.
             slave: The slave address. Should be 0 or 1
+            t_oversample (int):
+            p_oversample (int):
+            h_oversample (int):
+            iir_coef (int):
+            gas_status (int):
         """
 
         super(BME680, self).__init__(name, max_data_length)
@@ -177,6 +183,90 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         # TODO fix it
         self.ambient_temperature = None
+
+    @property
+    def t_oversample(self):
+        return self._t_oversample
+
+    @t_oversample.setter
+    def t_oversample(self, value):
+        self._t_oversample = value
+
+        # Set osrs_t
+        self._set_register(self.CTRL_MEAS, self.OSRS_T_BITS,
+                           self.OSRS_T, self.OVERSAMPLING[value])
+
+    @property
+    def p_oversample(self):
+        return self._p_oversample
+
+    @p_oversample.setter
+    def p_oversample(self, value):
+        self._p_oversample = value
+
+        # Set osrs_p
+        self._set_register(self.CTRL_MEAS, self.OSRS_P_BITS,
+                           self.OSRS_P, self.OVERSAMPLING[value])
+
+    @property
+    def h_oversample(self):
+        return self._h_oversample
+
+    @h_oversample.setter
+    def h_oversample(self, value):
+        self._h_oversample = value
+
+        # Set osrs_h
+        self._set_register(self.CTRL_HUM, self.OSRS_H_BITS,
+                           self.OSRS_H, self.OVERSAMPLING[value])
+
+    @property
+    def iir_coef(self):
+        return self._iir_coef
+
+    @iir_coef.setter
+    def iir_coef(self, value):
+        self._iir_coef = value
+
+        # Set osrs_t
+        self._set_register(self.CONFIG, self.FILTER_BITS,
+                           self.FILTER, self.IIR[value])
+
+    @property
+    def gas_status(self):
+        return self._gas_status
+
+    @gas_status.setter
+    def gas_status(self, value):
+        self._gas_status = value
+
+        # Set register
+        self._set_register(self.CTRL_GAS_1, self.RUN_GUS_BITS,
+                           self.RUN_GUS, value)
+
+    @property
+    def t_calib(self):
+        return self._t_calib
+
+    @property
+    def p_calib(self):
+        return self._p_calib
+
+    @property
+    def h_calib(self):
+        return self._h_calib
+
+    @property
+    def g_calib(self):
+        return self._g_calib
+
+    @property
+    def t_fine(self):
+        return self._t_fine
+
+    @property
+    def res_heat_range(self):
+        return self._res_heat_range
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -204,7 +294,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
 
         # Wait for measurements to finish
         while self._get_register(self.MEAS_STATUS_0, self.MEASURING_BITS,
-                self.MEASURING):
+                                 self.MEASURING):
             time.sleep(0.01)
 
         # Read results
@@ -290,13 +380,12 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Convert the raw pressure using calibration data."""
 
         var_1 = ((self.t_fine) >> 1) - 64000
-        var_2 = ((((var_1 >> 2) * (var_1 >> 2)) >> 11) *
-                self.p_calib.par_p6) >> 2
+        var_2 = ((((var_1 >> 2) * (var_1 >> 2)) >> 11) * self.p_calib.par_p6) >> 2
         var_2 = var_2 + ((var_1 * self.p_calib.par_p5) << 1)
         var_2 = (var_2 >> 2) + (self.p_calib.par_p4 << 16)
-        var_1 = (((((var_1 >> 2) * (var_1 >> 2)) >> 13) *
-                ((self.p_calib.par_p3 << 5)) >> 3) +
-                ((self.p_calib.par_p2 * var_1) >> 1))
+        var_1 = (((((var_1 >> 2) * (var_1 >> 2)) >> 13)
+                 * ((self.p_calib.par_p3 << 5)) >> 3)
+                 + ((self.p_calib.par_p2 * var_1) >> 1))
         var_1 = var_1 >> 18
 
         var_1 = ((32768 + var_1) * self.p_calib.par_p1) >> 15
@@ -308,13 +397,11 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         else:
             calc_pressure = ((calc_pressure << 1) // var_1)
 
-        var_1 = (self.p_calib.par_p9 * (((calc_pressure >> 3) *
-                (calc_pressure >> 3)) >> 13)) >> 12
-        var_2 = ((calc_pressure >> 2) *
-                self.p_calib.par_p8) >> 13
-        var_3 = ((calc_pressure >> 8) * (calc_pressure >> 8) *
-                (calc_pressure >> 8) *
-                self.p_calib.par_p10) >> 17
+        var_1 = (self.p_calib.par_p9 * (((calc_pressure >> 3) 
+                                         * (calc_pressure >> 3)) >> 13)) >> 12
+        var_2 = ((calc_pressure >> 2) * self.p_calib.par_p8) >> 13
+        var_3 = ((calc_pressure >> 8) * (calc_pressure >> 8) 
+                 * (calc_pressure >> 8) * self.p_calib.par_p10) >> 17
 
         calc_pressure = (calc_pressure) + ((var_1 + var_2 + var_3 +
                                            (self.p_calib.par_p7 << 7)) >> 4)
@@ -324,12 +411,12 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     def _calc_humi(self, humidity_adc, INT=True):
         """Convert the raw humidity using calibration data."""
         temp_scaled = ((self.t_fine * 5) + 128) >> 8
-        var_1 = (humidity_adc - ((self.h_calib.par_h1 * 16))) -\
-               (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
-        var_2 = (self.h_calib.par_h2 *
-                (((temp_scaled * self.h_calib.par_h4) // (100)) +
-                 (((temp_scaled * ((temp_scaled * self.h_calib.par_h5)\
-                    // (100))) >> 6)\
+        var_1 = (humidity_adc - ((self.h_calib.par_h1 * 16))) 
+        var -= (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
+        var_2 = (self.h_calib.par_h2
+                 * (((temp_scaled * self.h_calib.par_h4) // (100)) 
+                    + (((temp_scaled * ((temp_scaled * self.h_calib.par_h5)
+                                        // (100))) >> 6)
                     // (100)) + (1 * 16384))) >> 10
         var_3 = var_1 * var_2
         var_4 = self.h_calib.par_h6 << 7
@@ -343,7 +430,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
     def _calc_gas(self, adc, gas_range, range_error):
         """Convert the raw gas resistance using calibration data."""
 
-        var_1 = ((1340 + (5 * range_error)) * (self.lookupTable1[gas_range])) >> 16
+        var_1 = ((1340 + (5 * range_error))
+                 * (self.lookupTable1[gas_range])) >> 16
         var_2 = (((adc << 15) - (16777216)) + var_1)
         var_3 = ((self.lookupTable2[gas_range] * var_1) >> 9)
         calc_gas_res = ((var_3 + (var_2 >> 1)) / var_2)
@@ -399,9 +487,9 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             self.ambient_temperature *= 100
 
         var_1 = ((self.ambient_temperature * self.g_calib.par_g3) / 1000) * 256
-        var_2 = (self.g_calib.par_g1 + 784)\
-               * (((((self.g_calib.par_g2 + 154009)\
-                      * temperature * 5) / 100) + 3276800) / 10)
+        var_2 = (self.g_calib.par_g1 + 784)
+        var_2 *= (((((self.g_calib.par_g2 + 154009)
+                  * temperature * 5) / 100) + 3276800) / 10)
         var_3 = var_1 + (var_2 / 2)
         var_4 = (var_3 / (self.g_calib.res_heat_range + 4))
         var_5 = (131 * self.g_calib.res_heat_val) + 65536
@@ -424,7 +512,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             self._set_register(self.GAS_WAIT+i, 8, 0, val)
 
     def _calc_heater_duration(self, duration):
-        """Calculate correct value for heater duration setting from milliseconds."""
+        """Calculate correct value for heater duration setting from 
+        milliseconds."""
         if duration < 0xfc0:
             factor = 0
 
@@ -492,7 +581,9 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         par_g1 = self._get_bytes(self.PAR_G1, 8, signed=True)
         par_g2 = self._get_bytes(self.PAR_G2_L, 16, signed=True)
         par_g3 = self._get_bytes(self.PAR_G3, 8, signed=True)
-        res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 8), 2, 4)
+        res_heat_range = self._get_bits(self._get_bytes(self.RES_HEAT_RANGE, 8),
+                                        2,
+                                        4)
         res_heat_val = self._get_bytes(self.RES_HEAT_VAL, 8, signed=True)
         self._g_calib = g_cal(par_g1=par_g1, par_g2=par_g2, par_g3=par_g3,
                               res_heat_range=res_heat_range,
@@ -598,86 +689,3 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                                                   register,
                                                   r_val)
 
-    @property
-    def t_oversample(self):
-        return self._t_oversample
-
-    @t_oversample.setter
-    def t_oversample(self, value):
-        self._t_oversample = value
-
-        # Set osrs_t
-        self._set_register(self.CTRL_MEAS, self.OSRS_T_BITS,
-                           self.OSRS_T, self.OVERSAMPLING[value])
-
-    @property
-    def p_oversample(self):
-        return self._p_oversample
-
-    @p_oversample.setter
-    def p_oversample(self, value):
-        self._p_oversample = value
-
-        # Set osrs_p
-        self._set_register(self.CTRL_MEAS, self.OSRS_P_BITS,
-                           self.OSRS_P, self.OVERSAMPLING[value])
-
-    @property
-    def h_oversample(self):
-        return self._h_oversample
-
-    @h_oversample.setter
-    def h_oversample(self, value):
-        self._h_oversample = value
-
-        # Set osrs_h
-        self._set_register(self.CTRL_HUM, self.OSRS_H_BITS,
-                           self.OSRS_H, self.OVERSAMPLING[value])
-
-    @property
-    def iir_coef(self):
-        return self._iir_coef
-
-    @iir_coef.setter
-    def iir_coef(self, value):
-        self._iir_coef = value
-
-        # Set osrs_t
-        self._set_register(self.CONFIG, self.FILTER_BITS,
-                           self.FILTER, self.IIR[value])
-
-    @property
-    def gas_status(self):
-        return self._gas_status
-
-    @gas_status.setter
-    def gas_status(self, value):
-        self._gas_status = value
-
-        # Set register
-        self._set_register(self.CTRL_GAS_1, self.RUN_GUS_BITS,
-                           self.RUN_GUS, value)
-
-    @property
-    def t_calib(self):
-        return self._t_calib
-
-    @property
-    def p_calib(self):
-        return self._p_calib
-
-    @property
-    def h_calib(self):
-        return self._h_calib
-
-    @property
-    def g_calib(self):
-        return self._g_calib
-
-    @property
-    def t_fine(self):
-        return self._t_fine
-
-    @property
-    def res_heat_range(self):
-        return self._res_heat_range
