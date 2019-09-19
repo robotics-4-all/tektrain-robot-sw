@@ -25,6 +25,11 @@ class NotOutputPin(PidevicesError):
 class NotPwmPin(PidevicesError):
     """Error when try to use a non pwm pin for a pwm function."""
 
+
 class NotInputPin(PidevicesError):
     """Error when try to use non input pin for an input function."""
+
+
+class OutOfRange(PidevicesError):
+    """Error when a distance sensor returns a measurment out of it's range."""
     pass

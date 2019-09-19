@@ -1,20 +1,37 @@
 import time
-from ..devices import Sensor
+from .distance_sensor import DistanceSensor
 
 
 # TODO find max pulse width from testing
-class HcSr04(Sensor):
-    """Implementation of the HC-SR04 sensor class
-       speed of sound is 33100 + 0.6*temperature(cm/s)
-       Considering temperature = 20, speed of sound at sea level
+class HcSr04(DistanceSensor):
+    """HcSr04 class extends :class:`DistanceSensor`
+
+    Implementation of the HC-SR04 sensor class speed of sound is 
+    33100 + 0.6*temperature(cm/s) considering temperature = 20, speed of sound 
+    at sea level.
+    
+    Hardware specs:
+        - Operating voltage: 5V
+        - Min distance: 2cm
+        - Max distance: 4m
+
+    Args:
+        trigger_pin (int): BCM number of the trigger pin.
+        echo_pin (int): BCM number of the echo pin.
+        name (str): The optional name of the device.
+        max_data_length (int): The max data of the data list.
     """
     _SPEED_OF_SOUND = 33100
 
-    def __init__(self, name="",
-                 max_data_length=100,
-                 trigger_pin=24, echo_pin=23):
+    def __init__(self, trigger_pin,
+                 echo_pin, name="",
+                 max_data_length=100):
+        "Constructor"
+
         # Set id and max data length.
         super(HcSr04, self).__init__(name, max_data_length)
+        self.max_distance = 4
+        self.min_distance = 0.02
 
         # Set the pins names
         self._trigger_pin = trigger_pin
@@ -23,7 +40,25 @@ class HcSr04(Sensor):
         # Initialize hardware resources
         self.start()
 
-    # Methods
+    @property
+    def trigger_pin(self):
+        """Get trigger pin."""
+        return self._trigger_pin
+
+    @trigger_pin.setter
+    def trigger_pin(self, pin):
+        """Set trigger pin."""
+        self._trigger_pin = pin
+
+    @property
+    def echo_pin(self):
+        """Get echo pin."""
+        return self._echo_pin
+
+    @echo_pin.setter
+    def echo_pin(self, pin):
+        """Set echo pin."""
+        self._echo_pin = pin
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -49,9 +84,16 @@ class HcSr04(Sensor):
         self.hardware_interfaces[self._gpio].close()
 
     def read(self, SAVE=False):
-        """Get sonar distance measurement.
+        """Get a distance measurment
         
-        Max echo signal = 0.024s
+        Args:
+            SAVE (boolean): Flag for saving the measurment to the data list.
+
+        Returns:
+            The distance in centimeters.
+
+        Raises:
+            OutOfRange: Error when a measurment takes too long.
         """
 
         # Send 10us pulse to trigger
@@ -60,11 +102,11 @@ class HcSr04(Sensor):
         self.hardware_interfaces[self._gpio].write('trigger', 0)
 
         self.out = False
-        # If wait time is more than 
+        # If wait time is more than max echo signal = 0.024s
         count = 0
         while not self.out:
             if count == 10:
-                return -1
+                raise OutOfRange("Out of range.")
             time.sleep(0.003)
             count += 1
 
@@ -93,25 +135,3 @@ class HcSr04(Sensor):
         else:
             self.duration = time.time() - self.t_start
             self.out = True
-
-    # Setter's and getter's
-
-    @property
-    def trigger_pin(self):
-        """Get trigger pin."""
-        return self._trigger_pin
-
-    @trigger_pin.setter
-    def trigger_pin(self, pin):
-        """Set trigger pin."""
-        self._trigger_pin = pin
-
-    @property
-    def echo_pin(self):
-        """Get echo pin."""
-        return self._echo_pin
-
-    @echo_pin.setter
-    def echo_pin(self, pin):
-        """Set echo pin."""
-        self._echo_pin = pin
