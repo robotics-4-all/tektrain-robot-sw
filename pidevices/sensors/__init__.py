@@ -6,8 +6,7 @@ from .button_array import *
 from .cytron_line_sensor_lss05 import *
 from .distance_sensor import *
 from .gas_sensor import *
-from .gp2y0a21yk0f import *
-from .gp2y0a41sk0f import *
+from .sharp_gp20axxx0f import *
 from .hc_sr04 import *
 from .humidity_sensor import *
 from .line_follower import *
