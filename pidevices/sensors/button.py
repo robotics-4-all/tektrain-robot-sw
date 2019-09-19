@@ -1,8 +1,14 @@
+"""button.py"""
+
 from ..devices import Sensor
 
 
 class Button(Sensor):
-    """A single button"""
+    """A single button extends :class:`Sensor`.
+    
+    Args:
+        pin_num (int): BCM number of the pin.
+    """
 
     def __init__(self, pin_num, name='', max_data_length=0):
         """Constructor"""
@@ -11,6 +17,15 @@ class Button(Sensor):
         self._pin_num = pin_num
 
         self.start()
+
+    @property
+    def pin_num(self):
+        """The bcm pin number."""
+        return self._pin_num
+
+    @pin_num.setter
+    def pin_num(self, value):
+        self._pin_num = value
 
     def start(self):
         """Init hardware and os resources."""
@@ -21,12 +36,24 @@ class Button(Sensor):
         self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
     
     def read(self):
-        """Read current state of button."""
+        """Read current state of button.
+        
+        Returns:
+            An int that represents the state of the button. 0 for not pressed
+            1 for pressed.
+        """
 
         return self.hardware_interfaces[self._gpio].read('button')
 
     def when_pressed(self, func, *args):
-        """Function to be called when the button is pressed."""
+        """Function to be called when the button is pressed.
+        
+        Set a function for asynchronous call when the button is pressed.
+
+        Args:
+            func (function): The function.
+            *args: Arguments for the function.
+        """
 
         self.hardware_interfaces[self._gpio].set_pin_event('button', func, *args)
 
@@ -39,11 +66,3 @@ class Button(Sensor):
         """Free hardware and os resources."""
 
         self.hardware_interfaces[self._gpio].close()
-
-    @property
-    def pin_num(self):
-        return self._pin_num
-
-    @pin_num.setter
-    def pin_num(self, value):
-        self._pin_num = value

@@ -7,8 +7,14 @@ Sensors
 Button
 ======
 
+.. autoclass:: pidevices.Button
+   :members:
+
 Button Array
 ------------
+
+.. autoclass:: pidevices.ButtonArray
+   :members:
 
 Distance sensors
 ================
