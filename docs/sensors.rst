@@ -69,3 +69,9 @@ Microphone
 
 .. autoclass:: pidevices.Microphone
    :members:
+
+Camera
+======
+
+.. autoclass:: pidevices.Camera
+   :members:

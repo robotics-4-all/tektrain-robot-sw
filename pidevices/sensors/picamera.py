@@ -1,4 +1,5 @@
 """camera.py"""
+
 import time
 import atexit
 from threading import Thread, Event, Lock
@@ -25,14 +26,20 @@ class TimeStampedStream(BytesIO):
 
 
 class Camera(Sensor):
-    """Camera driver."""
+    """Camera driver it uses picamera library and extends :class:`Sensor`.
+    
+    Args:
+        framerate: The camera's framerate defaults to 30.
+        resolution: Tuple that has (width, height)
+    """
 
     def __init__(self,
-                 name="",
-                 max_data_length=20,
                  framerate=30,
-                 resolution=Dims(width=640, height=480)):
+                 resolution=Dims(width=640, height=480),
+                 name="",
+                 max_data_length=20):
         """Constructor of a Camera object."""
+
         # Init name and max data length.
         atexit.register(self.stop)
         super(Camera, self).__init__(name, max_data_length)
@@ -42,8 +49,37 @@ class Camera(Sensor):
         self._resolution = resolution
         self.start()
 
+    @property
+    def resolution(self):
+        """Camera's resolution."""
+        return self._resolution
+
+    @resolution.setter
+    def resolution(self, resolution):
+        """Set camera's resolution."""
+        self._resolution = resolution
+
+    @property
+    def framerate(self):
+        """Camera's framerate."""
+        return self._framerate
+
+    @framerate.setter
+    def framerate(self, framerate):
+        """Set camera's framerate."""
+        self._framerate = framerate
+
+    @property
+    def camera(self):
+        """Picamera object."""
+        return self._camera
+
+    @property
+    def thread_event(self):
+        return self._thread_event
+
     def start(self):
-        """Initialize os resources."""
+        """Initialize hardware and os resources."""
         self._camera = PiCamera()
         self._camera.framerate = self.framerate
         self._camera.resolution = self.resolution
@@ -55,7 +91,7 @@ class Camera(Sensor):
         time.sleep(1)
 
     def stop(self):
-        """Free os resources."""
+        """Free hardware and os resources."""
         # Clear the flag to stop
         self.thread_event.clear()
 
@@ -67,18 +103,19 @@ class Camera(Sensor):
 
     # For formats that are raw we need to know the collumns of the image
     def read(self, batch=1, image_dims=None, image_format='rgb', SAVE=True):
-        """Take a batch frames from camera.
+        """Take a batch of frames from camera.
+        
+        Args:
+            batch: The number of frames to capture
+            image_dims: a dims tuple or a simple tuple with width, height
+                values
+            image_format: the image image_format
+            SAVE: flag for appending the stream to the data deque
 
-           Arguments:
-           batch -- the number of frames to capture
-           image_dims -- a dims tuple or a simple tuple with width, height
-                         values
-           image_format -- the image image_format
-           SAVE -- flag for appending the stream to the data deque
-
-           Return:
+        Returns:
            A deque with CameraData objects.
         """
+
         # Initialize frame buffers.
         raw_captures = [TimeStampedStream() for i in range(batch)]
 
@@ -150,34 +187,3 @@ class Camera(Sensor):
         """Return the last frame captured"""
         return self.data[-1]
 
-    # Setters and getters
-
-    @property
-    def resolution(self):
-        """Get camera's resolution."""
-        return self._resolution
-
-    @resolution.setter
-    def resolution(self, resolution):
-        """Set camera's resolution."""
-        self._resolution = resolution
-
-    @property
-    def framerate(self):
-        """Get camera's framerate."""
-        return self._framerate
-
-    @framerate.setter
-    def framerate(self, framerate):
-        """Set camera's framerate."""
-        self._framerate = framerate
-
-    @property
-    def camera(self):
-        """Get camera object."""
-        return self._camera
-
-    @property
-    def thread_event(self):
-        """Get event object."""
-        return self._thread_event
