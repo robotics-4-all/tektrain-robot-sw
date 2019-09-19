@@ -63,3 +63,9 @@ BME-680
 
 .. autoclass:: pidevices.BME680
    :members:
+
+Microphone
+==========
+
+.. autoclass:: pidevices.Microphone
+   :members:

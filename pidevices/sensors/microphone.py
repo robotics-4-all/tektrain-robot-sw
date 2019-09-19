@@ -7,7 +7,17 @@ import alsaaudio
 
 
 class Microphone(Sensor):
-    """Class representing a usb microphone."""
+    """Class representing a usb microphone. Extends :class:`Sensor`. 
+    
+    It uses pyalsaaudio library. 
+    It captures from the microphone and saves the record to a file. Currently 
+    supports only wav files.
+    For consistent naming a udev rule has been written for identifing the device
+    and an example asoundrc file.
+
+    Args:
+        dev_name: Alsa name of the device.
+    """
 
     def __init__(self, dev_name='mic', name="", max_data_length=0):
         """Constructor"""
@@ -17,10 +27,50 @@ class Microphone(Sensor):
         self.start()
         self._init_thread()
 
+    @property
+    def dev_name(self):
+        """The alsa name of the device."""
+        return self._dev_name
+
+    @dev_name.setter
+    def dev_name(self, dev_name):
+        self._dev_name = dev_name
+
+    @property
+    def device(self):
+        """pyalsaaudio object."""
+        return self._device
+
+    @property
+    def mixer(self):
+        """Mixer object for controlling the volume."""
+        return self._mixer
+
+    @property
+    def recording_mutex(self):
+        return self._recording_mutex
+
+    @property
+    def recording(self):
+        return self._recording
+
+    @recording.setter
+    def recording(self, value):
+        self._recording = value
+
+    @property
+    def paused(self):
+        return self._paused
+
+    @paused.setter
+    def paused(self, value):
+        self._paused = value
+
     def start(self):
         """Initialize hardware and os resources."""
 
-        self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE, device=self.dev_name)
+        self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
+                                     device=self.dev_name)
         self._mixer = alsaaudio.Mixer(control='Mic', device=self.dev_name)
 
     def _init_thread(self):
@@ -36,6 +86,9 @@ class Microphone(Sensor):
             file_path: The file path of the file to be played. Currently it
                      supports only wav file format.
             volume: Volume percenatage
+
+        Returns:
+            It doesn't return a value but it saves the recording to a file.
         """
 
         # Get recording mutex
@@ -110,7 +163,17 @@ class Microphone(Sensor):
         self.recording_mutex.release()
     
     def async_read(self, secs, file_path, volume=100):
-        """Async read."""
+        """Async read data from microphone
+        
+        Args:
+            secs: The time in seconds of the capture.
+            file_path: The file path of the file to be played. Currently it
+                     supports only wav file format.
+            volume: Volume percenatage
+
+        Returns:
+            It doesn't return a value but it saves the recording to a file.
+        """
        
         thread = threading.Thread(target=self.read, 
                                   args=(secs, file_path, volume,),
@@ -138,38 +201,3 @@ class Microphone(Sensor):
         self.device.close()
         self.mixer.close()
 
-    @property
-    def dev_name(self):
-        return self._dev_name
-
-    @dev_name.setter
-    def dev_name(self, dev_name):
-        self._dev_name = dev_name
-
-    @property
-    def device(self):
-        return self._device
-
-    @property
-    def mixer(self):
-        return self._mixer
-
-    @property
-    def recording_mutex(self):
-        return self._recording_mutex
-
-    @property
-    def recording(self):
-        return self._recording
-
-    @recording.setter
-    def recording(self, value):
-        self._recording = value
-
-    @property
-    def paused(self):
-        return self._paused
-
-    @paused.setter
-    def paused(self, value):
-        self._paused = value
