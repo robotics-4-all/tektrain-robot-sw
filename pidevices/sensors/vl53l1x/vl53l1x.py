@@ -1,4 +1,4 @@
-from ...devices import DistanceSensor
+from ..distance_sensor import DistanceSensor
 
 # MIT License
 #
@@ -60,8 +60,9 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 _TOF_LIBRARY = CDLL(dir_path + '/test.so')
 
 
+# TODO: Document args.
 class VL53L1X(DistanceSensor):
-    """VL53L1X ToF.
+    """VL53L1X ToF extends :class:`DistanceSensor`
 
     Hardware: 
         - voltage: 2.6V-5.5V
@@ -110,11 +111,15 @@ class VL53L1X(DistanceSensor):
         self.start()
 
     def start(self):
+        """Init hardware and os resources."""
+
         self._i2c = self.init_interface('i2c', bus=self._bus)
         self._configure_i2c_library_functions()
         self._dev = _TOF_LIBRARY.initialise(self.VL53L1X_ADDRESS)
 
     def stop(self):
+        """Free hardware and os resources."""
+
         self.hardware_interfaces[self._i2c].close()
         self._dev = None
 

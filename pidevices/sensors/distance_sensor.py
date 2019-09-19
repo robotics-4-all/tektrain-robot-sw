@@ -2,9 +2,8 @@ from ..devices import Sensor
 
 
 class DistanceSensor(Sensor):
-    """Abstract class for distance sensors.
-    
-    Describes a using some common attributes like max distance and fov.
+    """Abstract class for distance sensors extends :class:`Sensor` and 
+    a distance sensor using some common attributes.
     """
 
     def _set_max_distance(self, max_distance):

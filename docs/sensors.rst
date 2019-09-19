@@ -7,6 +7,9 @@ Sensors
 Distance sensors
 ================
 
+.. autoclass:: pidevices.DistanceSensor
+   :members:
+
 vl53l1x
 -------
 
