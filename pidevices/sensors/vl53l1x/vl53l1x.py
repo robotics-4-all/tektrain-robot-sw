@@ -1,4 +1,4 @@
-from ...devices import Sensor
+from ...devices import DistanceSensor
 
 # MIT License
 #
@@ -60,7 +60,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 _TOF_LIBRARY = CDLL(dir_path + '/test.so')
 
 
-class VL53L1X(Sensor):
+class VL53L1X(DistanceSensor):
     """VL53L1X ToF.
 
     Hardware: 
@@ -77,12 +77,21 @@ class VL53L1X(Sensor):
     lower sampling rates and longer timing budgets. 
 
     First call start_ranging function and then read.
+
+    Args:
+        bus (int): The i2c bus.
+        VL53L1X_ADDRESS (int): It is the i2c address of the device. Defaults to
+            0x29.
+        tca9548a_num (int):
+        tca9548a_addr (int):
     """
 
     def __init__(self, bus=1, VL53L1X_ADDRESS=0x29, 
                  tca9548a_num=255, tca9548a_addr=0):
         """Initialize the VL53L1X ToF Sensor from ST"""
         super(VL53L1X, self).__init__(name='', max_data_length=0)
+        self.max_distance = 4
+        self.min_distance = 0.04
 
         self._bus = bus
         self.VL53L1X_ADDRESS = VL53L1X_ADDRESS
