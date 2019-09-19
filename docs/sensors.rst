@@ -49,8 +49,14 @@ Sharp gp2y0axxxk0f family
 Line follower
 =============
 
+.. autoclass:: pidevices.LineFollower
+   :members:
+
 Cytron lss05
 ------------
+
+.. autoclass:: pidevices.CytronLfLSS05
+   :members:
 
 BME-680
 =======
