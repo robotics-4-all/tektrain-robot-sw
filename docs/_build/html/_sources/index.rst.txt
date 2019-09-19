@@ -13,6 +13,7 @@ Welcome to pidevices's documentation!
    devices_api.rst
    hardware_interfaces.rst
    hardware_interfaces_implementations.rst
+   sensors.rst
 
 
 Indices and tables

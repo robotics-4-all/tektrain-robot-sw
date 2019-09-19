@@ -93,6 +93,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
 </ul>
 
             
@@ -210,25 +211,35 @@ talk with the hardware.</p>
 <dt id="pidevices.devices.Device.init_interface">
 <code class="sig-name descname">init_interface</code><span class="sig-paren">(</span><em class="sig-param">interface: str</em>, <em class="sig-param">impl=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.init_interface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose an implementation for an interface.</p>
+<p>Basically using the impl parameter finds the implemented class and
+creates a new instance of that class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>interface</strong> – String representing the hardware interface type,
+<li><p><strong>interface</strong> (<em>str</em>) – String representing the hardware interface type,
 it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.</p></li>
-<li><p><strong>impl</strong> – The specific implementation to be used. If it is none the
-first that is installed will be used.</p></li>
+<li><p><strong>impl</strong> (<em>str</em>) – <p>The specific implementation to be used. If it is none the
+first that is installed will be used. Currently supported values</p>
+<blockquote>
+<div><ul>
+<li><p>GPIO: “RPiGPIO”</p></li>
+<li><p>SPI: “SPIimplementation”</p></li>
+<li><p>UART:</p></li>
+<li><p>I2C: “SMBus2”</p></li>
+<li><p>HPWM: “HPWMPeriphery”</p></li>
+</ul>
+</div></blockquote>
+<p>The above list has the form interface: implementation.</p>
+</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments for the constructor of the chosen
 interface.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Representing the interface’s index in the list.</p>
+<dd class="field-even"><p>Int representing the interface’s index in the list.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>TypeError</strong> – Wrong interface type.</p></li>
 <li><p><strong>NotSupportedInterface</strong> – An error occured accessing modules.</p></li>
 <li><p><strong>NotInstalledInterface</strong> – An error occured when there isn’t any

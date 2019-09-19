@@ -14,6 +14,7 @@ Welcome to pidevices's documentation!
    hardware_interfaces.rst
    hardware_interfaces_implementations.rst
    sensors.rst
+   actuators.rst
 
 
 Indices and tables

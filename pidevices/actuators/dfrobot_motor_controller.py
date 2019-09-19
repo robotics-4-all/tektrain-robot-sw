@@ -1,3 +1,5 @@
+"""dfrobot_motor_controller.py"""
+
 from .motor_controller import MotorController
 from collections import namedtuple
 

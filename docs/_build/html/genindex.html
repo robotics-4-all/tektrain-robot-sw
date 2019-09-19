@@ -84,6 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devices_api.html">Devices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
 </ul>
 
             
@@ -164,7 +165,9 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -173,9 +176,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="devices_api.html#pidevices.Actuator">Actuator (class in pidevices)</a>
 </li>
+      <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.adc">adc() (pidevices.GP2Y0AxxxK0F property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.ButtonArray.add_button">add_button() (pidevices.ButtonArray method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.add_pins">add_pins() (pidevices.GPIO method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Microphone.async_read">async_read() (pidevices.Microphone method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -185,11 +194,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.SPI.bit_per_word">bit_per_word() (pidevices.SPI property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.BME680">BME680 (class in pidevices)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.bounce">bounce() (pidevices.GPIOPin property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.I2C.bus">bus() (pidevices.I2C property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Button">Button (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.ButtonArray">ButtonArray (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.ButtonArray.buttons">buttons() (pidevices.ButtonArray property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -197,6 +214,14 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.cal">cal() (pidevices.CytronLfLSS05 property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.calibrate">calibrate() (pidevices.CytronLfLSS05 method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Camera">Camera (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Camera.camera">camera() (pidevices.Camera property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.SPI.clock_mode">clock_mode() (pidevices.SPI property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.SPI.clock_phase">clock_phase() (pidevices.SPI property)</a>
@@ -222,15 +247,29 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05">CytronLfLSS05 (class in pidevices)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.Microphone.dev_name">dev_name() (pidevices.Microphone property)</a>
+</li>
       <li><a href="devices_api.html#pidevices.devices.Device">Device (class in pidevices.devices)</a>
 </li>
+      <li><a href="sensors.html#pidevices.Mcp3002.device">device() (pidevices.Mcp3002 property)</a>
+
+      <ul>
+        <li><a href="sensors.html#pidevices.Microphone.device">(pidevices.Microphone property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.DistanceSensor">DistanceSensor (class in pidevices)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.duty_cycle">duty_cycle() (pidevices.GPIOPin property)</a>
 
       <ul>
@@ -243,6 +282,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.HcSr04.echo_pin">echo_pin() (pidevices.HcSr04 property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.edge">edge() (pidevices.GPIOPin property)</a>
 </li>
   </ul></td>
@@ -257,6 +298,8 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.Camera.framerate">framerate() (pidevices.Camera property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.frequency">frequency() (pidevices.GPIOPin property)</a>
 
       <ul>
@@ -273,6 +316,10 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.BME680.gas_status">gas_status() (pidevices.BME680 property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Camera.get_frame">get_frame() (pidevices.Camera method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_bounce">get_pin_bounce() (pidevices.GPIO method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_duty_cycle">get_pin_duty_cycle() (pidevices.GPIO method)</a>
@@ -291,6 +338,12 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_pwm">get_pin_pwm() (pidevices.GPIO method)</a>
 </li>
+      <li><a href="sensors.html#pidevices.GP2Y0A21YK0F">GP2Y0A21YK0F (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.GP2Y0A41SK0F">GP2Y0A41SK0F (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F">GP2Y0AxxxK0F (class in pidevices)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO">GPIO (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin">GPIOPin (class in pidevices)</a>
@@ -301,10 +354,14 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.BME680.h_oversample">h_oversample() (pidevices.BME680 property)</a>
+</li>
       <li><a href="devices_api.html#pidevices.devices.Device.hardware_interfaces">hardware_interfaces() (pidevices.devices.Device property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.HcSr04">HcSr04 (class in pidevices)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.HPWM">HPWM (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.HPWMPeriphery">HPWMPeriphery (class in pidevices)</a>
@@ -318,6 +375,8 @@
       <li><a href="hardware_interfaces.html#pidevices.I2C">I2C (class in pidevices)</a>
 </li>
       <li><a href="devices_api.html#pidevices.devices.Device.id">id() (pidevices.devices.Device property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.BME680.iir_coef">iir_coef() (pidevices.BME680 property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.init_input">init_input() (pidevices.GPIO method)</a>
 </li>
@@ -347,6 +406,10 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.LineFollower">LineFollower (class in pidevices)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.SPI.lsb_first">lsb_first() (pidevices.SPI property)</a>
 </li>
   </ul></td>
@@ -357,9 +420,31 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="devices_api.html#pidevices.devices.Device.max_data_length">max_data_length() (pidevices.devices.Device property)</a>
 </li>
+      <li><a href="sensors.html#pidevices.LineFollower.max_dist">max_dist() (pidevices.LineFollower property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.DistanceSensor.max_distance">max_distance() (pidevices.DistanceSensor property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.LineFollower.max_frequency">max_frequency() (pidevices.LineFollower property)</a>
+</li>
+      <li><a href="hardware_interfaces.html#pidevices.SPI.max_speed_hz">max_speed_hz() (pidevices.SPI property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.max_volt">max_volt() (pidevices.GP2Y0AxxxK0F property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hardware_interfaces.html#pidevices.SPI.max_speed_hz">max_speed_hz() (pidevices.SPI property)</a>
+      <li><a href="sensors.html#pidevices.Mcp3002">Mcp3002 (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Microphone">Microphone (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.LineFollower.min_dist">min_dist() (pidevices.LineFollower property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.DistanceSensor.min_distance">min_distance() (pidevices.DistanceSensor property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.min_volt">min_volt() (pidevices.GP2Y0AxxxK0F property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Microphone.mixer">mixer() (pidevices.Microphone property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.mode">mode() (pidevices.CytronLfLSS05 property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -367,14 +452,26 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hardware_interfaces.html#pidevices.GPIOPin.pin_num">pin_num() (pidevices.GPIOPin property)</a>
+      <li><a href="sensors.html#pidevices.BME680.p_oversample">p_oversample() (pidevices.BME680 property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Microphone.pause">pause() (pidevices.Microphone method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Button.pin_num">pin_num() (pidevices.Button property)</a>
+
+      <ul>
+        <li><a href="hardware_interfaces.html#pidevices.GPIOPin.pin_num">(pidevices.GPIOPin property)</a>
+</li>
+      </ul></li>
+      <li><a href="sensors.html#pidevices.ButtonArray.pin_nums">pin_nums() (pidevices.ButtonArray property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.pins">pins() (pidevices.GPIO property)</a>
 </li>
-      <li><a href="hardware_interfaces.html#pidevices.HPWM.polarity">polarity() (pidevices.HPWM property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="hardware_interfaces.html#pidevices.HPWM.polarity">polarity() (pidevices.HPWM property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Mcp3002.port">port() (pidevices.Mcp3002 property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.pull">pull() (pidevices.GPIOPin property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.pwm">pwm() (pidevices.GPIOPin property)</a>
@@ -391,14 +488,32 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hardware_interfaces.html#pidevices.GPIO.read">read() (pidevices.GPIO method)</a>
+      <li><a href="sensors.html#pidevices.BME680.read">read() (pidevices.BME680 method)</a>
 
       <ul>
+        <li><a href="sensors.html#pidevices.Button.read">(pidevices.Button method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.ButtonArray.read">(pidevices.ButtonArray method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Camera.read">(pidevices.Camera method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.CytronLfLSS05.read">(pidevices.CytronLfLSS05 method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.read">(pidevices.GP2Y0AxxxK0F method)</a>
+</li>
+        <li><a href="hardware_interfaces.html#pidevices.GPIO.read">(pidevices.GPIO method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.HcSr04.read">(pidevices.HcSr04 method)</a>
+</li>
         <li><a href="hardware_interfaces.html#pidevices.HPWM.read">(pidevices.HPWM method)</a>
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.HPWMPeriphery.read">(pidevices.HPWMPeriphery method)</a>
 </li>
         <li><a href="hardware_interfaces.html#pidevices.I2C.read">(pidevices.I2C method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Mcp3002.read">(pidevices.Mcp3002 method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Microphone.read">(pidevices.Microphone method)</a>
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.read">(pidevices.RPiGPIO method)</a>
 </li>
@@ -410,9 +525,15 @@
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.SPIimplementation.read">(pidevices.SPIimplementation method)</a>
 </li>
+        <li><a href="sensors.html#pidevices.VL53L1X.read">(pidevices.VL53L1X method)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.Camera.read_continuous">read_continuous() (pidevices.Camera method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.Camera.read_continuous_async">read_continuous_async() (pidevices.Camera method)</a>
+</li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2.read_i2c">read_i2c() (pidevices.SMBus2 method)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2.read_write">read_write() (pidevices.SMBus2 method)</a>
@@ -421,12 +542,16 @@
         <li><a href="hardware_interfaces_implementations.html#pidevices.SPIimplementation.read_write">(pidevices.SPIimplementation method)</a>
 </li>
       </ul></li>
+      <li><a href="sensors.html#pidevices.ButtonArray.remove_button">remove_button() (pidevices.ButtonArray method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.remove_pins">remove_pins() (pidevices.GPIO method)</a>
 
       <ul>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.remove_pins">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
+      <li><a href="sensors.html#pidevices.Camera.resolution">resolution() (pidevices.Camera property)</a>
+</li>
       <li><a href="devices_api.html#pidevices.devices.Device.restart">restart() (pidevices.devices.Device method)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO">RPiGPIO (class in pidevices)</a>
@@ -440,6 +565,14 @@
       <li><a href="hardware_interfaces.html#pidevices.SPI.select_high">select_high() (pidevices.SPI property)</a>
 </li>
       <li><a href="devices_api.html#pidevices.Sensor">Sensor (class in pidevices)</a>
+</li>
+      <li><a href="sensors.html#pidevices.BME680.set_heater_off">set_heater_off() (pidevices.BME680 method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.BME680.set_heating_temp">set_heating_temp() (pidevices.BME680 method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.BME680.set_heating_time">set_heating_time() (pidevices.BME680 method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.BME680.set_idac_heat">set_idac_heat() (pidevices.BME680 method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_bounce">set_pin_bounce() (pidevices.GPIO method)</a>
 
@@ -467,8 +600,6 @@
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_frequency">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_function">set_pin_function() (pidevices.GPIO method)</a>
 
       <ul>
@@ -491,13 +622,87 @@
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2">SMBus2 (class in pidevices)</a>
 </li>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_1">so_1() (pidevices.CytronLfLSS05 property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_2">so_2() (pidevices.CytronLfLSS05 property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_3">so_3() (pidevices.CytronLfLSS05 property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_4">so_4() (pidevices.CytronLfLSS05 property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_5">so_5() (pidevices.CytronLfLSS05 property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.SPI">SPI (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SPIimplementation">SPIimplementation (class in pidevices)</a>
 </li>
-      <li><a href="devices_api.html#pidevices.devices.Device.start">start() (pidevices.devices.Device method)</a>
+      <li><a href="sensors.html#pidevices.BME680.start">start() (pidevices.BME680 method)</a>
+
+      <ul>
+        <li><a href="sensors.html#pidevices.Button.start">(pidevices.Button method)</a>
 </li>
-      <li><a href="devices_api.html#pidevices.devices.Device.stop">stop() (pidevices.devices.Device method)</a>
+        <li><a href="sensors.html#pidevices.ButtonArray.start">(pidevices.ButtonArray method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Camera.start">(pidevices.Camera method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.CytronLfLSS05.start">(pidevices.CytronLfLSS05 method)</a>
+</li>
+        <li><a href="devices_api.html#pidevices.devices.Device.start">(pidevices.devices.Device method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.start">(pidevices.GP2Y0AxxxK0F method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.HcSr04.start">(pidevices.HcSr04 method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Mcp3002.start">(pidevices.Mcp3002 method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Microphone.start">(pidevices.Microphone method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.VL53L1X.start">(pidevices.VL53L1X method)</a>
+</li>
+      </ul></li>
+      <li><a href="sensors.html#pidevices.VL53L1X.start_ranging">start_ranging() (pidevices.VL53L1X method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.BME680.stop">stop() (pidevices.BME680 method)</a>
+
+      <ul>
+        <li><a href="sensors.html#pidevices.Button.stop">(pidevices.Button method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.ButtonArray.stop">(pidevices.ButtonArray method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Camera.stop">(pidevices.Camera method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.CytronLfLSS05.stop">(pidevices.CytronLfLSS05 method)</a>
+</li>
+        <li><a href="devices_api.html#pidevices.devices.Device.stop">(pidevices.devices.Device method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.stop">(pidevices.GP2Y0AxxxK0F method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.HcSr04.stop">(pidevices.HcSr04 method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Mcp3002.stop">(pidevices.Mcp3002 method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.Microphone.stop">(pidevices.Microphone method)</a>
+</li>
+        <li><a href="sensors.html#pidevices.VL53L1X.stop">(pidevices.VL53L1X method)</a>
+</li>
+      </ul></li>
+      <li><a href="sensors.html#pidevices.Camera.stop_continuous">stop_continuous() (pidevices.Camera method)</a>
+</li>
+      <li><a href="sensors.html#pidevices.VL53L1X.stop_ranging">stop_ranging() (pidevices.VL53L1X method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.BME680.t_oversample">t_oversample() (pidevices.BME680 property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.HcSr04.trigger_pin">trigger_pin() (pidevices.HcSr04 property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -510,11 +715,31 @@
   </ul></td>
 </tr></table>
 
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.VL53L1X">VL53L1X (class in pidevices)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.Button.wait_for_press">wait_for_press() (pidevices.Button method)</a>
+
+      <ul>
+        <li><a href="sensors.html#pidevices.ButtonArray.wait_for_press">(pidevices.ButtonArray method)</a>
+</li>
+      </ul></li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.wait_pin_for_edge">wait_pin_for_edge() (pidevices.RPiGPIO method)</a>
 </li>
+      <li><a href="sensors.html#pidevices.Button.when_pressed">when_pressed() (pidevices.Button method)</a>
+
+      <ul>
+        <li><a href="sensors.html#pidevices.ButtonArray.when_pressed">(pidevices.ButtonArray method)</a>
+</li>
+      </ul></li>
       <li><a href="devices_api.html#pidevices.Actuator.write">write() (pidevices.Actuator method)</a>
 
       <ul>
