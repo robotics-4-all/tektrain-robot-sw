@@ -7,7 +7,8 @@ import time
 
 # TODO: Initiliazation of adc inside the class or outside.
 class GP2Y0AxxxK0F(DistanceSensor):
-    """Sharp gp2y0axxxk0f family of ir distance sensors.
+    """Sharp gp2y0axxxk0f family of ir distance sensors extends 
+    :class:`DistanceSensor`.
     
     Args:
         datasheet_data: A 2d numpy array with the measurements from the 
