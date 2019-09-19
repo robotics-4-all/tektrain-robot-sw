@@ -86,12 +86,21 @@ class Device(object):
     # and call the constructors with no arguments.
     def init_interface(self, interface: str, impl=None, **kwargs):
         """Choose an implementation for an interface.
+        
+        Basically using the impl parameter finds the implemented class and 
+        creates a new instance of that class. 
 
         Args:
-            interface: String representing the hardware interface type,
+            interface (str): String representing the hardware interface type,
                 it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.
-            impl: The specific implementation to be used. If it is none the 
-                first that is installed will be used.
+            impl (str): The specific implementation to be used. If it is none the 
+                first that is installed will be used. Currently supported values
+                  - GPIO: "RPiGPIO"
+                  - SPI: "SPIimplementation"
+                  - UART: 
+                  - I2C: "SMBus2"
+                  - HPWM: "HPWMPeriphery"
+                The above list has the form interface: implementation.
             **kwargs: Keyword arguments for the constructor of the chosen 
                 interface.
 
