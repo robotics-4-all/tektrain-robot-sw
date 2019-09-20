@@ -61,26 +61,30 @@ class TouchScreen(Actuator):
     def turnScreenOn(self):
         os.popen("vcgencmd display_power 1")
 
-    def write(self, file_path=None, time_enabled=None, touch_enabled=None,
-              color_rgb=None, color_hex=None, options=None, multiple_options=None,
-              time_window=None, text=None, show_image=False, show_color=False, 
+    def write(self, file_path=None, 
+              time_enabled=None, touch_enabled=None,
+              color_rgb=None, color_hex=None,
+              options=None, multiple_options=False,
+              time_window=None, text=None,
+              show_image=False, show_color=False, 
               show_video=False, show_options=False):
         """Write to the screen
 
         Args:
-            file_path:
-            time_enabled:
-            touch_enabled:
-            color_rgb:
-            color_hex:
-            options:
-            multiple_options:
+            file_path: Optional argument specifying the path of an image. 
+                Defaults to :data:`None`.
+            time_enabled: Time in secs specifying the duration of the preview.
+            touch_enabled: Enable touch mode.
+            color_rgb: Color in rgb value.
+            color_hex: Color in hex value.
+            options (list): A list with the options text.
+            multiple_options (boolean): Flag to preview multiple options.
             time_window:
-            text:
-            show_image (boolean):
-            show_color (boolean):
-            show_video (boolean):
-            show_options (boolean):
+            text: Single text for preview.
+            show_image (boolean): Flag for showing an image.
+            show_color (boolean): Flag for showing just color.
+            show_video (boolean): Flag for showing a video.
+            show_options (boolean): Flag for showing a menu with options.
 
         Raises:
             Exception: 

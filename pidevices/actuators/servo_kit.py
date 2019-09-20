@@ -5,7 +5,7 @@ from .pca9685 import PCA9685
 
 
 class ServoKit(Actuator):
-    """Class representing multiple servos."""
+    """Class representing multiple servos. Will be deprecated."""
 
     # TODO: Importing driver and not hardcoded
     def __init__(self, frequency, channels, name="", max_data_length=1):
