@@ -36,6 +36,9 @@ Neopixel ledstrip
 Speaker
 =======
 
+.. autoclass:: pidevices.Speaker
+   :members:
+
 Touch screen
 ============
 
