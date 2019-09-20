@@ -1,3 +1,5 @@
+"""servo_kit.py"""
+
 from ..devices import Actuator
 from .pca9685 import PCA9685
 
@@ -18,6 +20,30 @@ class ServoKit(Actuator):
         self._frequency = frequency
         self._driver = PCA9685(1, self._frequency)
         self.start()
+
+    @property
+    def driver(self):
+        return self._driver
+
+    @driver.setter
+    def driver(self, driver):
+        self._driver = driver
+
+    @property
+    def channels(self):
+        return self._channels
+
+    @channels.setter
+    def channels(self, channels):
+        self._channels = channels
+
+    @property
+    def frequency(self):
+        return self._frequency
+
+    @frequency.setter
+    def frequency(self, frequency):
+        self._frequency = frequency
 
     def start(self):
         """Init hardware and os resources."""
@@ -45,27 +71,3 @@ class ServoKit(Actuator):
         pulse_time = (min_pulse + angle*(pulse_range/180)) * 10**-3 
 
         return pulse_time / period
-
-    @property
-    def driver(self):
-        return self._driver
-
-    @driver.setter
-    def driver(self, driver):
-        self._driver = driver
-
-    @property
-    def channels(self):
-        return self._channels
-
-    @channels.setter
-    def channels(self, channels):
-        self._channels = channels
-
-    @property
-    def frequency(self):
-        return self._frequency
-
-    @frequency.setter
-    def frequency(self, frequency):
-        self._frequency = frequency
