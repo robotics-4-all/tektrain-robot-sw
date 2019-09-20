@@ -1,3 +1,5 @@
+"""touch_screen.py"""
+
 import os
 import pygame
 import sys
@@ -12,22 +14,19 @@ from omxplayer.player import OMXPlayer
 
 #class TouchScreen(Composite):
 class TouchScreen(Actuator):
-    """Class representing a touch screen."""
+    """Class representing a touch screen extends :class:`Actuator`.
 
-    def __init__(self, dev_name='touch_screen', name="", max_data_length=0):
+    Args:
+        dev_name:
+    """
+
+    def __init__(self, name="", max_data_length=0):
         """Constructor"""
 
         super(Composite, self).__init__(name, max_data_length)
-        self.dev_name = dev_name
         self.screen_w = 800
         self.screen_h = 480
         self.start()
-
-    def turnScreenOff(self):
-        os.popen("vcgencmd display_power 0")
-
-    def turnScreenOn(self):
-        os.popen("vcgencmd display_power 1")
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -56,10 +55,36 @@ class TouchScreen(Actuator):
 
         #self.turnScreenOff()
 
+    def turnScreenOff(self):
+        os.popen("vcgencmd display_power 0")
+
+    def turnScreenOn(self):
+        os.popen("vcgencmd display_power 1")
+
     def write(self, file_path=None, time_enabled=None, touch_enabled=None,
               color_rgb=None, color_hex=None, options=None, multiple_options=None,
               time_window=None, text=None, show_image=False, show_color=False, 
               show_video=False, show_options=False):
+        """Write to the screen
+
+        Args:
+            file_path:
+            time_enabled:
+            touch_enabled:
+            color_rgb:
+            color_hex:
+            options:
+            multiple_options:
+            time_window:
+            text:
+            show_image (boolean):
+            show_color (boolean):
+            show_video (boolean):
+            show_options (boolean):
+
+        Raises:
+            Exception: 
+        """
 
         # Clears the events buffer
         #self.turnScreenOn()

@@ -42,3 +42,5 @@ Speaker
 Touch screen
 ============
 
+.. autoclass:: pidevices.TouchScreen
+   :members:
