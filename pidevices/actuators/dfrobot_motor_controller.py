@@ -210,7 +210,6 @@ class Motor(object):
 
     @property
     def k(self):
-        """Get k"""
         return self._k
 
     @property

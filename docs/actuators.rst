@@ -5,10 +5,18 @@ Actuators
 =========
 
 Motor controller
-===============
+================
+
+A motor contoller could use a motor object for driving a motor using rpm values.
+
+.. autoclass:: pidevices.Motor
+   :members:
 
 Dfrobot motor controller
 ------------------------
+
+.. autoclass:: pidevices.DfrobotMotorController
+   :members:
 
 Servo driver
 ============
