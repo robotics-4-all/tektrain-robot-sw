@@ -1,3 +1,5 @@
+"""pca9685.py"""
+
 from ..devices import Actuator
 import time
 
@@ -43,7 +45,13 @@ class PCA9685(Actuator):
     RESET = 0x06
 
     def __init__(self, bus, frequency=None, oe=None, name="", max_data_lenght=1):
-        """Constructor"""
+        """Constructor
+        
+        Args:
+            bus (int): I2C bus.
+            frequency: PWM frequency of the module.
+            oe (int): The bcm pin number of enable pin. 
+        """
 
         super(PCA9685, self).__init__(name, max_data_lenght)
         self._frequency = frequency
@@ -51,110 +59,14 @@ class PCA9685(Actuator):
         self._bus = bus
         self.start()
 
-    def start(self):
-        """Init hardware and os resources."""
+    @property
+    def bus(self):
+        """I2C bus."""
+        return self._bus
 
-        # Init hardware interfaces
-        self._i2c = self.init_interface("i2c", bus=self.bus)
-        if self.oe:
-            self._gpio = self.init_interface("gpio", oe=self.oe)
-
-        # Init modes of pca
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS, 
-                                                  self.MODE_2,
-                                                  self.OUTDRV)
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS, 
-                                                  self.MODE_1,
-                                                  self.ALLCALL)
-        self._settle_osc()
-        
-        # Change frequency
-        if self._frequency:
-            self.frequency = self._frequency
-
-        # Write 0 to sleep bit
-        mode = self.hardware_interfaces[self._i2c].read(self.PCA_ADDRESS,
-                                                        self.MODE_1)
-        mode = mode & (self.SLEEP ^ 0xFF)
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  self.MODE_1,
-                                                  mode)
-
-    # TODO: different values per channel
-    def write(self, channels, duty_cycle, delay=0):
-        """Write
-        
-        Channel list of channels or a single value, if channel is -1 right to
-        all channels
-
-        delay is in %
-
-        The value should be a duty cycle. Start at on_ = delay -1
-        off = delay + int(duty_cycle*self.TICKS) - 1. Have in mind overflow 
-        if off starts after end
-
-        Fully on just make one bit 4 of high byte
-        """
-        
-        # TODO: make computations for delay different of zero. Check led off 
-        # overflowing self.TICKS
-        led_on, led_off = self._compute_on_off(duty_cycle, delay)
-
-        # Make it a list if is a single value
-        channels = channels if isinstance(channels, list) else [channels]
-
-        for channel in channels:
-            self._set_register(self.LED + 4*channel, led_on)
-            self._set_register(self.LED + 4*channel + 2, led_off)
-
-    def _compute_on_off(self, duty_cycle, delay):
-        """Compute the value in registers.
-        
-        Setting bit 4 of led_on_h makes the led always on and the same bit
-        of led_on_l makes them always off. When both are set the off wins.
-        """
-        
-        if not duty_cycle:
-            led_off = self.LED_FULL
-            led_on = 0
-        elif int(duty_cycle) is 1:
-            led_on = self.LED_FULL
-            led_off = 0
-        else:
-            led_on = max(round(delay*self.TICKS) - 1, 0)
-            led_off = (led_on + int(duty_cycle*self.TICKS)) % (self.TICKS+1)
-
-        return led_on, led_off
-
-    def _set_register(self, register, value):
-        """Write to a 2 bytes register a 10bit value. The registers are 
-           first low and then high bytes.
-        """
-
-        low = value & 0xFF 
-        h = value >> 8
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  register,
-                                                  low)
-        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
-                                                  register + 1,
-                                                  h)
-
-    def write_all(self, value):
-        """Privete function for writting to all registers
-        
-        Write to register ALLCALLADDR
-        """
-        pass
-    
-    # TODO: Use on chip reset and not the ad hoc solution.
-    def stop(self):
-        """Free hardware and os resources."""
-        self.write(list(range(16)), 0)
-        self.hardware_interfaces[self._i2c].close()
-
-    def _settle_osc(self):
-        time.sleep(0.005)
+    @property
+    def oe(self):
+        return self._oe
 
     def _set_frequency(self, freq):
         """Set the prescale value. 
@@ -194,12 +106,111 @@ class PCA9685(Actuator):
                                                              self.PRESCALE)
         return (self.OSC_CLOCK*prescaler) / (prescaler+1)
 
-    frequency = property(_get_frequency, _set_frequency)
+    frequency = property(_get_frequency, _set_frequency, doc="""
+                            Frequency of the pwm channels.""")
 
-    @property
-    def bus(self):
-        return self._bus
+    def start(self):
+        """Init hardware and os resources."""
 
-    @property
-    def oe(self):
-        return self._oe
+        # Init hardware interfaces
+        self._i2c = self.init_interface("i2c", bus=self.bus)
+        if self.oe:
+            self._gpio = self.init_interface("gpio", oe=self.oe)
+
+        # Init modes of pca
+        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS, 
+                                                  self.MODE_2,
+                                                  self.OUTDRV)
+        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS, 
+                                                  self.MODE_1,
+                                                  self.ALLCALL)
+        self._settle_osc()
+        
+        # Change frequency
+        if self._frequency:
+            self.frequency = self._frequency
+
+        # Write 0 to sleep bit
+        mode = self.hardware_interfaces[self._i2c].read(self.PCA_ADDRESS,
+                                                        self.MODE_1)
+        mode = mode & (self.SLEEP ^ 0xFF)
+        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
+                                                  self.MODE_1,
+                                                  mode)
+
+    # TODO: different values per channel
+    def write(self, channels, duty_cycle, delay=0):
+        """Drive pwm channels.
+        
+        Args:
+            channels: Could be a list of channels or just one channel, to drive
+                all channels should be -1.
+            duty_cycle: Duty cycle value. 
+            delay: Wait time until starting the on pulse. It is percentage of
+                the number of module clock ticks.
+        """
+        
+        # TODO: make computations for delay different of zero. Check led off 
+        # overflowing self.TICKS
+        led_on, led_off = self._compute_on_off(duty_cycle, delay)
+
+        # Make it a list if is a single value
+        channels = channels if isinstance(channels, list) else [channels]
+
+        for channel in channels:
+            self._set_register(self.LED + 4*channel, led_on)
+            self._set_register(self.LED + 4*channel + 2, led_off)
+
+    def _compute_on_off(self, duty_cycle, delay):
+        """Compute the value in registers.
+        
+        Setting bit 4 of led_on_h makes the led always on and the same bit
+        of led_on_l makes them always off. When both are set the off wins.
+
+        The value should be a duty cycle. Start at on = delay -1
+        off = delay + int(duty_cycle*self.TICKS) - 1. Have in mind overflow 
+        if off starts after end
+        """
+        
+        if not duty_cycle:
+            led_off = self.LED_FULL
+            led_on = 0
+        elif int(duty_cycle) is 1:
+            led_on = self.LED_FULL
+            led_off = 0
+        else:
+            led_on = max(round(delay*self.TICKS) - 1, 0)
+            led_off = (led_on + int(duty_cycle*self.TICKS)) % (self.TICKS+1)
+
+        return led_on, led_off
+
+    def _set_register(self, register, value):
+        """Write to a 2 bytes register a 10bit value. The registers are 
+           first low and then high bytes.
+        """
+
+        low = value & 0xFF 
+        h = value >> 8
+        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
+                                                  register,
+                                                  low)
+        self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
+                                                  register + 1,
+                                                  h)
+
+    def _write_all(self, value):
+        """Privete function for writting to all registers
+        
+        Write to register ALLCALLADDR
+        """
+        pass
+    
+    # TODO: Use on chip reset and not the ad hoc solution.
+    def stop(self):
+        """Free hardware and os resources."""
+        self.write(list(range(16)), 0)
+        self.hardware_interfaces[self._i2c].close()
+
+    def _settle_osc(self):
+        time.sleep(0.005)
+
