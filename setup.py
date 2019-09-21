@@ -40,7 +40,7 @@ setup(
     packages=find_packages(),
 
     # Install required packages
-    install_requires=REQUIRES,
+    install_requires=DEPENDENCIES,
 
     # Metadata
     author=" ",
