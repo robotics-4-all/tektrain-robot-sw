@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actuators.html">Actuators</a></li>
 </ul>
 
             
@@ -162,13 +163,18 @@
 <h1>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>The main reason of this library is to have implementations of different sensors
-and actuators that share the same common api. So it would be as easy as a pie
-to use any implemented device(any sensor or effector is a device) without
-knowning the specific protocols.</p>
-<p>A device is a sensor when it gets information from the environment and an
-actuator when it changes the environment. With that in mind every sensor
-should have a read function and every actuator a write function.</p>
+<p>Pidevices’s main goal is the easy deployment of devices. A device could be anything
+that get’s connected to the pi(also the pi could be a device, but we don’t see it
+from that prespective). Pidevices distinct the devices in two categories sensors
+which are devices that get any information from the environment and actuators
+that change the environment.</p>
+<p>To make things easier for the maker/developer pidevices use a common interface
+consisting of three functions start(), stop() and restart(). The distinction
+between sensors and actuators is a read() function that belongs to sensors and
+a write function that belongs only to actuatos.</p>
+<p>With that in mind a developer can contribute a new sensor or effector by
+just implementing these four functions and then any user could use it without
+having to know the specific implementation.</p>
 <div class="section" id="device">
 <h3>Device<a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
@@ -186,7 +192,7 @@ talk with the hardware.</p>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Invalid name type, or invalud max_data_length type.</p>
+<dd class="field-even"><p><strong>TypeError</strong> – Invalid name type, or invalid max_data_length type.</p>
 </dd>
 </dl>
 <dl class="method">
@@ -281,7 +287,8 @@ interface.</p></li>
 <dl class="class">
 <dt id="pidevices.Sensor">
 <em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Sensor</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Sensor" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Base class of a sensor device. Extends <code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code>.</p>
+<dl class="method">
 <dt id="pidevices.Sensor.read">
 <code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Sensor.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Empty function for reading from devices, which will be
@@ -296,11 +303,11 @@ overloaded.</p>
 <dl class="class">
 <dt id="pidevices.Actuator">
 <em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Actuator</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Actuator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring for actuator class</p>
+<dd><p>Base class of an actuator device. Extends <code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code>.</p>
 <dl class="method">
 <dt id="pidevices.Actuator.write">
 <code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Actuator.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstact method for driving an actuator.</p>
+<dd><p>Abstact method for driving an actuator which will be overloaded.</p>
 </dd></dl>
 
 </dd></dl>

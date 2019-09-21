@@ -85,6 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actuators.html">Actuators</a></li>
 </ul>
 
             
@@ -178,13 +179,15 @@
 </li>
       <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.adc">adc() (pidevices.GP2Y0AxxxK0F property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.ButtonArray.add_button">add_button() (pidevices.ButtonArray method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.add_pins">add_pins() (pidevices.GPIO method)</a>
 </li>
       <li><a href="sensors.html#pidevices.Microphone.async_read">async_read() (pidevices.Microphone method)</a>
+</li>
+      <li><a href="actuators.html#pidevices.Speaker.async_write">async_write() (pidevices.Speaker method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -198,10 +201,14 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.bounce">bounce() (pidevices.GPIOPin property)</a>
 </li>
+      <li><a href="hardware_interfaces.html#pidevices.I2C.bus">bus() (pidevices.I2C property)</a>
+
+      <ul>
+        <li><a href="actuators.html#pidevices.PCA9685.bus">(pidevices.PCA9685 property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hardware_interfaces.html#pidevices.I2C.bus">bus() (pidevices.I2C property)</a>
-</li>
       <li><a href="sensors.html#pidevices.Button">Button (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.ButtonArray">ButtonArray (class in pidevices)</a>
@@ -257,7 +264,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.Microphone.dev_name">dev_name() (pidevices.Microphone property)</a>
+
+      <ul>
+        <li><a href="actuators.html#pidevices.Speaker.dev_name">(pidevices.Speaker property)</a>
 </li>
+      </ul></li>
       <li><a href="devices_api.html#pidevices.devices.Device">Device (class in pidevices.devices)</a>
 </li>
       <li><a href="sensors.html#pidevices.Mcp3002.device">device() (pidevices.Mcp3002 property)</a>
@@ -268,6 +279,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController">DfrobotMotorController (class in pidevices)</a>
+</li>
       <li><a href="sensors.html#pidevices.DistanceSensor">DistanceSensor (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.duty_cycle">duty_cycle() (pidevices.GPIOPin property)</a>
@@ -282,12 +295,16 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="sensors.html#pidevices.HcSr04.echo_pin">echo_pin() (pidevices.HcSr04 property)</a>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.E1">E1() (pidevices.DfrobotMotorController property)</a>
 </li>
-      <li><a href="hardware_interfaces.html#pidevices.GPIOPin.edge">edge() (pidevices.GPIOPin property)</a>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.E2">E2() (pidevices.DfrobotMotorController property)</a>
+</li>
+      <li><a href="sensors.html#pidevices.HcSr04.echo_pin">echo_pin() (pidevices.HcSr04 property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="hardware_interfaces.html#pidevices.GPIOPin.edge">edge() (pidevices.GPIOPin property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.HPWM.enable">enable() (pidevices.HPWM property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.event">event() (pidevices.GPIOPin property)</a>
@@ -300,10 +317,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.Camera.framerate">framerate() (pidevices.Camera property)</a>
 </li>
-      <li><a href="hardware_interfaces.html#pidevices.GPIOPin.frequency">frequency() (pidevices.GPIOPin property)</a>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.frequency">frequency() (pidevices.DfrobotMotorController property)</a>
 
       <ul>
+        <li><a href="hardware_interfaces.html#pidevices.GPIOPin.frequency">(pidevices.GPIOPin property)</a>
+</li>
         <li><a href="hardware_interfaces.html#pidevices.HPWM.frequency">(pidevices.HPWM property)</a>
+</li>
+        <li><a href="actuators.html#pidevices.PCA9685.frequency">(pidevices.PCA9685 property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -418,6 +439,10 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.M1">M1() (pidevices.DfrobotMotorController property)</a>
+</li>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.M2">M2() (pidevices.DfrobotMotorController property)</a>
+</li>
       <li><a href="devices_api.html#pidevices.devices.Device.max_data_length">max_data_length() (pidevices.devices.Device property)</a>
 </li>
       <li><a href="sensors.html#pidevices.LineFollower.max_dist">max_dist() (pidevices.LineFollower property)</a>
@@ -430,10 +455,10 @@
 </li>
       <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.max_volt">max_volt() (pidevices.GP2Y0AxxxK0F property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.Mcp3002">Mcp3002 (class in pidevices)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.Microphone">Microphone (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.LineFollower.min_dist">min_dist() (pidevices.LineFollower property)</a>
@@ -446,6 +471,12 @@
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.mode">mode() (pidevices.CytronLfLSS05 property)</a>
 </li>
+      <li><a href="actuators.html#pidevices.Motor">Motor (class in pidevices)</a>
+</li>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.motor_1">motor_1() (pidevices.DfrobotMotorController property)</a>
+</li>
+      <li><a href="actuators.html#pidevices.DfrobotMotorController.motor_2">motor_2() (pidevices.DfrobotMotorController property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -455,6 +486,12 @@
       <li><a href="sensors.html#pidevices.BME680.p_oversample">p_oversample() (pidevices.BME680 property)</a>
 </li>
       <li><a href="sensors.html#pidevices.Microphone.pause">pause() (pidevices.Microphone method)</a>
+
+      <ul>
+        <li><a href="actuators.html#pidevices.Speaker.pause">(pidevices.Speaker method)</a>
+</li>
+      </ul></li>
+      <li><a href="actuators.html#pidevices.PCA9685">PCA9685 (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.Button.pin_num">pin_num() (pidevices.Button property)</a>
 
@@ -464,10 +501,10 @@
       </ul></li>
       <li><a href="sensors.html#pidevices.ButtonArray.pin_nums">pin_nums() (pidevices.ButtonArray property)</a>
 </li>
-      <li><a href="hardware_interfaces.html#pidevices.GPIO.pins">pins() (pidevices.GPIO property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="hardware_interfaces.html#pidevices.GPIO.pins">pins() (pidevices.GPIO property)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.HPWM.polarity">polarity() (pidevices.HPWM property)</a>
 </li>
       <li><a href="sensors.html#pidevices.Mcp3002.port">port() (pidevices.Mcp3002 property)</a>
@@ -556,6 +593,8 @@
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO">RPiGPIO (class in pidevices)</a>
 </li>
+      <li><a href="actuators.html#pidevices.Motor.rpm">rpm() (pidevices.Motor property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -573,6 +612,8 @@
       <li><a href="sensors.html#pidevices.BME680.set_heating_time">set_heating_time() (pidevices.BME680 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.BME680.set_idac_heat">set_idac_heat() (pidevices.BME680 method)</a>
+</li>
+      <li><a href="actuators.html#pidevices.Motor.set_parameters">set_parameters() (pidevices.Motor method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_bounce">set_pin_bounce() (pidevices.GPIO method)</a>
 
@@ -630,14 +671,16 @@
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_4">so_4() (pidevices.CytronLfLSS05 property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_5">so_5() (pidevices.CytronLfLSS05 property)</a>
+</li>
+      <li><a href="actuators.html#pidevices.Speaker">Speaker (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.SPI">SPI (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SPIimplementation">SPIimplementation (class in pidevices)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.BME680.start">start() (pidevices.BME680 method)</a>
 
       <ul>
@@ -651,6 +694,8 @@
 </li>
         <li><a href="devices_api.html#pidevices.devices.Device.start">(pidevices.devices.Device method)</a>
 </li>
+        <li><a href="actuators.html#pidevices.DfrobotMotorController.start">(pidevices.DfrobotMotorController method)</a>
+</li>
         <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.start">(pidevices.GP2Y0AxxxK0F method)</a>
 </li>
         <li><a href="sensors.html#pidevices.HcSr04.start">(pidevices.HcSr04 method)</a>
@@ -658,6 +703,12 @@
         <li><a href="sensors.html#pidevices.Mcp3002.start">(pidevices.Mcp3002 method)</a>
 </li>
         <li><a href="sensors.html#pidevices.Microphone.start">(pidevices.Microphone method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.PCA9685.start">(pidevices.PCA9685 method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.Speaker.start">(pidevices.Speaker method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.TouchScreen.start">(pidevices.TouchScreen method)</a>
 </li>
         <li><a href="sensors.html#pidevices.VL53L1X.start">(pidevices.VL53L1X method)</a>
 </li>
@@ -677,6 +728,8 @@
 </li>
         <li><a href="devices_api.html#pidevices.devices.Device.stop">(pidevices.devices.Device method)</a>
 </li>
+        <li><a href="actuators.html#pidevices.DfrobotMotorController.stop">(pidevices.DfrobotMotorController method)</a>
+</li>
         <li><a href="sensors.html#pidevices.GP2Y0AxxxK0F.stop">(pidevices.GP2Y0AxxxK0F method)</a>
 </li>
         <li><a href="sensors.html#pidevices.HcSr04.stop">(pidevices.HcSr04 method)</a>
@@ -684,6 +737,12 @@
         <li><a href="sensors.html#pidevices.Mcp3002.stop">(pidevices.Mcp3002 method)</a>
 </li>
         <li><a href="sensors.html#pidevices.Microphone.stop">(pidevices.Microphone method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.PCA9685.stop">(pidevices.PCA9685 method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.Speaker.stop">(pidevices.Speaker method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.TouchScreen.stop">(pidevices.TouchScreen method)</a>
 </li>
         <li><a href="sensors.html#pidevices.VL53L1X.stop">(pidevices.VL53L1X method)</a>
 </li>
@@ -702,6 +761,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="actuators.html#pidevices.TouchScreen">TouchScreen (class in pidevices)</a>
+</li>
       <li><a href="sensors.html#pidevices.HcSr04.trigger_pin">trigger_pin() (pidevices.HcSr04 property)</a>
 </li>
   </ul></td>
@@ -719,6 +780,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.VL53L1X">VL53L1X (class in pidevices)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="actuators.html#pidevices.Motor.voltage">voltage() (pidevices.Motor property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -743,6 +808,8 @@
       <li><a href="devices_api.html#pidevices.Actuator.write">write() (pidevices.Actuator method)</a>
 
       <ul>
+        <li><a href="actuators.html#pidevices.DfrobotMotorController.write">(pidevices.DfrobotMotorController method)</a>
+</li>
         <li><a href="hardware_interfaces.html#pidevices.GPIO.write">(pidevices.GPIO method)</a>
 </li>
         <li><a href="hardware_interfaces.html#pidevices.HPWM.write">(pidevices.HPWM method)</a>
@@ -751,13 +818,19 @@
 </li>
         <li><a href="hardware_interfaces.html#pidevices.I2C.write">(pidevices.I2C method)</a>
 </li>
+        <li><a href="actuators.html#pidevices.PCA9685.write">(pidevices.PCA9685 method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.write">(pidevices.RPiGPIO method)</a>
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2.write">(pidevices.SMBus2 method)</a>
 </li>
+        <li><a href="actuators.html#pidevices.Speaker.write">(pidevices.Speaker method)</a>
+</li>
         <li><a href="hardware_interfaces.html#pidevices.SPI.write">(pidevices.SPI method)</a>
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.SPIimplementation.write">(pidevices.SPIimplementation method)</a>
+</li>
+        <li><a href="actuators.html#pidevices.TouchScreen.write">(pidevices.TouchScreen method)</a>
 </li>
       </ul></li>
   </ul></td>
