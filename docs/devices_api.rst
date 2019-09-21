@@ -7,14 +7,20 @@ Devices
 Overview
 ========
 
-The main reason of this library is to have implementations of different sensors
-and actuators that share the same common api. So it would be as easy as a pie
-to use any implemented device(any sensor or effector is a device) without 
-knowning the specific protocols.
+Pidevices's main goal is the easy deployment of devices. A device could be anything
+that get's connected to the pi(also the pi could be a device, but we don't see it
+from that prespective). Pidevices distinct the devices in two categories sensors
+which are devices that get any information from the environment and actuators
+that change the environment.
 
-A device is a sensor when it gets information from the environment and an 
-actuator when it changes the environment. With that in mind every sensor 
-should have a read function and every actuator a write function.
+To make things easier for the maker/developer pidevices use a common interface
+consisting of three functions start(), stop() and restart(). The distinction
+between sensors and actuators is a read() function that belongs to sensors and 
+a write function that belongs only to actuatos.
+
+With that in mind a developer can contribute a new sensor or effector by 
+just implementing these four functions and then any user could use it without 
+having to know the specific implementation.
 
 Device
 ------

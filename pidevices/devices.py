@@ -15,7 +15,7 @@ class Device(object):
         max_data_length: The max length of the data deque.
 
     Raises:
-        TypeError: Invalid name type, or invalud max_data_length type.
+        TypeError: Invalid name type, or invalid max_data_length type.
     """
 
     """ Dictionary with the implemented implementations for every 
@@ -167,6 +167,7 @@ class Device(object):
 
 
 class Sensor(Device):
+    """Base class of a sensor device. Extends :class:`Device`."""
 
     def read(self):
         """Empty function for reading from devices, which will be
@@ -176,10 +177,10 @@ class Sensor(Device):
 
 
 class Actuator(Device):
-    """ Docstring for actuator class"""
+    """Base class of an actuator device. Extends :class:`Device`."""
 
     def write(self):
-        """Abstact method for driving an actuator."""
+        """Abstact method for driving an actuator which will be overloaded."""
         pass
 
 
