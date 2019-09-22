@@ -1,11 +1,18 @@
 """pca9685.py"""
 
-from ..devices import Actuator
+from .servo_driver import ServoDriver
 import time
 
 
-class PCA9685(Actuator):
-    """Class for controlling pca9685 led/servo driver."""
+class PCA9685(ServoDriver):
+    """Class for controlling pca9685 led/servo driver. Extends 
+    :class:`ServoDriver`
+    
+    Args:
+        bus (int): I2C bus.
+        frequency: PWM frequency of the module.
+        oe (int): The bcm pin number of enable pin. 
+    """
 
     LED_OFFSET = 4
     PCA_ADDRESS = 0x40
@@ -45,13 +52,7 @@ class PCA9685(Actuator):
     RESET = 0x06
 
     def __init__(self, bus, frequency=None, oe=None, name="", max_data_lenght=1):
-        """Constructor
-        
-        Args:
-            bus (int): I2C bus.
-            frequency: PWM frequency of the module.
-            oe (int): The bcm pin number of enable pin. 
-        """
+        """Constructor"""
 
         super(PCA9685, self).__init__(name, max_data_lenght)
         self._frequency = frequency
@@ -139,17 +140,25 @@ class PCA9685(Actuator):
                                                   mode)
 
     # TODO: different values per channel
-    def write(self, channels, duty_cycle, delay=0):
+    def write(self, channels, value, degrees=False, delay=0):
         """Drive pwm channels.
         
         Args:
             channels: Could be a list of channels or just one channel, to drive
                 all channels should be -1.
-            duty_cycle: Duty cycle value. 
+            value: The value to be written in the pwm channels. Could be raw
+                duty cycle or angle in degrees.
+            degrees: Flag that states if the value is angle in degrees. Defaults
+                to :data:`False`.
             delay: Wait time until starting the on pulse. It is percentage of
                 the number of module clock ticks.
         """
         
+        if degrees:
+            duty_cycle = self._angle_to_dc(value)
+        else:
+            duty_cycle = value
+
         # TODO: make computations for delay different of zero. Check led off 
         # overflowing self.TICKS
         led_on, led_off = self._compute_on_off(duty_cycle, delay)
