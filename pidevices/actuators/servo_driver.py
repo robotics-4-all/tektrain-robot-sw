@@ -6,7 +6,9 @@ class ServoDriver(Actuator):
     """Class representing a servo driver. Extends :class:`Actuator`."""
 
     def _angle_to_dc(self, angle):
-        """Frequency if how many overflows per sec. 1/f is the period or the 
+        """Angle to duty cycle.
+
+        Frequency if how many overflows per sec. 1/f is the period or the 
         the overall time of duty cycle.
 
         1ms is equal to 0 degrees and 2ms is equal to 180 degrees
