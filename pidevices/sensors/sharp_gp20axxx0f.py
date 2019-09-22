@@ -23,8 +23,8 @@ class GP2Y0AxxxK0F(DistanceSensor):
         """Constructor"""
 
         super(GP2Y0AxxxK0F, self).__init__(name, max_data_length)
-        self.min_volt = datasheet_data[len(datasheet_data) - 1, 0]
-        self.max_volt = datasheet_data[0, 0]
+        self._min_volt = datasheet_data[len(datasheet_data) - 1, 0]
+        self._max_volt = datasheet_data[0, 0]
         self.adc = adc
         self._interpol(datasheet_data)
 
@@ -39,26 +39,6 @@ class GP2Y0AxxxK0F(DistanceSensor):
     def adc(self, value):
         """Set adc"""
         self._adc = value
-
-    @property
-    def min_volt(self):
-        """Minimum output voltage."""
-        return self._min_volt
-
-    @min_volt.setter
-    def min_volt(self, value):
-        """Set min_volt"""
-        self._min_volt = value
-
-    @property
-    def max_volt(self):
-        """Maximum output voltage."""
-        return self._max_volt
-
-    @max_volt.setter
-    def max_volt(self, value):
-        """Set max_volt"""
-        self._max_volt = value
 
     def _interpol(self, data):
         self._f_int = interpolate.interp1d(data[:, 0],
@@ -92,13 +72,13 @@ class GP2Y0AxxxK0F(DistanceSensor):
         adc_val /= n
 
         # Check thresholds
-        if adc_val < self.min_volt:
+        if adc_val < self._min_volt:
             raise OutOfRange("Out of max distance.")
-        if adc_val > self.max_volt:
+        if adc_val > self._max_volt:
             raise OutOfRange("Out of min distance.")
 
-        adc_val = max(adc_val, self.min_volt)
-        adc_val = min(adc_val, self.max_volt)
+        adc_val = max(adc_val, self._min_volt)
+        adc_val = min(adc_val, self._max_volt)
 
         return round(self._f_int(adc_val).item(0), 4)
 
