@@ -310,10 +310,13 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """
 
         if not HUM:
+            h_oversample_bak = self.h_oversample
             self.h_oversample = 0
         if not TEMP:
+            t_oversample_bak = self.t_oversample
             self.t_oversample = 0
         if not PRES:
+            p_oversample_bak = self.p_oversample
             self.p_oversample = 0
         if not GAS:
             self.gas_status = 0
@@ -337,6 +340,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         gas = self._read_gas()
 
         data = bme680_data(temp=temp/100, pres=pres/100, hum=humi/1000, gas=gas)
+
+        # Restore values
+        if not HUM:
+            self.h_oversample = h_oversample_bak 
+        if not TEMP:
+            self.t_oversample = t_oversample_bak 
+        if not PRES:
+            self.p_oversample = p_oversample_bak 
+        if not GAS:
+            self.gas_status = 0
+
         return data
 
     # TODO: check if multiple returns is a good practice
