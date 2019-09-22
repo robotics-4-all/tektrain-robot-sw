@@ -37,16 +37,6 @@ class Microphone(Sensor):
         self._dev_name = dev_name
 
     @property
-    def device(self):
-        """pyalsaaudio object."""
-        return self._device
-
-    @property
-    def mixer(self):
-        """Mixer object for controlling the volume."""
-        return self._mixer
-
-    @property
     def recording_mutex(self):
         return self._recording_mutex
 
@@ -120,26 +110,26 @@ class Microphone(Sensor):
         f.setnframes(periodsize)
 
         # Set Device attributes for playback
-        self.device.setchannels(channels)
-        self.device.setrate(framerate)
+        self._device.setchannels(channels)
+        self._device.setrate(framerate)
 
         # Set volume for channels
-        self.mixer.setvolume(volume) 
+        self._mixer.setvolume(volume) 
 
         # 8bit is unsigned in wav files
         if sample_width == 1:
-            self.device.setformat(alsaaudio.PCM_FORMAT_U8)
+            self._device.setformat(alsaaudio.PCM_FORMAT_U8)
         # Otherwise we assume signed data, little endian
         elif sample_width == 2:
-            self.device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+            self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
         elif sample_width == 3:
-            self.device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
+            self._device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
         elif sample_width == 4:
-            self.device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
+            self._device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
         else:
             raise ValueError('Unsupported format')
 
-        self.device.setperiodsize(periodsize)
+        self._device.setperiodsize(periodsize)
         
         self.recording = True
         self.recording_mutex.release()
@@ -147,7 +137,7 @@ class Microphone(Sensor):
         # Start recording
         t_start = time.time()
         while time.time() - t_start < secs:
-            l, data = self.device.read()
+            l, data = self._device.read()
             if l:
                 f.writeframes(data)
 
@@ -183,7 +173,7 @@ class Microphone(Sensor):
     def pause(self, enabled=True):
         """Pause or resume the playback."""
 
-        self.device.pause(enabled)
+        self._device.pause(enabled)
         self.paused = True
 
     def _fix_path(self, fil_path):
@@ -198,6 +188,6 @@ class Microphone(Sensor):
     def stop(self):
         """Clean hardware and os reources."""
 
-        self.device.close()
-        self.mixer.close()
+        self._device.close()
+        self._mixer.close()
 
