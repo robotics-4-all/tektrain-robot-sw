@@ -28,6 +28,12 @@ have to know how to use the specific protocol libraries.
 Classes
 =======
 
+HardwareInterface
+-----------------
+
+.. autoclass:: pidevices.HardwareInterface
+   :members:
+
 GPIOPin 
 -------
 
