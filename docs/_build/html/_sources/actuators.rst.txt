@@ -30,11 +30,6 @@ PCA9685
 .. autoclass:: pidevices.PCA9685
    :members:
 
-Servo kit
----------
-
-Not sure yet. Maybe will make it deprecated.
-
 Neopixel ledstrip
 =================
 

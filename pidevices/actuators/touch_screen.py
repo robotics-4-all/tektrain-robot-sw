@@ -14,11 +14,7 @@ from omxplayer.player import OMXPlayer
 
 #class TouchScreen(Composite):
 class TouchScreen(Actuator):
-    """Class representing a touch screen extends :class:`Actuator`.
-
-    Args:
-        dev_name:
-    """
+    """Class representing a touch screen extends :class:`Actuator`."""
 
     def __init__(self, name="", max_data_length=0):
         """Constructor"""

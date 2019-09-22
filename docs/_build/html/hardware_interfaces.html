@@ -86,6 +86,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware Interfaces</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hardwareinterface">HardwareInterface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gpiopin">GPIOPin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gpio">GPIO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#spi">SPI</a></li>
@@ -184,6 +185,39 @@ have to know how to use the specific protocol libraries.</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="hardwareinterface">
+<h3>HardwareInterface<a class="headerlink" href="#hardwareinterface" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.HardwareInterface">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">HardwareInterface</code><a class="headerlink" href="#pidevices.HardwareInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class representing a hardware interface.</p>
+<dl class="method">
+<dt id="pidevices.HardwareInterface.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HardwareInterface.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HardwareInterface.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HardwareInterface.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from hardware.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HardwareInterface.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HardwareInterface.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data to hardware.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HardwareInterface.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HardwareInterface.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="gpiopin">
 <h3>GPIOPin<a class="headerlink" href="#gpiopin" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
