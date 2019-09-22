@@ -88,7 +88,7 @@ class ButtonArray(Sensor):
 
         self.buttons.append(Button(pin_num))
 
-    def remove_button(self, button):
+    def remove_button(self, pin_num):
         """Remove a button from the array.
         
         Args:
@@ -96,4 +96,3 @@ class ButtonArray(Sensor):
         """
 
         del self.buttons[button]
-
