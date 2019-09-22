@@ -1,26 +1,36 @@
+"""neopixel_rgb.py"""
+
 import time
 from rpi_ws281x import Adafruit_NeoPixel, ws
 from ..devices import Actuator
 
 
 class LedController(Actuator):
-    """ Implementation for the Neopixel Programmable RGB LEDS"""
+    """Implementation for the Neopixel Programmable RGB LEDS. Extends 
+    :class:`Actuator`.
+    
+    It use's rpi_ws281x library.
 
-    def __init__(self, name="", led_count=16, led_pin=21, led_freq_hz=700000,
-                 led_dma=10, led_brightness=60, led_invert=False,
-                 led_channel=0, led_strip=ws.WS2811_STRIP_RGB):
+    Args:
+        led_count (int): Number of leds.
+        led_pin (int): GPIO pin connected to the pixels.
+        led_freq_hz (int): LED signal frequency in hertz (usually 800khz)
+        led_brightness (int): Set to 0 for darkest and 255 for brightest
+        led_dma (int): DMA channel to use for generating signal.
+            Defaults to :data:`10`.
+        led_invert (boolean): True to invert the signal 
+            (when using NPN transistor level shift). Defaults to :data:`False`.
+        led_channel (int): Set to '1' for GPIOs 13, 19, 41, 45 or 53. Defaults
+            to :data:`0`.
+        led_strip: Strip type and colour ordering. Defaults to 
+            :data:`ws.WS2811_STRIP_RGB`.
+    """
 
-        """ Default LED strip configuration:
-        led_count = 12        Number of LEDs.
-        led_pin = 21          GPIO pin connected to the pixels (18 uses PWM!).
-        led_freq_hz = 700000  LED signal frequency in hertz (usually 800khz)
-        led_dma = 5          DMA channel to use for generating signal (try 10)
-        led_brightness = 255  Set to 0 for darkest and 255 for brightest
-        led_invert = False
-        True to invert the signal (when using NPN transistor level shift)
-        led_strip = ws.WS2811_STRIP_RGB   Strip type and colour ordering
-        led_channel = 0        set to '1' for GPIOs 13, 19, 41, 45 or 53
-        """
+    def __init__(self,  led_count, led_pin, led_freq_hz,
+                 led_brightness, led_dma=10,  led_invert=False,
+                 led_channel=0, led_strip=ws.WS2811_STRIP_RGB, name=""):
+        """Constructor"""
+
         self._led_count = led_count
         self._led_pin = led_pin
         self.led_freq_hz = led_freq_hz
@@ -35,7 +45,50 @@ class LedController(Actuator):
 
         self.start()
 
-    # Methods
+    @property
+    def led_pin(self):
+        """GPIO pin connected to the pixels."""
+        return self._led_pin
+
+    @property
+    def led_count(self):
+        """Number of leds."""
+        return self._led_count
+
+    @property
+    def led_brightness(self):
+        """Set to 0 for darkest and 255 for brightest."""
+        return self._led_brightness
+
+    @property
+    def led_channel(self):
+        """Set to '1' for GPIOs 13, 19, 41, 45 or 53."""
+        return self._led_channel
+
+    @property
+    def led_freq_hz(self):
+        """LED signal frequency in hertz."""
+        return self._led_freq_hz
+
+    @led_freq_hz.setter
+    def led_freq_hz(self, x):
+        self._led_freq_hz = x
+
+    @led_pin.setter
+    def led_pin(self, x):
+        self._led_pin = x
+
+    @led_count.setter
+    def led_count(self, x):
+        self._led_count = x
+
+    @led_brightness.setter
+    def led_brightness(self, x):
+        self._led_brightness = x
+
+    @led_channel.setter
+    def led_channel(self, x):
+        self._led_channel = x
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -54,23 +107,36 @@ class LedController(Actuator):
         # Turn-off led strip
         self.close()
         
-    def write(self, data):
-        """strip.setPixelColor(n, green, re)d, blue)"""
-        for (i, led) in enumerate(data):
-            self.strip.setPixelColor(i, Color(led[1],
-                                              led[0],
-                                              led[2]))
-            self.strip.setBrightness(led[3])
-            self.strip.show()
-            time.sleep(0.1)
+    def write(self, data, wait_ms=50, WIPE=False):
+        """Write to the leds.
+        
+        Args:
+            data: A list of lists of which each list corresponds to each led 
+                and the values are [red, green, blue, brightness].
+            wait_ms (int): Optional argument that has to be set when WIPE is 
+                :data:`True`. Defaults to :data:`50`.
+            WIPE: Flag for writting to all leds at once.
+        """
+
+        if WIPE:
+            self._color_wipe(data[0][:3], wait_ms=wait_ms, brightness=data[0][3])
+        else:
+            for (i, led) in enumerate(data):
+                self.strip.setPixelColor(i, Color(led[1],
+                                                  led[0],
+                                                  led[2]))
+                self.strip.setBrightness(led[3])
+                self.strip.show()
+                time.sleep(0.1)
 
     def close(self):
-        """ Disable Leds """
+        """Free hardware and os resources."""
+
         for i in range(self.strip.numPixels()):
             self.strip.setPixelColor(i, Color(0, 0, 0))
             self.strip.show()
 
-    def color_wipe(self, rgb_color=[0, 0, 255], wait_ms=50, brightness=60):
+    def _color_wipe(self, rgb_color=[0, 0, 255], wait_ms=50, brightness=60):
         """Wipe color across display a pixel at a time."""
         for i in range(self.strip.numPixels()):
             self.strip.setPixelColor(i, Color(rgb_color[1],
@@ -78,55 +144,3 @@ class LedController(Actuator):
             self.strip.setBrightness(brightness)
             self.strip.show()
             time.sleep(wait_ms/1000.0)
-
-    # Setters and getters
-
-    @property
-    def led_pin(self):
-            """ Get led_pin """
-            return self._led_pin
-
-    @property
-    def led_count(self):
-            """ Get led_pin """
-            return self._led_count
-
-    @property
-    def led_brightness(self):
-            """ Get led_pin """
-            return self._led_brightness
-
-    @property
-    def led_channel(self):
-            """ Get led_pin """
-            return self._led_channel
-
-    @property
-    def led_freq_hz(self):
-            """ Get led_pin """
-            return self._led_freq_hz
-
-    @led_freq_hz.setter
-    def led_freq_hz(self, x):
-            """set led_pin"""
-            self._led_freq_hz = x
-
-    @led_pin.setter
-    def led_pin(self, x):
-            """set led_pin"""
-            self._led_pin = x
-
-    @led_count.setter
-    def led_count(self, x):
-            """set led_pin"""
-            self._led_count = x
-
-    @led_brightness.setter
-    def led_brightness(self, x):
-            """set led_pin"""
-            self._led_brightness = x
-
-    @led_channel.setter
-    def led_channel(self, x):
-            """set led_pin"""
-            self._led_channel = x

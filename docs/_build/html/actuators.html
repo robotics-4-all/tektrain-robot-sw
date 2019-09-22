@@ -375,6 +375,97 @@ the number of module clock ticks.</p></li>
 </div>
 <div class="section" id="neopixel-ledstrip">
 <h2>Neopixel ledstrip<a class="headerlink" href="#neopixel-ledstrip" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.LedController">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">LedController</code><span class="sig-paren">(</span><em class="sig-param">led_count</em>, <em class="sig-param">led_pin</em>, <em class="sig-param">led_freq_hz</em>, <em class="sig-param">led_brightness</em>, <em class="sig-param">led_dma=10</em>, <em class="sig-param">led_invert=False</em>, <em class="sig-param">led_channel=0</em>, <em class="sig-param">led_strip=1050624</em>, <em class="sig-param">name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.LedController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation for the Neopixel Programmable RGB LEDS. Extends
+<a class="reference internal" href="devices_api.html#pidevices.Actuator" title="pidevices.Actuator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Actuator</span></code></a>.</p>
+<p>It use’s rpi_ws281x library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>led_count</strong> (<em>int</em>) – Number of leds.</p></li>
+<li><p><strong>led_pin</strong> (<em>int</em>) – GPIO pin connected to the pixels.</p></li>
+<li><p><strong>led_freq_hz</strong> (<em>int</em>) – LED signal frequency in hertz (usually 800khz)</p></li>
+<li><p><strong>led_brightness</strong> (<em>int</em>) – Set to 0 for darkest and 255 for brightest</p></li>
+<li><p><strong>led_dma</strong> (<em>int</em>) – DMA channel to use for generating signal.
+Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>led_invert</strong> (<em>boolean</em>) – True to invert the signal
+(when using NPN transistor level shift). Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>led_channel</strong> (<em>int</em>) – Set to ‘1’ for GPIOs 13, 19, 41, 45 or 53. Defaults
+to <code class="xref py py-data docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><strong>led_strip</strong> – Strip type and colour ordering. Defaults to
+<code class="xref py py-data docutils literal notranslate"><span class="pre">ws.WS2811_STRIP_RGB</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.LedController.led_freq_hz">
+<em class="property">property </em><code class="sig-name descname">led_freq_hz</code><a class="headerlink" href="#pidevices.LedController.led_freq_hz" title="Permalink to this definition">¶</a></dt>
+<dd><p>LED signal frequency in hertz.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.led_pin">
+<em class="property">property </em><code class="sig-name descname">led_pin</code><a class="headerlink" href="#pidevices.LedController.led_pin" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPIO pin connected to the pixels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.led_count">
+<em class="property">property </em><code class="sig-name descname">led_count</code><a class="headerlink" href="#pidevices.LedController.led_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of leds.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.led_brightness">
+<em class="property">property </em><code class="sig-name descname">led_brightness</code><a class="headerlink" href="#pidevices.LedController.led_brightness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to 0 for darkest and 255 for brightest.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.led_channel">
+<em class="property">property </em><code class="sig-name descname">led_channel</code><a class="headerlink" href="#pidevices.LedController.led_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to ‘1’ for GPIOs 13, 19, 41, 45 or 53.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.LedController.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.LedController.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">wait_ms=50</em>, <em class="sig-param">WIPE=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.LedController.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write to the leds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – A list of lists of which each list corresponds to each led
+and the values are [red, green, blue, brightness].</p></li>
+<li><p><strong>wait_ms</strong> (<em>int</em>) – Optional argument that has to be set when WIPE is
+<code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code>. Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">50</span></code>.</p></li>
+<li><p><strong>WIPE</strong> – Flag for writting to all leds at once.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.LedController.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="speaker">
 <h2>Speaker<a class="headerlink" href="#speaker" title="Permalink to this headline">¶</a></h2>

@@ -33,6 +33,9 @@ PCA9685
 Neopixel ledstrip
 =================
 
+.. autoclass:: pidevices.LedController
+   :members:
+
 Speaker
 =======
 
