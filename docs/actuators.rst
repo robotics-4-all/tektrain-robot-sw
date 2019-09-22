@@ -21,6 +21,9 @@ Dfrobot motor controller
 Servo driver
 ============
 
+.. autoclass:: pidevices.ServoDriver
+   :members:
+
 PCA9685
 -------
 

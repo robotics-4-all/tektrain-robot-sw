@@ -304,12 +304,28 @@ to <code class="xref py py-data docutils literal notranslate"><span class="pre">
 </div>
 <div class="section" id="servo-driver">
 <h2>Servo driver<a class="headerlink" href="#servo-driver" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.ServoDriver">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ServoDriver</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ServoDriver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing a servo driver. Extends <a class="reference internal" href="devices_api.html#pidevices.Actuator" title="pidevices.Actuator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Actuator</span></code></a>.</p>
+</dd></dl>
+
 <div class="section" id="pca9685">
 <h3>PCA9685<a class="headerlink" href="#pca9685" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pidevices.PCA9685">
 <em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">PCA9685</code><span class="sig-paren">(</span><em class="sig-param">bus</em>, <em class="sig-param">frequency=None</em>, <em class="sig-param">oe=None</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_lenght=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.PCA9685" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for controlling pca9685 led/servo driver.</p>
+<dd><p>Class for controlling pca9685 led/servo driver. Extends
+<a class="reference internal" href="#pidevices.ServoDriver" title="pidevices.ServoDriver"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServoDriver</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bus</strong> (<em>int</em>) – I2C bus.</p></li>
+<li><p><strong>frequency</strong> – PWM frequency of the module.</p></li>
+<li><p><strong>oe</strong> (<em>int</em>) – The bcm pin number of enable pin.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pidevices.PCA9685.bus">
 <em class="property">property </em><code class="sig-name descname">bus</code><a class="headerlink" href="#pidevices.PCA9685.bus" title="Permalink to this definition">¶</a></dt>
@@ -330,14 +346,17 @@ to <code class="xref py py-data docutils literal notranslate"><span class="pre">
 
 <dl class="method">
 <dt id="pidevices.PCA9685.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">channels</em>, <em class="sig-param">duty_cycle</em>, <em class="sig-param">delay=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.PCA9685.write" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">channels</em>, <em class="sig-param">value</em>, <em class="sig-param">degrees=False</em>, <em class="sig-param">delay=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.PCA9685.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drive pwm channels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>channels</strong> – Could be a list of channels or just one channel, to drive
 all channels should be -1.</p></li>
-<li><p><strong>duty_cycle</strong> – Duty cycle value.</p></li>
+<li><p><strong>value</strong> – The value to be written in the pwm channels. Could be raw
+duty cycle or angle in degrees.</p></li>
+<li><p><strong>degrees</strong> – Flag that states if the value is angle in degrees. Defaults
+to <code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 <li><p><strong>delay</strong> – Wait time until starting the on pulse. It is percentage of
 the number of module clock ticks.</p></li>
 </ul>
