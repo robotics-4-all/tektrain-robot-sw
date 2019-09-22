@@ -137,7 +137,7 @@ class Camera(Sensor):
 
         return frames
 
-    def read_continuous_async(self, batch=1, image_dims=None, image_format='rgb'):
+    def _read_continuous_async(self, batch=1, image_dims=None, image_format='rgb'):
         """Run a thread for continuous capturing"""
         # Initialize the frame buffers
         raw_captures = [TimeStampedStream() for i in range(batch)]
@@ -167,7 +167,7 @@ class Camera(Sensor):
 
     def read_continuous(self, batch=1, image_dims=None, image_format='rgb'):
         """Start the thread for reading continuous"""
-        thread = Thread(target=self.read_continuous_async,
+        thread = Thread(target=self._read_continuous_async,
                         args=(batch, image_dims, image_format, ))
         self.thread_event.set()
         thread.start()
