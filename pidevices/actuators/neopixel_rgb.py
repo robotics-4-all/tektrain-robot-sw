@@ -26,19 +26,19 @@ class LedController(Actuator):
             :data:`ws.WS2811_STRIP_RGB`.
     """
 
-    def __init__(self,  led_count, led_pin, led_freq_hz,
-                 led_brightness, led_dma=10,  led_invert=False,
+    def __init__(self, led_count, led_pin, led_freq_hz,
+                 led_brightness, led_dma=10, led_invert=False,
                  led_channel=0, led_strip=ws.WS2811_STRIP_RGB, name=""):
         """Constructor"""
 
         self._led_count = led_count
         self._led_pin = led_pin
-        self.led_freq_hz = led_freq_hz
-        self.led_dma = led_dma
+        self._led_freq_hz = led_freq_hz
+        self._led_dma = led_dma
         self._led_brightness = led_brightness
-        self.led_invert = led_invert
+        self._led_invert = led_invert
         self._led_channel = led_channel
-        self.led_strip = led_strip
+        self._led_strip = led_strip
 
         # Set the id of the actuator
         super(LedController, self).__init__(name)
@@ -46,24 +46,22 @@ class LedController(Actuator):
         self.start()
 
     @property
-    def led_pin(self):
-        """GPIO pin connected to the pixels."""
-        return self._led_pin
-
-    @property
     def led_count(self):
         """Number of leds."""
         return self._led_count
 
-    @property
-    def led_brightness(self):
-        """Set to 0 for darkest and 255 for brightest."""
-        return self._led_brightness
+    @led_count.setter
+    def led_count(self, x):
+        self._led_count = x
 
     @property
-    def led_channel(self):
-        """Set to '1' for GPIOs 13, 19, 41, 45 or 53."""
-        return self._led_channel
+    def led_pin(self):
+        """GPIO pin connected to the pixels."""
+        return self._led_pin
+
+    @led_pin.setter
+    def led_pin(self, x):
+        self._led_pin = x
 
     @property
     def led_freq_hz(self):
@@ -74,21 +72,50 @@ class LedController(Actuator):
     def led_freq_hz(self, x):
         self._led_freq_hz = x
 
-    @led_pin.setter
-    def led_pin(self, x):
-        self._led_pin = x
-
-    @led_count.setter
-    def led_count(self, x):
-        self._led_count = x
+    @property
+    def led_brightness(self):
+        """Set to 0 for darkest and 255 for brightest."""
+        return self._led_brightness
 
     @led_brightness.setter
     def led_brightness(self, x):
         self._led_brightness = x
 
+    @property
+    def led_dma(self):
+        """DMA channel to use for generating signal."""
+        return self._led_dma
+
+    @led_dma.setter
+    def led_dma(self, x):
+        self._led_dma = x
+
+    @property
+    def led_invert(self):
+        """True to invert the signal."""
+        return self._led_invert
+
+    @led_invert.setter
+    def led_invert(self, x):
+        self._led_invert = x
+
+    @property
+    def led_channel(self):
+        """Set to '1' for GPIOs 13, 19, 41, 45 or 53."""
+        return self._led_channel
+
     @led_channel.setter
     def led_channel(self, x):
         self._led_channel = x
+
+    @property
+    def led_strip(self):
+        """Strip type and color ordering."""
+        return self._led_strip
+
+    @led_strip.setter
+    def led_strip(self, x):
+        self._led_strip = x
 
     def start(self):
         """Initialize hardware and os resources."""
