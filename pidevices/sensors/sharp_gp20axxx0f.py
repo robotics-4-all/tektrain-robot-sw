@@ -27,6 +27,7 @@ class GP2Y0AxxxK0F(DistanceSensor):
         self._max_volt = datasheet_data[0, 0]
         self.adc = adc
         self._interpol(datasheet_data)
+        self._interval = interval
 
         self.start()
 
@@ -68,7 +69,7 @@ class GP2Y0AxxxK0F(DistanceSensor):
         adc_val = 0
         for _ in range(n):
             adc_val += self.adc.read(channel=self._channel)
-            time.sleep(self._INTERVAL)
+            time.sleep(self._interval)
         adc_val /= n
 
         # Check thresholds
