@@ -280,9 +280,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left_speed</strong> – Left motor speed. The value could be pwm duty cycle or
+<li><p><strong>speed_1</strong> – Channel 1 speed. The value could be pwm duty cycle or
 rpm. Also for backward movement the value should be negative.</p></li>
-<li><p><strong>right_speed</strong> – Right motor speed. The value could be pwm duty cycle or
+<li><p><strong>speed_2</strong> – Channel 2 speed. The value could be pwm duty cycle or
 rpm. Also for backward movement the value should be negative.</p></li>
 <li><p><strong>RPM</strong> (<em>boolean</em>) – Flag stating the mode of the speed values. Defaults
 to <code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
@@ -400,9 +400,9 @@ to <code class="xref py py-data docutils literal notranslate"><span class="pre">
 </dd>
 </dl>
 <dl class="method">
-<dt id="pidevices.LedController.led_freq_hz">
-<em class="property">property </em><code class="sig-name descname">led_freq_hz</code><a class="headerlink" href="#pidevices.LedController.led_freq_hz" title="Permalink to this definition">¶</a></dt>
-<dd><p>LED signal frequency in hertz.</p>
+<dt id="pidevices.LedController.led_count">
+<em class="property">property </em><code class="sig-name descname">led_count</code><a class="headerlink" href="#pidevices.LedController.led_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of leds.</p>
 </dd></dl>
 
 <dl class="method">
@@ -412,9 +412,9 @@ to <code class="xref py py-data docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <dl class="method">
-<dt id="pidevices.LedController.led_count">
-<em class="property">property </em><code class="sig-name descname">led_count</code><a class="headerlink" href="#pidevices.LedController.led_count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of leds.</p>
+<dt id="pidevices.LedController.led_freq_hz">
+<em class="property">property </em><code class="sig-name descname">led_freq_hz</code><a class="headerlink" href="#pidevices.LedController.led_freq_hz" title="Permalink to this definition">¶</a></dt>
+<dd><p>LED signal frequency in hertz.</p>
 </dd></dl>
 
 <dl class="method">
@@ -424,9 +424,27 @@ to <code class="xref py py-data docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <dl class="method">
+<dt id="pidevices.LedController.led_dma">
+<em class="property">property </em><code class="sig-name descname">led_dma</code><a class="headerlink" href="#pidevices.LedController.led_dma" title="Permalink to this definition">¶</a></dt>
+<dd><p>DMA channel to use for generating signal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.led_invert">
+<em class="property">property </em><code class="sig-name descname">led_invert</code><a class="headerlink" href="#pidevices.LedController.led_invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>True to invert the signal.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pidevices.LedController.led_channel">
 <em class="property">property </em><code class="sig-name descname">led_channel</code><a class="headerlink" href="#pidevices.LedController.led_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set to ‘1’ for GPIOs 13, 19, 41, 45 or 53.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LedController.led_strip">
+<em class="property">property </em><code class="sig-name descname">led_strip</code><a class="headerlink" href="#pidevices.LedController.led_strip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip type and color ordering.</p>
 </dd></dl>
 
 <dl class="method">
