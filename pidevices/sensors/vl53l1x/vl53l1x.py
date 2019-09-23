@@ -83,12 +83,13 @@ class VL53L1X(DistanceSensor):
         bus (int): The i2c bus.
         VL53L1X_ADDRESS (int): It is the i2c address of the device. Defaults to
             0x29.
-        tca9548a_num (int):
-        tca9548a_addr (int):
+        mode (int): The ranging mode. Valid values 1(short), 2(medium),
+            3(long). Defaults to 3.
     """
 
-    def __init__(self, bus=1, VL53L1X_ADDRESS=0x29, 
-                 tca9548a_num=255, tca9548a_addr=0):
+    def __init__(self, bus=1, VL53L1X_ADDRESS=0x29,
+                 mode=VL53L1xDistanceMode.LONG):
+        # tca9548a_num=255, tca9548a_addr=0):
         """Initialize the VL53L1X ToF Sensor from ST"""
         super(VL53L1X, self).__init__(name='', max_data_length=0)
         self.max_distance = 4
@@ -96,8 +97,9 @@ class VL53L1X(DistanceSensor):
 
         self._bus = bus
         self.VL53L1X_ADDRESS = VL53L1X_ADDRESS
-        self._tca9548a_num = tca9548a_num
-        self._tca9548a_addr = tca9548a_addr
+        self._mode = mode
+        # self._tca9548a_num = tca9548a_num
+        # self._tca9548a_addr = tca9548a_addr
         self._dev = None
         # Resgiter Address
         self.ADDR_UNIT_ID_HIGH = 0x16  # Serial number high byte
@@ -109,6 +111,17 @@ class VL53L1X(DistanceSensor):
         self.ADDR_I2C_SEC_ADDR = 0x8a  # Write new I2C address after unlock
 
         self.start()
+    
+    def _set_mode(self, mode):
+        self._stop_ranging()
+        self._start_ranging(mode)
+        self._mode = mode
+    
+    def _get_mode(self):
+        return self._mode
+
+    mode = property(_set_mode, _get_mode, doc="""
+                                The distance mode of the sensor.""")
 
     def start(self):
         """Init hardware and os resources."""
@@ -116,10 +129,12 @@ class VL53L1X(DistanceSensor):
         self._i2c = self.init_interface('i2c', bus=self._bus)
         self._configure_i2c_library_functions()
         self._dev = _TOF_LIBRARY.initialise(self.VL53L1X_ADDRESS)
+        self._start_ranging(self._mode)
 
     def stop(self):
         """Free hardware and os resources."""
 
+        self._stop_ranging()
         self.hardware_interfaces[self._i2c].close()
         self._dev = None
 
@@ -162,11 +177,11 @@ class VL53L1X(DistanceSensor):
         self._i2c_write_func = _I2C_WRITE_FUNC(_i2c_write)
         _TOF_LIBRARY.VL53L1_set_i2c(self._i2c_read_func, self._i2c_write_func)
 
-    def start_ranging(self, mode=VL53L1xDistanceMode.LONG):
+    def _start_ranging(self, mode=VL53L1xDistanceMode.LONG):
         """Start VL53L1X ToF Sensor Ranging"""
         _TOF_LIBRARY.startRanging(self._dev, mode)
 
-    def stop_ranging(self):
+    def _stop_ranging(self):
         """Stop VL53L1X ToF Sensor Ranging"""
         _TOF_LIBRARY.stopRanging(self._dev)
 
