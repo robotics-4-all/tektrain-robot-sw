@@ -1,8 +1,9 @@
+"""hc_sr04.py"""
+
 import time
 from .distance_sensor import DistanceSensor
 
 
-# TODO find max pulse width from testing
 class HcSr04(DistanceSensor):
     """HcSr04 class extends :class:`DistanceSensor`
 
@@ -42,7 +43,7 @@ class HcSr04(DistanceSensor):
 
     @property
     def trigger_pin(self):
-        """Get trigger pin."""
+        """Trigger pin number."""
         return self._trigger_pin
 
     @trigger_pin.setter
@@ -52,7 +53,7 @@ class HcSr04(DistanceSensor):
 
     @property
     def echo_pin(self):
-        """Get echo pin."""
+        """Echo pin number."""
         return self._echo_pin
 
     @echo_pin.setter

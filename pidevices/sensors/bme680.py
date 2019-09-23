@@ -268,6 +268,24 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
                            self.RUN_GUS, value)
 
     @property
+    def bus(self):
+        """The i2c bus."""
+        return self._bus
+    
+    @bus.setter
+    def bus(self, value):
+        self._bus = value
+
+    @property
+    def slave(self):
+        """The i2c slave."""
+        return self._slave
+    
+    @slave.setter
+    def slave(self, value):
+        self._slave = value
+
+    @property
     def t_calib(self):
         return self._t_calib
 

@@ -46,7 +46,7 @@ class Button(Sensor):
         return self.hardware_interfaces[self._gpio].read('button')
 
     def when_pressed(self, func, *args):
-        """Function to be called when the button is pressed.
+        """Set the function to be called when the button is pressed.
         
         Set a function for asynchronous call when the button is pressed.
 

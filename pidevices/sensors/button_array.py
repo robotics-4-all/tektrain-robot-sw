@@ -51,7 +51,7 @@ class ButtonArray(Sensor):
         return self.buttons[button].read()
 
     def when_pressed(self, button, func, *args):
-        """Function to be called when a button is pressed.
+        """Set the function to be called when a button is pressed.
         
         Set a function for asynchronous call when the button is pressed.
 
@@ -88,11 +88,11 @@ class ButtonArray(Sensor):
 
         self.buttons.append(Button(pin_num))
 
-    def remove_button(self, pin_num):
+    def remove_button(self, button):
         """Remove a button from the array.
         
         Args:
-            pin_num (int): BCM number of the pin.
+            button (int): The button index.
         """
 
         del self.buttons[button]
