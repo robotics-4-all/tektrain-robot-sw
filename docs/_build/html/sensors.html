@@ -214,7 +214,7 @@
 <dl class="method">
 <dt id="pidevices.Button.when_pressed">
 <code class="sig-name descname">when_pressed</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Button.when_pressed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to be called when the button is pressed.</p>
+<dd><p>Set the function to be called when the button is pressed.</p>
 <p>Set a function for asynchronous call when the button is pressed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -286,7 +286,7 @@
 <dl class="method">
 <dt id="pidevices.ButtonArray.when_pressed">
 <code class="sig-name descname">when_pressed</code><span class="sig-paren">(</span><em class="sig-param">button</em>, <em class="sig-param">func</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.when_pressed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to be called when a button is pressed.</p>
+<dd><p>Set the function to be called when a button is pressed.</p>
 <p>Set a function for asynchronous call when the button is pressed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -329,11 +329,11 @@
 
 <dl class="method">
 <dt id="pidevices.ButtonArray.remove_button">
-<code class="sig-name descname">remove_button</code><span class="sig-paren">(</span><em class="sig-param">pin_num</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.remove_button" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove_button</code><span class="sig-paren">(</span><em class="sig-param">button</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.remove_button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a button from the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pin_num</strong> (<em>int</em>) – BCM number of the pin.</p>
+<dd class="field-odd"><p><strong>button</strong> (<em>int</em>) – The button index.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -393,13 +393,13 @@ at sea level.</p>
 <dl class="method">
 <dt id="pidevices.HcSr04.trigger_pin">
 <em class="property">property </em><code class="sig-name descname">trigger_pin</code><a class="headerlink" href="#pidevices.HcSr04.trigger_pin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get trigger pin.</p>
+<dd><p>Trigger pin number.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pidevices.HcSr04.echo_pin">
 <em class="property">property </em><code class="sig-name descname">echo_pin</code><a class="headerlink" href="#pidevices.HcSr04.echo_pin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get echo pin.</p>
+<dd><p>Echo pin number.</p>
 </dd></dl>
 
 <dl class="method">
@@ -438,7 +438,7 @@ at sea level.</p>
 <h3>vl53l1x<a class="headerlink" href="#vl53l1x" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pidevices.VL53L1X">
-<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">VL53L1X</code><span class="sig-paren">(</span><em class="sig-param">bus=1</em>, <em class="sig-param">VL53L1X_ADDRESS=41</em>, <em class="sig-param">tca9548a_num=255</em>, <em class="sig-param">tca9548a_addr=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">VL53L1X</code><span class="sig-paren">(</span><em class="sig-param">bus=1</em>, <em class="sig-param">VL53L1X_ADDRESS=41</em>, <em class="sig-param">mode=3</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X" title="Permalink to this definition">¶</a></dt>
 <dd><p>VL53L1X ToF extends <a class="reference internal" href="#pidevices.DistanceSensor" title="pidevices.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a></p>
 <dl class="simple">
 <dt>Hardware:</dt><dd><ul class="simple">
@@ -462,11 +462,17 @@ lower sampling rates and longer timing budgets.</p>
 <li><p><strong>bus</strong> (<em>int</em>) – The i2c bus.</p></li>
 <li><p><strong>VL53L1X_ADDRESS</strong> (<em>int</em>) – It is the i2c address of the device. Defaults to
 0x29.</p></li>
-<li><p><strong>tca9548a_num</strong> (<em>int</em>) – </p></li>
-<li><p><strong>tca9548a_addr</strong> (<em>int</em>) – </p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – The ranging mode. Valid values 1(short), 2(medium),
+3(long). Defaults to 3.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="pidevices.VL53L1X.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#pidevices.VL53L1X.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>The distance mode of the sensor.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pidevices.VL53L1X.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.start" title="Permalink to this definition">¶</a></dt>
@@ -477,18 +483,6 @@ lower sampling rates and longer timing budgets.</p>
 <dt id="pidevices.VL53L1X.stop">
 <code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Free hardware and os resources.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pidevices.VL53L1X.start_ranging">
-<code class="sig-name descname">start_ranging</code><span class="sig-paren">(</span><em class="sig-param">mode=3</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.start_ranging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start VL53L1X ToF Sensor Ranging</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pidevices.VL53L1X.stop_ranging">
-<code class="sig-name descname">stop_ranging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.stop_ranging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop VL53L1X ToF Sensor Ranging</p>
 </dd></dl>
 
 <dl class="method">
@@ -765,6 +759,18 @@ The format is (so_1, so_2, so_3, so_4, so_5).</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pidevices.BME680.bus">
+<em class="property">property </em><code class="sig-name descname">bus</code><a class="headerlink" href="#pidevices.BME680.bus" title="Permalink to this definition">¶</a></dt>
+<dd><p>The i2c bus.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.slave">
+<em class="property">property </em><code class="sig-name descname">slave</code><a class="headerlink" href="#pidevices.BME680.slave" title="Permalink to this definition">¶</a></dt>
+<dd><p>The i2c slave.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pidevices.BME680.start">
 <code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize hardware and os resources.</p>
@@ -772,18 +778,18 @@ The format is (so_1, so_2, so_3, so_4, so_5).</p>
 
 <dl class="method">
 <dt id="pidevices.BME680.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">TEMP=True</em>, <em class="sig-param">HUM=True</em>, <em class="sig-param">PRES=True</em>, <em class="sig-param">GAS=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">temp=True</em>, <em class="sig-param">hum=True</em>, <em class="sig-param">pres=True</em>, <em class="sig-param">gas=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a measurment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>TEMP</strong> (<em>boolean</em>) – Flag for enabling temperature measurment.
+<li><p><strong>temp</strong> (<em>boolean</em>) – Flag for enabling temperature measurment.
 Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>HUM</strong> (<em>boolean</em>) – Flag for enabling humidity measurment.
+<li><p><strong>hum</strong> (<em>boolean</em>) – Flag for enabling humidity measurment.
 Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>PRES</strong> (<em>boolean</em>) – Flag for enabling pressure measurment.
+<li><p><strong>pres</strong> (<em>boolean</em>) – Flag for enabling pressure measurment.
 Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>GAS</strong> (<em>boolean</em>) – Flag for enabling gas measurment.
+<li><p><strong>gas</strong> (<em>boolean</em>) – Flag for enabling gas measurment.
 Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 </ul>
 </dd>
@@ -816,7 +822,7 @@ Defaults to <code class="xref py py-data docutils literal notranslate"><span cla
 <dl class="method">
 <dt id="pidevices.BME680.set_heating_temp">
 <code class="sig-name descname">set_heating_temp</code><span class="sig-paren">(</span><em class="sig-param">indexes</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.set_heating_temp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set idac_heat_x registers.</p>
+<dd><p>Set res_heat_x registers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

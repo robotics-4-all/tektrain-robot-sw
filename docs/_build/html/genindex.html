@@ -163,6 +163,7 @@
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -201,9 +202,11 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIOPin.bounce">bounce() (pidevices.GPIOPin property)</a>
 </li>
-      <li><a href="hardware_interfaces.html#pidevices.I2C.bus">bus() (pidevices.I2C property)</a>
+      <li><a href="sensors.html#pidevices.BME680.bus">bus() (pidevices.BME680 property)</a>
 
       <ul>
+        <li><a href="hardware_interfaces.html#pidevices.I2C.bus">(pidevices.I2C property)</a>
+</li>
         <li><a href="actuators.html#pidevices.PCA9685.bus">(pidevices.PCA9685 property)</a>
 </li>
       </ul></li>
@@ -475,10 +478,10 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.SPI.max_speed_hz">max_speed_hz() (pidevices.SPI property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.Mcp3002">Mcp3002 (class in pidevices)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.Microphone">Microphone (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.LineFollower.min_dist">min_dist() (pidevices.LineFollower property)</a>
@@ -486,12 +489,24 @@
       <li><a href="sensors.html#pidevices.DistanceSensor.min_distance">min_distance() (pidevices.DistanceSensor property)</a>
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.mode">mode() (pidevices.CytronLfLSS05 property)</a>
+
+      <ul>
+        <li><a href="sensors.html#pidevices.VL53L1X.mode">(pidevices.VL53L1X property)</a>
 </li>
+      </ul></li>
       <li><a href="actuators.html#pidevices.Motor">Motor (class in pidevices)</a>
 </li>
       <li><a href="actuators.html#pidevices.DfrobotMotorController.motor_1">motor_1() (pidevices.DfrobotMotorController property)</a>
 </li>
       <li><a href="actuators.html#pidevices.DfrobotMotorController.motor_2">motor_2() (pidevices.DfrobotMotorController property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="actuators.html#pidevices.PCA9685.oe">oe() (pidevices.PCA9685 property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -673,6 +688,8 @@
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_pwm">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
+      <li><a href="sensors.html#pidevices.BME680.slave">slave() (pidevices.BME680 property)</a>
+</li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2">SMBus2 (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_1">so_1() (pidevices.CytronLfLSS05 property)</a>
@@ -691,6 +708,8 @@
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SPIimplementation">SPIimplementation (class in pidevices)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.BME680.start">start() (pidevices.BME680 method)</a>
 
       <ul>
@@ -725,10 +744,6 @@
         <li><a href="sensors.html#pidevices.VL53L1X.start">(pidevices.VL53L1X method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="sensors.html#pidevices.VL53L1X.start_ranging">start_ranging() (pidevices.VL53L1X method)</a>
-</li>
       <li><a href="sensors.html#pidevices.BME680.stop">stop() (pidevices.BME680 method)</a>
 
       <ul>
@@ -764,8 +779,6 @@
 </li>
       </ul></li>
       <li><a href="sensors.html#pidevices.Camera.stop_continuous">stop_continuous() (pidevices.Camera method)</a>
-</li>
-      <li><a href="sensors.html#pidevices.VL53L1X.stop_ranging">stop_ranging() (pidevices.VL53L1X method)</a>
 </li>
   </ul></td>
 </tr></table>
