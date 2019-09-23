@@ -23,11 +23,6 @@ class SMBus2(I2C):
             raise ImportError("failed to import smbus2")
         self._smbus = SMBus(bus)
 
-    @property
-    def smbus(self):
-        """Object of the smbus2 library."""
-        return self._smbus
-
     def read(self, address, register, byte_num=1):
         """Read using the smbus protocol.
 
@@ -42,9 +37,9 @@ class SMBus2(I2C):
         
         byte_num = min(byte_num, 32)
         if byte_num > 1:
-            data = self.smbus.read_i2c_block_data(address, register, byte_num)
+            data = self._smbus.read_i2c_block_data(address, register, byte_num)
         else:
-            data = self.smbus.read_byte_data(address, register)
+            data = self._smbus.read_byte_data(address, register)
 
         return data
 
@@ -58,8 +53,8 @@ class SMBus2(I2C):
                 It is error prone so write less and make consecutive calls.
         """
 
-        write_func = self.smbus.write_i2c_block_data\
-            if isinstance(data, list) else self.smbus.write_byte_data
+        write_func = self._smbus.write_i2c_block_data\
+            if isinstance(data, list) else self._smbus.write_byte_data
 
         write_func(address, register, data)
     
@@ -73,7 +68,7 @@ class SMBus2(I2C):
         """
         data = data if isinstance(data, list) else [data]
         msg = i2c_msg.write(address, [register] + data)
-        self.smbus.i2c_rdwr(msg)
+        self._smbus.i2c_rdwr(msg)
 
     def read_i2c(self, address, byte_num):
         """Read using the i2c protocol.
@@ -87,7 +82,7 @@ class SMBus2(I2C):
         """
 
         msg = i2c_msg.read(address, byte_num)
-        self.smbus.i2c_rdwr(msg)
+        self._smbus.i2c_rdwr(msg)
         res = [ord(read.buf[i]) for i in range(byte_num)]
 
         return res
@@ -109,17 +104,16 @@ class SMBus2(I2C):
         write = i2c_msg.write(address, [register] + data)
         read = i2c_msg.read(address, byte_num)
         
-        self.smbus.i2c_rdwr(write, read)
+        self._smbus.i2c_rdwr(write, read)
         res = [ord(read.buf[i]) for i in range(byte_num)]
 
         return res
 
     def close(self):
-        self.smbus.close()
+        self._smbus.close()
 
     def _set_bus(self, bus):
         self._bus = bus
 
     def _get_bus(self):
         return self._bus
-

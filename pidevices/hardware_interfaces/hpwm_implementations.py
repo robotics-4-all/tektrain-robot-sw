@@ -28,11 +28,6 @@ class HPWMPeriphery(HPWM):
 
         self._pwm = PWM(self._chip, self._SELECTED_COMB.index(pin))
 
-    @property
-    def pwm(self):
-        """Periphery pwm object."""
-        return self._pwm
-
     def read(self):
         """Read from hardware pwm pin.
         
@@ -55,32 +50,32 @@ class HPWMPeriphery(HPWM):
         self.enable = 0
 
     def _get_frequency(self):
-        return self.pwm.frequency
+        return self._pwm.frequency
 
     def _set_frequency(self, frequency):
         "Ugly solution to sysf permission error"
         try:
-            self.pwm.frequency = frequency
+            self._pwm.frequency = frequency
         except PermissionError:
             sleep(0.1)
-            self.pwm.frequency = frequency
+            self._pwm.frequency = frequency
 
     def _get_duty_cycle(self):
-        return self.pwm.duty_cycle
+        return self._pwm.duty_cycle
 
     def _set_duty_cycle(self, duty_cycle):
-        self.pwm.duty_cycle = duty_cycle
+        self._pwm.duty_cycle = duty_cycle
 
     def _get_enable(self):
         return self._enable
 
     def _set_enable(self, enable):
-        #self.pwm.enable = enable
+        #self._pwm.enable = enable
         self._enable = enable
         if self._enable:
-            self.pwm.enable()
+            self._pwm.enable()
         else:
-            self.pwm.disable()
+            self._pwm.disable()
 
     def _get_polarity(self):
         pass

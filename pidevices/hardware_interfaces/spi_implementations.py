@@ -82,4 +82,3 @@ class SPIimplementation(SPI):
 
     def _set_bits_per_word(self, value):
         self._interface.bits_per_word = value
-
