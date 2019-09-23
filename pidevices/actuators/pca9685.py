@@ -65,9 +65,18 @@ class PCA9685(ServoDriver):
         """I2C bus."""
         return self._bus
 
+    @bus.setter
+    def bus(self, value):
+        self._bus = value
+
     @property
     def oe(self):
+        """BCM number of enable pin."""
         return self._oe
+
+    @oe.setter
+    def oe(self, value):
+        self._oe = value
 
     def _set_frequency(self, freq):
         """Set the prescale value. 
@@ -222,4 +231,3 @@ class PCA9685(ServoDriver):
 
     def _settle_osc(self):
         time.sleep(0.005)
-
