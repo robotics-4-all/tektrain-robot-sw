@@ -167,9 +167,9 @@ class DfrobotMotorController(MotorController):
         """Change motor's speed.
         
         Args:
-            left_speed: Left motor speed. The value could be pwm duty cycle or
+            speed_1: Channel 1 speed. The value could be pwm duty cycle or
                 rpm. Also for backward movement the value should be negative.
-            right_speed: Right motor speed. The value could be pwm duty cycle or
+            speed_2: Channel 2 speed. The value could be pwm duty cycle or
                 rpm. Also for backward movement the value should be negative.
             RPM (boolean): Flag stating the mode of the speed values. Defaults
                 to :data:`False`.
