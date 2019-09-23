@@ -99,7 +99,7 @@ class Camera(Sensor):
         self.thread_event.wait(0.2)
 
         # Close the camera object
-        self.camera.close()
+        self._camera.close()
 
     # For formats that are raw we need to know the collumns of the image
     def read(self, batch=1, image_dims=None, image_format='rgb', SAVE=True):
@@ -120,8 +120,8 @@ class Camera(Sensor):
         raw_captures = [TimeStampedStream() for i in range(batch)]
 
         # Capture the frames
-        self.camera.capture_sequence(raw_captures, resize=image_dims,
-                                     format=image_format, use_video_port=True)
+        self._camera.capture_sequence(raw_captures, resize=image_dims,
+                                      format=image_format, use_video_port=True)
 
         # Make a deque with the frames and the timestamps
         frames = deque()
@@ -137,17 +137,18 @@ class Camera(Sensor):
 
         return frames
 
-    def _read_continuous_async(self, batch=1, image_dims=None, image_format='rgb'):
+    def _read_continuous_async(self, batch=1,
+                               image_dims=None, image_format='rgb'):
         """Run a thread for continuous capturing"""
         # Initialize the frame buffers
         raw_captures = [TimeStampedStream() for i in range(batch)]
 
         while self.thread_event.is_set():
             # Capture the frames
-            self.camera.capture_sequence(raw_captures,
-                                         resize=image_dims,
-                                         format=image_format,
-                                         use_video_port=True)
+            self._camera.capture_sequence(raw_captures,
+                                          resize=image_dims,
+                                          format=image_format,
+                                          use_video_port=True)
 
             # Append data to deque
             for capture in raw_captures:
@@ -186,4 +187,3 @@ class Camera(Sensor):
     def get_frame(self):
         """Return the last frame captured"""
         return self.data[-1]
-

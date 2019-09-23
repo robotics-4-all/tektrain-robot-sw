@@ -310,17 +310,17 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         
         self._i2c = self.init_interface("i2c", bus=self._bus)
 
-    def read(self, TEMP=True, HUM=True, PRES=True, GAS=True):
+    def read(self, temp=True, hum=True, pres=True, gas=True):
         """Get a measurment.
         
         Args:
-            TEMP (boolean): Flag for enabling temperature measurment.
+            temp (boolean): Flag for enabling temperature measurment.
                 Defaults to :data:`True`.
-            HUM (boolean): Flag for enabling humidity measurment.
+            hum (boolean): Flag for enabling humidity measurment.
                 Defaults to :data:`True`.
-            PRES (boolean): Flag for enabling pressure measurment.
+            pres (boolean): Flag for enabling pressure measurment.
                 Defaults to :data:`True`.
-            GAS (boolean): Flag for enabling gas measurment.
+            gas (boolean): Flag for enabling gas measurment.
                 Defaults to :data:`True`.
         
         Returns:
@@ -519,7 +519,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             self._set_register(self.IDAC_HEAT+i, 0, 0, val)
 
     def set_heating_temp(self, indexes, values):
-        """Set idac_heat_x registers.
+        """Set res_heat_x registers.
         
         Args:
             values: List with the values
