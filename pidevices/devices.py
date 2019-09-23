@@ -161,7 +161,7 @@ class Device(object):
         pass
 
     def restart(self):
-        """Empty function for restarting devices, which will be overloaded."""
+        """Restart the device."""
         self.stop()
         self.start()
 

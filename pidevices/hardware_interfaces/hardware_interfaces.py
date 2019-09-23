@@ -1,3 +1,5 @@
+"""hardware_interfaces.py"""
+
 from pidevices.exceptions import InvalidHPWMPin
 # TODO: Check pins global pins availability
 
