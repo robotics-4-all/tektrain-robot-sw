@@ -96,7 +96,7 @@ class VL53L1X(DistanceSensor):
         self.min_distance = 0.04
 
         self._bus = bus
-        self.VL53L1X_ADDRESS = VL53L1X_ADDRESS
+        self._VL53L1X_ADDRESS = VL53L1X_ADDRESS
         self._mode = mode
         # self._tca9548a_num = tca9548a_num
         # self._tca9548a_addr = tca9548a_addr
@@ -123,12 +123,30 @@ class VL53L1X(DistanceSensor):
     mode = property(_set_mode, _get_mode, doc="""
                                 The distance mode of the sensor.""")
 
+    @property
+    def bus(self):
+        """The i2c bus of the device."""
+        return self._bus
+    
+    @bus.setter
+    def bus(self, value):
+        self._bus = value
+
+    @property
+    def VL53L1X_ADDRESS(self):
+        """Sensor's i2c address."""
+        return self._VL53L1X_ADDRESS
+
+    @VL53L1X_ADDRESS.setter
+    def VL53L1X_ADDRESS(self, value):
+        self._VL53L1X_ADDRESS = value
+
     def start(self):
         """Init hardware and os resources."""
 
         self._i2c = self.init_interface('i2c', bus=self._bus)
         self._configure_i2c_library_functions()
-        self._dev = _TOF_LIBRARY.initialise(self.VL53L1X_ADDRESS)
+        self._dev = _TOF_LIBRARY.initialise(self._VL53L1X_ADDRESS)
         self._start_ranging(self._mode)
 
     def stop(self):
