@@ -41,10 +41,11 @@ setup(
 
     # Install required packages
     install_requires=DEPENDENCIES,
+    ext_modules=[extension],
 
     # Metadata
-    author=" ",
-    author_email=" ",
+    author="Iasonas Paraskevopoulos",
+    author_email="iaswnparaskev@gmail.com",
     description="Drivers for sensors and actuators for the raspberry pi board.",
     url=" ", 
 )
