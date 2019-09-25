@@ -56,8 +56,22 @@ try:
 except AttributeError:
     pass
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-_TOF_LIBRARY = CDLL(dir_path + '/test.so')
+#dir_path = os.path.dirname(os.path.realpath(__file__))
+#_TOF_LIBRARY = CDLL(dir_path + '/test.so')
+
+for lib_location in _POSSIBLE_LIBRARY_LOCATIONS:
+    files = glob.glob(lib_location + "/vl53l1x_python*.so")
+    if len(files) > 0:
+        lib_file = files[0]
+        try:
+            _TOF_LIBRARY = CDLL(lib_file)
+            #print("Using: " + lib_location + "/vl51l1x_python.so")
+            break
+        except OSError:
+            #print(lib_location + "/vl51l1x_python.so not found")
+            pass
+else:
+    raise OSError('Could not find vl53l1x_python.so')
 
 
 # TODO: Document args.
