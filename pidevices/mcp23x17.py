@@ -35,6 +35,7 @@ class MCP23x17(Device):
 
     _FUNCTION = {'input': 1, 'output': 0}
     _POLARITY = {'same': 0, 'reverse': 1}
+    _PULL = {'up': 1, 'down': 0}
 
     def __init__(self):
         pass
@@ -44,26 +45,24 @@ class MCP23x17(Device):
 
         Args:
             pin_num: The number of pin [0, 7]
-            function: String representing the output of the pin. Possible values
-                    are 'input' or 'output'
+            function: Boolean, it could be 1 for input and 0 for output.
             chunk: From which team of pins to use. Could be 'A'
         """
         
         address = self.IODIRA if chunk is 'A' else self.IODIRB
-        self._set_bit_register(address, pin_num+1, self._FUNCTION[function])
+        self._set_bit_register(address, pin_num+1, int(function))
 
     def set_pin_pol(self, pin_num, polarity, chunk='A'):
         """Set pin polarity
 
         Args:
             pin_num: The number of pin [0, 7]
-            Polarity: String representing the polarity of the pin. Possible values
-                    are 'same' or 'reverse'
+            Polarity (boolean): It could be 1 for reverse and 0 for same. 
             chunk: From which team of pins to use. Could be 'A'
         """
 
         address = self.IPOLA if chunk is 'A' else self.IPOLB
-        self._set_bit_register(address, pin_num+1, self._POLARITY[polarity])
+        self._set_bit_register(address, pin_num+1, int(polarity))
 
     def set_pin_int(self, pin_num, interrupt, chunk='A'):
         """Set pin interrupt on change.
@@ -92,7 +91,7 @@ class MCP23x17(Device):
         """
 
         address = self.DEFVALA if chunk is 'A' else self.DEFVALB
-        self._set_bit_register(address, pin_num+1, def_val)
+        self._set_bit_register(address, pin_num+1, int(def_val))
 
     def set_pin_intcon(self, pin_num, value, chunk='A'):
         """Set pin intcon value.
@@ -190,17 +189,17 @@ class MCP23x17(Device):
 
         self._set_bit_register(self.IOCON, 2, value)
 
-    def set_pin_pull_up(self, pin_num, enabled, chunk='A'):
+    def set_pin_pull_up(self, pin_num, pull, chunk='A'):
         """Set the pull up of a pin.
 
         Args:
             pin_num: The number of pin [0, 7]
-            enabled: Boolean.
+            pull (boolean): It could be 0 for down and 1 for up.
             chunk: From which team of pins to use. Could be 'A'
         """
 
         address = self.GPPUA if chunk is 'A' else self.GPPUB
-        self._set_bit_register(address, pin_num+1, int(enabled))
+        self._set_bit_register(address, pin_num+1, int(pull))
 
     def get_intf(self, pin_num, chunk='A'):
         """Get the pin interrupt flag.
