@@ -34,7 +34,7 @@ class MCP23x17(Device):
     OLATB = 0x15
     
     def __init__(self):
-        pass
+        super(MCP23x17, self).__init__(name="", max_data_length=0)
     
     def _get_chunk_number(self, pin_num):
         """Split a string like "A_12" to A and 12.

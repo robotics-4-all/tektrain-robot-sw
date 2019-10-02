@@ -14,6 +14,7 @@ class MCP23017(MCP23x17):
     def __init__(self, bus, address):
         """Constructor."""
 
+        super(MCP23017, self).__init__()
         self._bus = bus
         self._address = address
         self.start()
