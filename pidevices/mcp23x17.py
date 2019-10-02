@@ -1,6 +1,9 @@
+"""mcp23x17.py"""
+
 from .devices import Device
 
 
+# TODO: Change the pins numbering, instead of using chunks. Use the number 0-16
 class MCP23x17(Device): 
     """Class representing mcp23x17 chips."""
 
@@ -69,7 +72,7 @@ class MCP23x17(Device):
 
         Args:
             pin_num: The number of pin [0, 7]
-            interrupt: Boolean representing the polarity of the pin.
+            interrupt: Boolean representing the interrupt status of the pin.
             chunk: From which team of pins to use. Could be 'A'
         """
 

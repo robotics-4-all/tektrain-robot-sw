@@ -1,3 +1,5 @@
+"""mcp23017.py"""
+
 from .mcp23x17 import MCP23x17
 
 
