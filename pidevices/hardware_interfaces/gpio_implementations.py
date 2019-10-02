@@ -1,6 +1,6 @@
 """gpio_implementations.py"""
 
-from .hardware_interfaces import GPIO
+from .hardware_interfaces import GPIO, GPIOPin
 
 try:
     import RPi.GPIO as RPIGPIO
@@ -205,3 +205,84 @@ class RPiGPIO(GPIO):
         """Close interface.input"""
 
         self.remove_pins(*self.pins.keys())
+
+
+class Mcp23x17GPIO(GPIO):
+    """GPIO class implementation using mcp23x17 chip. Extends :class:`GPIO`
+    
+    Args:
+        device: Instance of mcp23017 or mcp23s17 class. After the construction
+            it can't be changed.
+        **kwargs: Could be multiple keyword arguments in the form of
+            pin_name = pin_number(pin number is A_x or B_x, because the 
+            implementation use the mcp23x17 devices.) For example for the 
+            hc-sr04 sonar, it would be echo="A_1", trigger="B_2".
+    """
+
+    MCP_FUNCTION = {'input': 1, 'output': 0}
+    MCP_POLARITY = {'reverse': 1, 'same': 0}
+    MCP_PULL = {'up': 1, 'down': 0}
+    PIN_NUMBER_MAP = {
+        'A_0': 0, 
+        'A_1': 1, 
+        'A_2': 2, 
+        'A_3': 3, 
+        'A_4': 4, 
+        'A_5': 5, 
+        'A_6': 6, 
+        'A_7': 7, 
+        'B_0': 8, 
+        'B_1': 9, 
+        'B_2': 10,
+        'B_3': 11,
+        'B_4': 12,
+        'B_5': 13,
+        'B_6': 14,
+        'B_7': 15,
+        0: 'A_0', 
+        1: 'A_1', 
+        2: 'A_2', 
+        3: 'A_3', 
+        4: 'A_4', 
+        5: 'A_5', 
+        6: 'A_6', 
+        7: 'A_7', 
+        8: 'B_0', 
+        9: 'B_1', 
+        10: 'B_2', 
+        11: 'B_3', 
+        12: 'B_4', 
+        13: 'B_5', 
+        14: 'B_6', 
+        15: 'B_7', 
+    }
+
+    def __init__(self, device, **kwargs):
+        """Contructor"""
+
+        self._pins = {}
+        self.add_pins(**kwargs)
+
+        self._device = device
+        self.initialize()
+
+    def initialize(self):
+        """Initialize"""
+        pass
+
+    def add_pins(self, **kwargs):
+        """Add new pins to the pins dictionary.
+        Args:
+            **kwargs: Keyword arguments pin_name=pin_number.
+                For example echo="A_1", trigger="B_2".
+        """
+
+        for key, value in kwargs.items():
+            self._pins[key] = GPIOPin(self.PIN_NUMBER_MAP[value])
+
+    #def read(self, pin):
+    #    if pin.function is not "input":
+    #        raise NotInputPin("Can't read from non input pin.")
+
+    #    return self._device.read(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
+    
