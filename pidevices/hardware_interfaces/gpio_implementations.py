@@ -280,9 +280,9 @@ class Mcp23x17GPIO(GPIO):
         for key, value in kwargs.items():
             self._pins[key] = GPIOPin(self.PIN_NUMBER_MAP[value])
 
-    #def read(self, pin):
-    #    if pin.function is not "input":
-    #        raise NotInputPin("Can't read from non input pin.")
+    def read(self, pin):
+        if pin.function is not "input":
+            raise NotInputPin("Can't read from non input pin.")
 
-    #    return self._device.read(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
+        return self._device.read(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
     
