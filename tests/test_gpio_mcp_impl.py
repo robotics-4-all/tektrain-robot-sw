@@ -2,6 +2,7 @@ import unittest
 import time
 from pidevices.mcp23017 import MCP23017
 from pidevices import Mcp23x17GPIO
+from pidevices.exceptions import NotInputPin
 
 
 class TestMcp23x17GPIO(unittest.TestCase):
@@ -35,6 +36,22 @@ class TestMcp23x17GPIO(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             interface.set_pin_function("trigger", "aa")
+
+    def test_set_pin_pull(self):
+        device = MCP23017(bus=1, address=0x20)
+        interface = Mcp23x17GPIO(device=device, echo='A_1', trigger='B_2')
+
+        pull = "up"
+        pin = "echo"
+        interface.init_input(pin, pull)
+        self.assertEqual(interface.pins[pin].pull, pull, 
+                         "Pull should be {}".format(pull))
+
+        with self.assertRaises(TypeError):
+            interface.set_pin_pull("echo", "aa")
+
+        with self.assertRaises(NotInputPin):
+            interface.set_pin_pull("trigger", "up")
 
 
 if __name__ == "__main__":

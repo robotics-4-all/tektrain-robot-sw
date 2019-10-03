@@ -1,6 +1,7 @@
 """gpio_implementations.py"""
 
 from .hardware_interfaces import GPIO, GPIOPin
+from ..exceptions import NotInputPin, NotOutputPin, NotPwmPin
 
 try:
     import RPi.GPIO as RPIGPIO
@@ -322,3 +323,103 @@ class Mcp23x17GPIO(GPIO):
         self._device.set_pin_dir(self.PIN_NUMBER_MAP[pin.pin_num],
                                  self.MCP_FUNCTION[function])
         pin.function = function 
+
+    def set_pin_pull(self, pin, pull):
+        if pull not in self.MCP_PULL:
+            raise TypeError("Invalid pull name, should be up or dowm.")
+
+        pin = self.pins[pin]
+        if pin.function is 'input':
+            self._device.set_pin_pull_up(self.PIN_NUMBER_MAP[pin.pin_num],
+                                         self.MCP_PULL[pull])
+            pin.pull = pull
+        else:
+            raise NotInputPin("Can't set pull up resistor to a non input pin.")
+
+    #def set_pin_pwm(self, pin, pwm):
+    #    if not isinstance(pwm, bool):
+    #        raise TypeError("Invalid pwm type, should be boolean.")
+
+    #    pin_name = pin
+    #    pin = self.pins[pin]
+
+    #    if pin.function is not 'output':
+    #        raise NotOutputPin("Can't set pwm to a non output pin.")
+
+    #    if not pin.pwm and pwm:
+    #        # The pwm is deactivated and it will be activated.
+    #        pin.frequency = 1
+    #        pin.duty_cycle = 0
+    #        self.pwm_pins[pin_name] = RPIGPIO.PWM(pin.pin_num, pin.frequency)
+    #        self.pwm_pins[pin_name].start(pin.duty_cycle)
+    #    elif pin.pwm and not pwm:
+    #        # The pwm is activated and will be deactivated.
+    #        pin.frequency = None
+    #        pin.duty_cycle = None
+    #        self.pwm_pins[pin_name].stop()
+    #        del self.pwm_pins[pin_name]
+
+    #    pin.pwm = pwm
+
+    #def set_pin_frequency(self, pin, frequency):
+    #    pin_name = pin
+    #    pin = self.pins[pin]
+    #    if pin.pwm:
+    #        pin.frequency = frequency
+    #        self.pwm_pins[pin_name].ChangeFrequency(frequency)
+    #    else:
+    #        raise NotPwmPin("Can't set frequency to a non pwm pin.")
+
+    #def set_pin_edge(self, pin, edge):
+    #    pin = self.pins[pin]
+    #    if edge not in self.RPIGPIO_EDGES:
+    #        raise TypeError("Wrong edge name, should be rising, falling or both")
+    #    if pin.function is 'input':
+    #        pin.edge = self.RPIGPIO_EDGES[edge]
+    #    else:
+    #        raise NotInputPin("Can't set edge to a non input pin.")
+
+    #def set_pin_bounce(self, pin, bounce):
+    #    self.pins[pin].bounce = bounce
+
+    #def set_pin_event(self, pin, event, *args):
+    #    # The function which needs the arguments
+    #    def callback(channel):
+    #        event(*args)
+
+    #    pin = self.pins[pin]
+
+    #    if pin.function is 'input':
+    #        if pin.bounce is None:
+    #            RPIGPIO.add_event_detect(pin.pin_num, pin.edge)
+    #        else:
+    #            RPIGPIO.add_event_detect(pin.pin_num,
+    #                                     pin.edge,
+    #                                     bouncetime=pin.bounce)
+
+    #        pin.event = event
+    #        RPIGPIO.add_event_callback(pin.pin_num, callback)
+    #    else:
+    #        # Raise exception output pin
+    #        raise NotInputPin("Can's set event to a non input pin.")
+
+    #def wait_pin_for_edge(self, pin, timeout=None):
+    #    """Wait pin for an edge detection.
+    #    Args:
+    #        pin (str): Pin name.
+    #        timeout (int): The time until it stops waiting for an edge signal.
+    #    """
+
+    #    pin = self.pins[pin]
+    #    if pin.function is'input':
+    #        if timeout is None:
+    #            RPIGPIO.wait_for_edge(pin.pin_num, pin.edge)
+    #        else:
+    #            RPIGPIO.wait_for_edge(pin.pin_num, pin.edge, timeout=timeout)
+    #    else:
+    #        raise NotInputPin("Can's wait for an event to a non input pin.")
+
+    def close(self):
+        """Close interface.input"""
+
+        self.remove_pins(*self.pins.keys())
