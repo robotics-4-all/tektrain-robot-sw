@@ -1,5 +1,6 @@
 """mcp23x17.py"""
 
+from abc import abstractmethod, ABCMeta
 from .devices import Device
 
 
@@ -86,6 +87,19 @@ class MCP23x17(Device):
         chunk, pin_num = self._get_chunk_number(pin_num)
         address = self.IODIRA if chunk is 'A' else self.IODIRB
         self._set_bit_register(address, pin_num+1, int(function))
+
+    def get_pin_dir(self, pin_num):
+        """Get pin direction
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+        """
+        
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.IODIRA if chunk is 'A' else self.IODIRB
+
+        return self._get_bit_register(address, pin_num+1)
 
     def set_pin_pol(self, pin_num, polarity):
         """Set pin polarity
@@ -348,10 +362,13 @@ class MCP23x17(Device):
         """
 
         register = self._read_interface(address)
+        print(bin(register))
+        print(bit)
         register = self._set_bit(register, bit, value)
+        print(bin(register))
         self._write_interface(address, register)
 
-    def _get_bit_register(self, address):
+    def _get_bit_register(self, address, bit):
         """Get i'th bit in from register in address.
 
         Args:
@@ -383,12 +400,11 @@ class MCP23x17(Device):
             # raise exception
             pass
 
-        bit -= 1
         max_val = 2**res - 1
-        mask = ((max_val << bit) | ((0x1 << bit) - 1)) & max_val
+        mask = ((max_val << bit) | ((0x1 << (bit-1)) - 1)) & max_val
         register &= mask
 
-        return register | (value << bit)
+        return register | (value << (bit-1))
     
     def _get_bit(self, register, bit):
         """Get the value of a specific bit from register.

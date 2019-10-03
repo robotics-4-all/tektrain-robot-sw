@@ -42,10 +42,10 @@ class MCP23017(MCP23x17):
 
         self._i2c = self.init_interface('i2c', bus=self._bus)
     
-    def read(self, address):
+    def _read_interface(self, address):
         return self.hardware_interfaces[self._i2c].read(self._address, address)
 
-    def write(self, address, value):
+    def _write_interface(self, address, value):
         self.hardware_interfaces[self._i2c].write(self._address, address, value)
 
     def stop(self):
