@@ -308,3 +308,17 @@ class Mcp23x17GPIO(GPIO):
             self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], value)
         else:
             raise NotOutputPin("Can't write to a non output pin.")
+
+    def remove_pins(self, *args):
+        for pin in args:
+            self._device.write(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
+            del self.pins[pin]
+
+    def set_pin_function(self, pin, function):
+        if function not in self.MCP_FUNCTION:
+            raise TypeError("Invalid function name should be input or output.")
+
+        pin = self.pins[pin]
+        self._device.set_pin_dir(self.PIN_NUMBER_MAP[pin.pin_num],
+                                 self.MCP_FUNCTION[function])
+        pin.function = function 
