@@ -57,7 +57,6 @@ class RPiGPIO(GPIO):
             RPIGPIO.setmode(RPIGPIO.BCM)
 
     def read(self, pin):
-        pin = self.pins[pin]
         if pin.function is not "input":
             raise NotInputPin("Can't read from non input pin.")
 
