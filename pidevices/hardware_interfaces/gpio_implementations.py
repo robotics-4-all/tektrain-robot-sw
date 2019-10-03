@@ -285,4 +285,26 @@ class Mcp23x17GPIO(GPIO):
             raise NotInputPin("Can't read from non input pin.")
 
         return self._device.read(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
-    
+
+    def write(self, pin, value):
+        if isinstance(value, int):
+            value = float(value)
+
+        if not isinstance(value, float):
+            raise TypeError("Invalid value type, should be float or int.")
+
+        if value < 0:
+            raise ValueError("The value should be positive.")
+
+        if value > 1:
+            raise ValueError("The value should be less or equal than 1.")
+
+        pin_name = pin
+        pin = self.pins[pin]
+
+        # Check if it is pwm or simple output
+        if pin.function is 'output':
+            value = int(round(value))
+            self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], value)
+        else:
+            raise NotOutputPin("Can't write to a non output pin.")
