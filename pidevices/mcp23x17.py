@@ -114,6 +114,23 @@ class MCP23x17(Device):
         address = self.IPOLA if chunk is 'A' else self.IPOLB
         self._set_bit_register(address, pin_num+1, int(polarity))
 
+    def get_pin_pol(self, pin_num):
+        """Get pin polarity
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+
+        Returns:
+            An integer indicating the polarity of the pin. 0 is for same and 
+            1 for reverse.
+        """
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.IPOLA if chunk is 'A' else self.IPOLB
+
+        return self._get_bit_register(address, pin_num+1)
+
     def set_pin_int(self, pin_num, interrupt):
         """Set pin interrupt on change.
 
@@ -128,6 +145,24 @@ class MCP23x17(Device):
         chunk, pin_num = self._get_chunk_number(pin_num)
         address = self.GPINTENA if chunk is 'A' else self.GPINTENB
         self._set_bit_register(address, pin_num+1, int(interrupt))
+
+    def get_pin_int(self, pin_num):
+        """Get pin interrupt on change.
+
+        In order to work the DEFVAL and INTCON registers must be set.
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+
+        Returns:
+            An integer indicating the interrupt status of the pin.
+        """
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.GPINTENA if chunk is 'A' else self.GPINTENB
+
+        return self._get_bit_register(address, pin_num+1)
 
     def set_pin_def_val(self, pin_num, def_val):
         """Set pin default value for comparison.
@@ -144,6 +179,25 @@ class MCP23x17(Device):
         chunk, pin_num = self._get_chunk_number(pin_num)
         address = self.DEFVALA if chunk is 'A' else self.DEFVALB
         self._set_bit_register(address, pin_num+1, int(def_val))
+
+    def get_pin_def_val(self, pin_num):
+        """Get pin default value for comparison.
+
+        The value of each bits will be compared with the value of the associate
+        pin and if they are different then an interrupt will happen.
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+
+        Returns:
+            Int representing the compare value. Should be 0 or 1.
+        """
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.DEFVALA if chunk is 'A' else self.DEFVALB
+
+        return self._get_bit_register(address, pin_num+1)
 
     def set_pin_intcon(self, pin_num, value):
         """Set pin intcon value.
@@ -162,6 +216,26 @@ class MCP23x17(Device):
         address = self.INTCONA if chunk is 'A' else self.INTCONB
         self._set_bit_register(address, pin_num+1, value)
     
+    def get_pin_intcon(self, pin_num):
+        """Get pin intcon value.
+
+        If the corresponding pin's bit is set the the value is compared with 
+        the associate bit in the DEFVAL register. Else is compared against the
+        previous value.
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+
+        Returns:
+            Int representing the value. Should be 0 or 1.
+        """
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.INTCONA if chunk is 'A' else self.INTCONB
+
+        return self._get_bit_register(address, pin_num+1)
+    
     def set_bank(self, value):
         """Set bank bit.
 
@@ -172,6 +246,17 @@ class MCP23x17(Device):
         """
 
         self._set_bit_register(self.IOCON, 8, 0)
+
+    def get_bank(self):
+        """Get bank bit.
+
+        It changes the registers mapping. Currenty it only sets it to 0.
+
+        Returns:
+            Int represents the value.
+        """
+
+        return self._get_bit_register(self.IOCON, 8)
 
     def set_mirror(self, value):
         """Set mirror bit.
@@ -184,6 +269,17 @@ class MCP23x17(Device):
 
         self._set_bit_register(self.IOCON, 7, value)
 
+    def get_mirror(self):
+        """Get mirror bit.
+
+        If it is set the INTn pins are functionally OR'ed. 
+
+        Returns:
+            Int represents the value.
+        """
+
+        return self._get_bit_register(self.IOCON, 7)
+
     def set_seqop(self, value):
         """Set SEQOP bit.
 
@@ -195,6 +291,17 @@ class MCP23x17(Device):
 
         self._set_bit_register(self.IOCON, 6, value)
 
+    def get_seqop(self):
+        """Get SEQOP bit.
+
+        It changes the sequential operation. It is usefull for polling
+
+        Returns:
+            Int represents the value.
+        """
+
+        return self._get_bit_register(self.IOCON, 6)
+
     def set_disslw(self, value):
         """Set DISSLW bit.
 
@@ -205,6 +312,17 @@ class MCP23x17(Device):
         """
 
         self._set_bit_register(self.IOCON, 5, value)
+
+    def get_disslw(self):
+        """Get DISSLW bit.
+
+        It controls the slew rate of SDA pin
+
+        Returns:
+            Int represents the value.
+        """
+
+        return self._get_bit_register(self.IOCON, 5)
 
     def set_haen(self, value):
         """It is usefull only in the mcp23s17."""
@@ -231,6 +349,18 @@ class MCP23x17(Device):
 
         self._set_bit_register(self.IOCON, 3, value)
 
+    def get_odr(self):
+        """Get ODR bit.
+
+        It enables the int pin for open drain configuration. It overrides the 
+        INTPOL bit.
+
+        Returns:
+            Int represents the value.
+        """
+
+        return self._get_bit_register(self.IOCON, 3)
+
     def set_intpol(self, value):
         """Set INTPOL bit.
 
@@ -241,6 +371,17 @@ class MCP23x17(Device):
         """
 
         self._set_bit_register(self.IOCON, 2, value)
+
+    def get_intpol(self):
+        """Get INTPOL bit.
+
+        It sets the polarity of the INT pin.
+
+        Returns:
+            Int represents the value.
+        """
+
+        return self._get_bit_register(self.IOCON, 2)
 
     def set_pin_pull_up(self, pin_num, pull):
         """Set the pull up of a pin.
@@ -254,6 +395,23 @@ class MCP23x17(Device):
         chunk, pin_num = self._get_chunk_number(pin_num)
         address = self.GPPUA if chunk is 'A' else self.GPPUB
         self._set_bit_register(address, pin_num+1, int(pull))
+
+    def get_pin_pull_up(self, pin_num):
+        """Get the pull up of a pin.
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+
+        Returns:
+            Int indicating the pin pull up resistor could be 0 for down and 
+            1 for up.
+        """
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.GPPUA if chunk is 'A' else self.GPPUB
+
+        return self._get_bit_register(address, pin_num+1)
 
     def get_intf(self, pin_num):
         """Get the pin interrupt flag.
@@ -362,10 +520,7 @@ class MCP23x17(Device):
         """
 
         register = self._read_interface(address)
-        print(bin(register))
-        print(bit)
         register = self._set_bit(register, bit, value)
-        print(bin(register))
         self._write_interface(address, register)
 
     def _get_bit_register(self, address, bit):
