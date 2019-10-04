@@ -327,16 +327,16 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
             A named tuple of type (temp, pres, hum, gas)
         """
 
-        if not HUM:
+        if not hum:
             h_oversample_bak = self.h_oversample
             self.h_oversample = 0
-        if not TEMP:
+        if not temp:
             t_oversample_bak = self.t_oversample
             self.t_oversample = 0
-        if not PRES:
+        if not pres:
             p_oversample_bak = self.p_oversample
             self.p_oversample = 0
-        if not GAS:
+        if not gas:
             self.gas_status = 0
 
         self._set_register(self.CTRL_MEAS, self.MODE_BITS,
@@ -360,13 +360,13 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         data = bme680_data(temp=temp/100, pres=pres/100, hum=humi/1000, gas=gas)
 
         # Restore values
-        if not HUM:
+        if not hum:
             self.h_oversample = h_oversample_bak 
-        if not TEMP:
+        if not temp:
             self.t_oversample = t_oversample_bak 
-        if not PRES:
+        if not pres:
             self.p_oversample = p_oversample_bak 
-        if not GAS:
+        if not gas:
             self.gas_status = 0
 
         return data
@@ -473,7 +473,7 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Convert the raw humidity using calibration data."""
         temp_scaled = ((self._t_fine * 5) + 128) >> 8
         var_1 = (humidity_adc - ((self.h_calib.par_h1 * 16))) 
-        var -= (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
+        var_1 -= (((temp_scaled * self.h_calib.par_h3) // (100)) >> 1)
         var_2 = (self.h_calib.par_h2
                  * (((temp_scaled * self.h_calib.par_h4) // (100)) 
                     + (((temp_scaled * ((temp_scaled * self.h_calib.par_h5)

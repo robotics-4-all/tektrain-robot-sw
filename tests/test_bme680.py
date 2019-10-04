@@ -52,10 +52,12 @@ class TestBME680(unittest.TestCase):
         h_over = sensor.OVERSAMPLING[h_over]
         iir_coef = sensor.IIR[iir_coef]
 
-        ctrl_meas = sensor.hardware_interfaces[sensor._i2c].read(sensor.BME_ADDRESS,
-                                                                 sensor.CTRL_MEAS)
-        ctrl_hum = sensor.hardware_interfaces[sensor._i2c].read(sensor.BME_ADDRESS,
-                                                                sensor.CTRL_HUM)
+        ctrl_meas = \
+            sensor.hardware_interfaces[sensor._i2c].read(sensor.BME_ADDRESS,
+                                                         sensor.CTRL_MEAS)
+        ctrl_hum = \
+            sensor.hardware_interfaces[sensor._i2c].read(sensor.BME_ADDRESS,
+                                                         sensor.CTRL_HUM)
         config = sensor.hardware_interfaces[sensor._i2c].read(sensor.BME_ADDRESS,
                                                               sensor.CONFIG)
 
@@ -67,7 +69,7 @@ class TestBME680(unittest.TestCase):
         self.assertEqual(t, t_over, "Should be {}".format(t_over))
         self.assertEqual(h, h_over, "Should be {}".format(h_over))
         self.assertEqual(p, p_over, "Should be {}".format(p_over))
-        self.assertEqual(iir ,iir_coef, "Should be {}".format(iir_coef))
+        self.assertEqual(iir, iir_coef, "Should be {}".format(iir_coef))
 
     def test_read(self):
         t_over = 8
@@ -92,7 +94,13 @@ class TestBME680(unittest.TestCase):
                                                                  data.gas))
             time.sleep(1)
 
-        data = sensor.read(HUM=False, GAS=False)
+        data = sensor.read(hum=False, gas=False, temp=False)
+        print("Temp: {}\tPres: {}\tHumi: {}\tGas: {}".format(data.temp,
+                                                             data.pres,
+                                                             data.hum,
+                                                             data.gas))
+
+        data = sensor.read()
         print("Temp: {}\tPres: {}\tHumi: {}\tGas: {}".format(data.temp,
                                                              data.pres,
                                                              data.hum,
@@ -102,6 +110,7 @@ class TestBME680(unittest.TestCase):
         sensor = BME680(1, 0)
         sensor._get_bytes(sensor.PAR_T1_l, 2)
         sensor._get_bytes(sensor.PAR_T1_l, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
