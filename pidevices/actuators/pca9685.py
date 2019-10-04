@@ -8,6 +8,9 @@ class PCA9685(ServoDriver):
     """Class for controlling pca9685 led/servo driver. Extends 
     :class:`ServoDriver`
     
+    Default address of the i2c slave address is 0x40 and 0x70 is for controlling
+    all the pca9685 modules simultaneously if more than one is connected.
+
     Args:
         bus (int): I2C bus.
         frequency: PWM frequency of the module.

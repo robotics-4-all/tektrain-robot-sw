@@ -1,6 +1,6 @@
 import unittest
 import time
-from pidevices.pca9685 import PCA9685 
+from pidevices import PCA9685 
 
 
 class TestPCA9685(unittest.TestCase):
@@ -20,19 +20,87 @@ class TestPCA9685(unittest.TestCase):
 
         controller.restart()
 
-        on_re_l = controller.hardware_interfaces[controller._i2c].read(controller.PCA_ADDRESS,
-                                                                       controller.LED)
-        on_re_h = controller.hardware_interfaces[controller._i2c].read(controller.PCA_ADDRESS,
-                                                                       controller.LED + 1)
-        off_re_l = controller.hardware_interfaces[controller._i2c].read(controller.PCA_ADDRESS,
-                                                                        controller.LED + 2)
-        off_re_h = controller.hardware_interfaces[controller._i2c].read(controller.PCA_ADDRESS,
-                                                                        controller.LED + 3)
+        on_re_l = controller.hardware_interfaces[controller._i2c].read(
+            controller.PCA_ADDRESS,
+            controller.LED)
+        on_re_h = controller.hardware_interfaces[controller._i2c].read(
+            controller.PCA_ADDRESS,
+            controller.LED + 1)
+        off_re_l = controller.hardware_interfaces[controller._i2c].read(
+            controller.PCA_ADDRESS,
+            controller.LED + 2)
+        off_re_h = controller.hardware_interfaces[controller._i2c].read(
+            controller.PCA_ADDRESS,
+            controller.LED + 3)
 
         self.assertEqual(on_re_l, on_l, "Should be {}".format(on_l))
         self.assertEqual(on_re_h, on_h, "Should be {}".format(on_h))
         self.assertEqual(off_re_l, off_l, "Should be {}".format(off_l))
         self.assertEqual(off_re_h, off_h, "Should be {}".format(off_h))
+
+    def test_angle(self):
+        kit = PCA9685(1, 50)
+
+        angle = 90
+        self.assertEqual(kit._angle_to_dc(angle), 0.075, "Should be 0.05")
+
+    def test_write(self):
+        kit = PCA9685(1, 50)
+        channel = 1
+        kit.write(channel, 0, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 10, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 30, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 40, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 50, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 60, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 70, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 80, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 90, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 100, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 110, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 120, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 130, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 140, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 150, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 160, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 170, degrees=True)
+        time.sleep(1)
+
+        kit.write(channel, 180, degrees=True)
+        time.sleep(1)
+
 
 if __name__ == "__main__":
     unittest.main()
