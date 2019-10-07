@@ -1,6 +1,7 @@
 """pca9685.py"""
 
 from .servo_driver import ServoDriver
+from ..exceptions import MoreValuesThanChannels
 import time
 
 
@@ -112,12 +113,12 @@ class PCA9685(ServoDriver):
         self.hardware_interfaces[self._i2c].write(self.PCA_ADDRESS,
                                                   self.MODE_1,
                                                   old_mode | 0x80)
-        
+
     def _get_frequency(self):
         """Maybe read prescaler value than having an extra variable."""
         prescaler = self.hardware_interfaces[self._i2c].read(self.PCA_ADDRESS,
                                                              self.PRESCALE)
-        return (self.OSC_CLOCK*prescaler) / (prescaler+1)
+        return int(self.OSC_CLOCK / ((prescaler + 1)*self.TICKS))
 
     frequency = property(_get_frequency, _set_frequency, doc="""
                             Frequency of the pwm channels.""")
@@ -151,34 +152,43 @@ class PCA9685(ServoDriver):
                                                   self.MODE_1,
                                                   mode)
 
-    # TODO: different values per channel
-    def write(self, channels, value, degrees=False, delay=0):
+    def write(self, channels, values, degrees=False, delay=0):
         """Drive pwm channels.
         
         Args:
             channels: Could be a list of channels or just one channel, to drive
                 all channels should be -1.
-            value: The value to be written in the pwm channels. Could be raw
-                duty cycle or angle in degrees.
-            degrees: Flag that states if the value is angle in degrees. Defaults
+            values: Could be a list of values one for every channel or just one
+                value for all the channels. The type of the all values could be
+                in duty cycle or angle in degrees.
+            degrees: Flag that states if the values is angle in degrees. Defaults
                 to :data:`False`.
             delay: Wait time until starting the on pulse. It is percentage of
                 the number of module clock ticks.
+
+        Raises:
+            MoreValuesThanChannels: Error when the length of values list is 
+                bigger than the length of channels list.
         """
         
-        if degrees:
-            duty_cycle = self._angle_to_dc(value)
-        else:
-            duty_cycle = value
-
-        # TODO: make computations for delay different of zero. Check led off 
-        # overflowing self.TICKS
-        led_on, led_off = self._compute_on_off(duty_cycle, delay)
-
         # Make it a list if is a single value
         channels = channels if isinstance(channels, list) else [channels]
+        values = values if isinstance(values, list) else [values]
 
-        for channel in channels:
+        # Check if values are more than channels
+        if len(channels) < len(values):
+            raise MoreValuesThanChannels("More values than channels.")
+
+        values_len = len(values)
+
+        for i, channel in enumerate(channels):
+            value = values[i % values_len]
+            duty_cycle = self._angle_to_dc(value) if degrees else value 
+
+            # TODO: make computations for delay different of zero. Check led off 
+            # overflowing self.TICKS
+            led_on, led_off = self._compute_on_off(duty_cycle, delay)
+
             self._set_register(self.LED + 4*channel, led_on)
             self._set_register(self.LED + 4*channel + 2, led_off)
 

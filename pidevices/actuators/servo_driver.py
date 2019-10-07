@@ -2,6 +2,7 @@
 
 from ..devices import Actuator
 
+
 class ServoDriver(Actuator):
     """Class representing a servo driver. Extends :class:`Actuator`."""
 

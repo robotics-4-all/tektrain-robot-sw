@@ -38,6 +38,16 @@ class NotConnectedCalPin(PidevicesError):
     """Error when trying to calibrate cytron lf without cal pin connected."""
     
 
+class MoreValuesThanChannels(PidevicesError):
+    """Give more values than channels in a servo driver with multiple 
+    channels.
+    """
+
+
+class NotModZero(PidevicesError):
+    """Not integral multiple."""
+
+
 class OutOfRange(PidevicesError):
     """Error when a distance sensor returns a measurment out of it's range."""
     pass

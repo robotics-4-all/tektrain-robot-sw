@@ -42,64 +42,72 @@ class TestPCA9685(unittest.TestCase):
         kit = PCA9685(1, 50)
 
         angle = 90
-        self.assertEqual(kit._angle_to_dc(angle), 0.075, "Should be 0.05")
+        self.assertEqual(kit._angle_to_dc(angle), 0.075, "Should be 0.075")
 
     def test_write(self):
+        channels = 2
         kit = PCA9685(1, 50)
-        channel = 1
-        kit.write(channel, 0, degrees=True)
-        time.sleep(1)
+        print("0 degrees to 180")
 
-        kit.write(channel, 10, degrees=True)
-        time.sleep(1)
+        for i in range(channels):
+            channel = i
 
-        kit.write(channel, 30, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 0, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 40, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 10, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 50, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 30, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 60, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 40, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 70, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 50, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 80, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 60, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 90, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 70, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 100, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 80, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 110, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 90, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 120, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 100, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 130, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 110, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 140, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 120, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 150, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 130, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 160, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 140, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 170, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 150, degrees=True)
+            time.sleep(1)
 
-        kit.write(channel, 180, degrees=True)
-        time.sleep(1)
+            kit.write(channel, 160, degrees=True)
+            time.sleep(1)
+
+            kit.write(channel, 170, degrees=True)
+            time.sleep(1)
+
+            kit.write(channel, 180, degrees=True)
+            time.sleep(1)
+
+        print("Drive two channels with same value")
+        kit.write([0, 1], 100, degrees=True)
 
 
 if __name__ == "__main__":
