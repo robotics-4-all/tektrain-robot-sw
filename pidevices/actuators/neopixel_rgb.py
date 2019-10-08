@@ -1,7 +1,7 @@
 """neopixel_rgb.py"""
 
 import time
-from rpi_ws281x import Adafruit_NeoPixel, ws
+from rpi_ws281x import Adafruit_NeoPixel, ws, Color
 from ..devices import Actuator
 
 
@@ -121,7 +121,7 @@ class LedController(Actuator):
         """Initialize hardware and os resources."""
         # Create NeoPixel object with appropriate configuration.
         self.strip = Adafruit_NeoPixel(self.led_count, self.led_pin,
-                                       self.led_freq_hz, self.led_dma,
+                                       int(self.led_freq_hz), self.led_dma,
                                        self.led_invert, self.led_brightness,
                                        self.led_channel, self.led_strip)
 
@@ -134,18 +134,18 @@ class LedController(Actuator):
         # Turn-off led strip
         self.close()
         
-    def write(self, data, wait_ms=50, WIPE=False):
+    def write(self, data, wait_ms=50, wipe=False):
         """Write to the leds.
         
         Args:
             data: A list of lists of which each list corresponds to each led 
                 and the values are [red, green, blue, brightness].
-            wait_ms (int): Optional argument that has to be set when WIPE is 
+            wait_ms (int): Optional argument that has to be set when wipe is 
                 :data:`True`. Defaults to :data:`50`.
-            WIPE: Flag for writting to all leds at once.
+            wipe: Flag for writting to all leds at once.
         """
 
-        if WIPE:
+        if wipe:
             self._color_wipe(data[0][:3], wait_ms=wait_ms, brightness=data[0][3])
         else:
             for (i, led) in enumerate(data):
