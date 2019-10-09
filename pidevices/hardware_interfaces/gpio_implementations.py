@@ -8,6 +8,11 @@ try:
 except ImportError:
     RPIGPIO = None
 
+try:
+    from ..mcp23017 import MCP23017
+except ImportError:
+    MCP23017 = None
+
 
 class RPiGPIO(GPIO):
     """GPIO hardware interface implementation using RPi.GPIO library extends
@@ -208,12 +213,14 @@ class RPiGPIO(GPIO):
         self.remove_pins(*self.pins.keys())
 
 
-class Mcp23x17GPIO(GPIO):
-    """GPIO class implementation using mcp23x17 chip. Extends :class:`GPIO`
+class Mcp23017GPIO(GPIO):
+    """GPIO class implementation using mcp23017 chip. Extends :class:`GPIO`
     
     Args:
-        device: Instance of mcp23017 or mcp23s17 class. After the construction
-            it can't be changed.
+        bus (int): Optional argument for specifying the i2c bus of the mcp23017
+            module. Defaults to :data:`1`.
+        address (int): Optional argument for specifying the i2c address of the 
+            mcp23017 module. Defaults to :data:`0x20`.
         **kwargs: Could be multiple keyword arguments in the form of
             pin_name = pin_number(pin number is A_x or B_x, because the 
             implementation use the mcp23x17 devices.) For example for the 
@@ -258,18 +265,19 @@ class Mcp23x17GPIO(GPIO):
         15: 'B_7', 
     }
 
-    def __init__(self, device, **kwargs):
+    def __init__(self, bus=1, address=0x20, **kwargs):
         """Contructor"""
 
         self._pins = {}
         self.add_pins(**kwargs)
 
-        self._device = device
+        self._bus = bus
+        self._address = address
         self.initialize()
 
     def initialize(self):
-        """Initialize"""
-        pass
+        """Initialize hardware and os resources."""
+        self._device = MCP23017(bus=bus, address=address)
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
