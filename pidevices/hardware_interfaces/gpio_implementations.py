@@ -322,7 +322,6 @@ class Mcp23017GPIO(GPIO):
 
     def remove_pins(self, *args):
         for pin in args:
-            self._device.write(self.PIN_NUMBER_MAP[self.pins[pin].pin_num], 0)
             del self.pins[pin]
 
     def set_pin_function(self, pin, function):

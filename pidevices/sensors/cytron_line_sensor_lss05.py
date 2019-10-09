@@ -197,3 +197,6 @@ class CytronLfLSS05(LineFollower):
             while c < self._PULSE_TIME:
                 sleep(self._SLEEP_TIME)
                 c += 1
+
+        # Wait module to settle
+        sleep(1.5)

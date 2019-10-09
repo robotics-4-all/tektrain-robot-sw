@@ -44,6 +44,7 @@ class TestCytronLf(unittest.TestCase):
         for i in range(20):
             print(lf.read())
             time.sleep(1)
+        lf.stop()
 
 
 if __name__ == "__main__":
