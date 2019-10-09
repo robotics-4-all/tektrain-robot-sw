@@ -22,7 +22,7 @@ class Device(object):
     hardware interface.
     """
     _IMPLEMENTATIONS = {
-        'GPIO': ["RPiGPIO"],
+        'GPIO': ["RPiGPIO", "Mcp23017GPIO"],
         'SPI': ["SPIimplementation"],
         'UART': [],
         'I2C': ["SMBus2"],
