@@ -11,7 +11,7 @@ class LineFollower(Sensor):
         self._max_frequency = freq
 
     max_frequency = property(lambda self: self._get_max_freq(),
-                             lambda self, value: self_set_max_freq(value),
+                             lambda self, value: self._set_max_freq(value),
                              doc="""Max working frequency.""")
 
     def _get_min_dist(self):

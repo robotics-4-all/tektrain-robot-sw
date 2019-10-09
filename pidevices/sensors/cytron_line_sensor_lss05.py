@@ -123,37 +123,24 @@ class CytronLfLSS05(LineFollower):
         self._mode = mode
         self._control_cal(self._MODES[mode])
 
+    @property
+    def gpio(self):
+        return self._gpio
+
+    @gpio.setter
+    def gpio(self, value):
+        self._gpio = value
+
     def start(self):
-        """Init hardware and os resources."""
-
-        self._gpio = self.init_interface("gpio",
-                                         so_1=self.so_1,
-                                         so_2=self.so_2,
-                                         so_3=self.so_3,
-                                         so_4=self.so_4,
-                                         so_5=self.so_5)
-
-        # Init pins as input and pull down the resistors.
-        self.hardware_interfaces[self._gpio].init_input("so_1", pull="down")
-        self.hardware_interfaces[self._gpio].init_input("so_2", pull="down")
-        self.hardware_interfaces[self._gpio].init_input("so_3", pull="down")
-        self.hardware_interfaces[self._gpio].init_input("so_4", pull="down")
-        self.hardware_interfaces[self._gpio].init_input("so_5", pull="down")
-
-        # If calibration line pin is connected initialize it to high.
-        if self.cal is not None:
-            self.hardware_interfaces[self._gpio].add_pins(cal=self.cal)
-            self.hardware_interfaces[self._gpio].init_output("cal", 1)
-
-            # Set mode
-            self._control_cal(self._MODES[self.mode])
-
-        # Settle hardware resources
-        sleep(1)
+        """Init hardware and os resources.
+        
+        Will be overloaded from specific implementations.
+        """
+        pass
 
     def stop(self):
         """Free hardware and os resources."""
-        self.hardware_interfaces[self._gpio].close()
+        self.hardware_interfaces[self.gpio].close()
 
     def read(self, SAVE=False):
         """Read a measurment from sensor.
@@ -166,11 +153,11 @@ class CytronLfLSS05(LineFollower):
             The format is (so_1, so_2, so_3, so_4, so_5).
         """
 
-        so_1_res = self.hardware_interfaces[self._gpio].read("so_1")
-        so_2_res = self.hardware_interfaces[self._gpio].read("so_2")
-        so_3_res = self.hardware_interfaces[self._gpio].read("so_3")
-        so_4_res = self.hardware_interfaces[self._gpio].read("so_4")
-        so_5_res = self.hardware_interfaces[self._gpio].read("so_5")
+        so_1_res = self.hardware_interfaces[self.gpio].read("so_1")
+        so_2_res = self.hardware_interfaces[self.gpio].read("so_2")
+        so_3_res = self.hardware_interfaces[self.gpio].read("so_3")
+        so_4_res = self.hardware_interfaces[self.gpio].read("so_4")
+        so_5_res = self.hardware_interfaces[self.gpio].read("so_5")
 
         res = cytron_res(so_1=so_1_res,
                          so_2=so_2_res,
@@ -199,13 +186,13 @@ class CytronLfLSS05(LineFollower):
         """
 
         for i in range(pulses):
-            self.hardware_interfaces[self._gpio].write("cal", 0)
+            self.hardware_interfaces[self.gpio].write("cal", 0)
             c = 0
             while c < self._PULSE_TIME:
                 sleep(self._SLEEP_TIME)
                 c += 1
 
-            self.hardware_interfaces[self._gpio].write("cal", 1)
+            self.hardware_interfaces[self.gpio].write("cal", 1)
             c = 0
             while c < self._PULSE_TIME:
                 sleep(self._SLEEP_TIME)
