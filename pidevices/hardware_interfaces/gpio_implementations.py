@@ -278,7 +278,7 @@ class Mcp23017GPIO(GPIO):
 
     def initialize(self):
         """Initialize hardware and os resources."""
-        self._device = MCP23017(bus=bus, address=address)
+        self._device = MCP23017(bus=self._bus, address=self._address)
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
@@ -291,10 +291,11 @@ class Mcp23017GPIO(GPIO):
             self._pins[key] = GPIOPin(self.PIN_NUMBER_MAP[value])
 
     def read(self, pin):
+        pin = self.pins[pin]
         if pin.function is not "input":
             raise NotInputPin("Can't read from non input pin.")
 
-        return self._device.read(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
+        return self._device.read(self.PIN_NUMBER_MAP[pin.pin_num])
 
     def write(self, pin, value):
         if isinstance(value, int):
@@ -321,7 +322,7 @@ class Mcp23017GPIO(GPIO):
 
     def remove_pins(self, *args):
         for pin in args:
-            self._device.write(self.PIN_NUMBER_MAP[self.pins[pin].pin_num])
+            self._device.write(self.PIN_NUMBER_MAP[self.pins[pin].pin_num], 0)
             del self.pins[pin]
 
     def set_pin_function(self, pin, function):
