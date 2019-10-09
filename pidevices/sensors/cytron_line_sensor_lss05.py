@@ -1,6 +1,9 @@
+"""cytron_line_sensor_lss05.py"""
+
 from .line_follower import LineFollower
 from time import sleep
 from collections import namedtuple
+from ..exceptions import InvalidMode
 
 
 cytron_res = namedtuple('cytron_res', ['so_1', 'so_2', 'so_3', 'so_4', 'so_5'])
@@ -114,6 +117,9 @@ class CytronLfLSS05(LineFollower):
 
     @mode.setter
     def mode(self, mode):
+        if mode not in self._MODES:
+            raise InvalidMode("Invalid sensor mode.")
+
         self._mode = mode
         self._control_cal(self._MODES[mode])
 

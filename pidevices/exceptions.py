@@ -30,6 +30,10 @@ class NotInputPin(PidevicesError):
     """Error when try to use non input pin for an input function."""
 
 
+class InvalidMode(PidevicesError):
+    """Error when inserting wrong operation mode for cytron lf."""
+
+
 class OutOfRange(PidevicesError):
     """Error when a distance sensor returns a measurment out of it's range."""
     pass
