@@ -4,7 +4,6 @@ from abc import abstractmethod, ABCMeta
 from .devices import Device
 
 
-# TODO: Change the pins numbering, instead of using chunks. Use the number 0-16
 class MCP23x17(Device): 
     """Class representing mcp23x17 chips."""
 
