@@ -63,10 +63,11 @@ class RPiGPIO(GPIO):
             RPIGPIO.setmode(RPIGPIO.BCM)
 
     def read(self, pin):
+        pin = self.pins[pin]
         if pin.function is not "input":
             raise NotInputPin("Can't read from non input pin.")
 
-        return RPIGPIO.input(self.pins[pin].pin_num)
+        return RPIGPIO.input(pin.pin_num)
 
     def write(self, pin, value):
         if isinstance(value, int):
