@@ -114,6 +114,42 @@ class TestMCP23017(unittest.TestCase):
         device.write("A_0", 0)
         self.assertEqual(device.read("A_0"), 0, "Should be 0")
 
+    def test_get_mult_intf(self):
+        device = MCP23017(1, 0x20)
+        device.set_pin_dir("A_0", 1)
+        device.read_olat("B_0")
+        #device.set_pin_dir("A_1", 0)
+        #device.set_pin_dir("B_1", 0)
+        
+        device.set_seqop(1)
+        print(device.hardware_interfaces[device._i2c].read(device._address,
+                                                           0,
+                                                           32))
+                                                           
+        for i in range(16):
+            print(device.hardware_interfaces[device._i2c].read(device._address,
+                                                               i))
+
+        for i in range(2):
+            data = device.get_mult_intf("A_0")
+            print(data)
+    
+    def test_set_bank(self):
+        device = MCP23017(1, 0x20)
+        device.hardware_interfaces[device._i2c].write(device._address, 
+                                                      device.IODIRB,
+                                                      100)
+        d = device.hardware_interfaces[device._i2c].read(device._address, 
+                                                         device.IODIRB)
+        self.assertEqual(device.IODIRB, 0x01, "Should be {}".format(0x01))
+        self.assertEqual(d, 100, "Should be {}".format(100))
+
+        device.set_bank(1)
+        d = device.hardware_interfaces[device._i2c].read(device._address, 
+                                                         device.IODIRB)
+        self.assertEqual(device.IODIRB, 0x10, "Should be {}".format(0x10))
+        self.assertEqual(d, 100, "Should be {}".format(100))
+
         
 if __name__ == "__main__":
     unittest.main()
