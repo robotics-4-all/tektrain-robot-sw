@@ -5,37 +5,80 @@ from .devices import Device
 
 
 class MCP23x17(Device): 
-    """Class representing mcp23x17 chips."""
-
-    # Registers
-    # They control the direction of pins
-    IODIRA = 0x00
-    IODIRB = 0x01
-    IPOLA = 0x02
-    IPOLB = 0x03
-    GPINTENA = 0x04
-    GPINTENB = 0x05
-    DEFVALA = 0x06
-    DEFVALB = 0x07
-    INTCONA = 0x08
-    INTCONB = 0x09
-    IOCON = 0x0A   # This register is shared between the two ports
-    GPPUA = 0x0C
-    GPPUB = 0x0D
-    INTFA = 0x0E
-    INTFB = 0x0F
-    INTCAPA = 0x10
-    INTCAPB = 0x11
-    # Read from GPIOn reads the value on the port, write to them causes a 
-    # write to the latches OLATn
-    GPIOA = 0x12
-    GPIOB = 0x13
-    OLATA = 0x14
-    OLATB = 0x15
+    """Class representing mcp23x17 chips.
     
+    Steps for interrupts:
+        - Enable interrupt on pin through GPINTEN register
+        - Define which type of signal will cause the interrupt through registers
+          INTCON and DEFVAL
+        - When an interrupt occur the bit in INT register is set.
+        - The interrupt bit remains active until the intcap register(the value
+          of gpio when the interrupt occured) or the gpio register is read.
+        - The first interrupt event causes the port contents to becopied into 
+          the INTCAP register. Subsequent interruptconditions on the port
+          will not cause an interrupt tooccur as long as the interrupt is 
+          not cleared by a readof INTCAP or GPIO.
+    """
+
     def __init__(self):
         super(MCP23x17, self).__init__(name="", max_data_length=0)
+        self._set_registers(0)
     
+    def _set_registers(self, bank):
+        """Set the registers address."""
+
+        # Registers
+        if bank:
+            # They control the direction of pins
+            self.IODIRA = 0x00
+            self.IODIRB = 0x10
+            self.IPOLA = 0x01
+            self.IPOLB = 0x11
+            self.GPINTENA = 0x02
+            self.GPINTENB = 0x12
+            self.DEFVALA = 0x03
+            self.DEFVALB = 0x13
+            self.INTCONA = 0x04
+            self.INTCONB = 0x14
+            self.IOCON = 0x05   # This register is shared between the two ports
+            self.GPPUA = 0x06
+            self.GPPUB = 0x16
+            self.INTFA = 0x07
+            self.INTFB = 0x17
+            self.INTCAPA = 0x08
+            self.INTCAPB = 0x18
+            # Read from GPIOn reads the value on the port, write to them causes a 
+            # write to the latches OLATn
+            self.GPIOA = 0x09
+            self.GPIOB = 0x19
+            self.OLATA = 0x0A
+            self.OLATB = 0x1A
+        else:
+            # They control the direction of pins
+            self.IODIRA = 0x00
+            self.IODIRB = 0x01
+            self.IPOLA = 0x02
+            self.IPOLB = 0x03
+            self.GPINTENA = 0x04
+            self.GPINTENB = 0x05
+            self.DEFVALA = 0x06
+            self.DEFVALB = 0x07
+            self.INTCONA = 0x08
+            self.INTCONB = 0x09
+            self.IOCON = 0x0A   # This register is shared between the two ports
+            self.GPPUA = 0x0C
+            self.GPPUB = 0x0D
+            self.INTFA = 0x0E
+            self.INTFB = 0x0F
+            self.INTCAPA = 0x10
+            self.INTCAPB = 0x11
+            # Read from GPIOn reads the value on the port, write to them causes a 
+            # write to the latches OLATn
+            self.GPIOA = 0x12
+            self.GPIOB = 0x13
+            self.OLATA = 0x14
+            self.OLATB = 0x15
+
     def _get_chunk_number(self, pin_num):
         """Split a string like "A_12" to A and 12.
         
@@ -244,7 +287,8 @@ class MCP23x17(Device):
             value: Int represents the value.
         """
 
-        self._set_bit_register(self.IOCON, 8, 0)
+        self._set_bit_register(self.IOCON, 8, value)
+        self._set_registers(value)
 
     def get_bank(self):
         """Get bank bit.

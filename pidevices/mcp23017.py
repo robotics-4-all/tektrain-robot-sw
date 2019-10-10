@@ -1,6 +1,7 @@
 """mcp23017.py"""
 
 from .mcp23x17 import MCP23x17
+import atexit
 
 
 class MCP23017(MCP23x17):
@@ -14,6 +15,7 @@ class MCP23017(MCP23x17):
     def __init__(self, bus, address):
         """Constructor."""
 
+        atexit.register(self.stop)
         super(MCP23017, self).__init__()
         self._bus = bus
         self._address = address
@@ -50,4 +52,8 @@ class MCP23017(MCP23x17):
 
     def stop(self):
         """Free hardware and os resources."""
-        self.hardware_interfaces[self._i2c].close()
+
+        if len(self.hardware_interfaces):
+            self.set_bank(0)
+            self.hardware_interfaces[self._i2c].close()
+            del self.hardware_interfaces[self._i2c]
