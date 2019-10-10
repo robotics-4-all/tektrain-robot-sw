@@ -474,6 +474,27 @@ class MCP23x17(Device):
 
         return self._get_bit_register(address, pin_num+1)
 
+    def get_mult_intf(self, pin_num):
+        """Get the pin interrupt flag with more bytes
+        
+        It reflects if the pin caused the interrupt.
+
+        Args:
+            pin_num (str): The pin number in format A_x or B_x, where A/B is 
+                the pin-chunk and x is the number. See modules's datasheet.
+
+        Returns:
+            A list with the flag value.
+        """
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.INTFA if chunk is 'A' else self.INTFB
+        data = self._read_sequential(address, 32)
+        print(data)
+        data = [self._get_bit(register, pin_num+1) for register in data]
+
+        return data
+
     def get_intcap(self, pin_num):
         """Get the pin's state when the interrupt occured.
 
@@ -544,7 +565,7 @@ class MCP23x17(Device):
         chunk, pin_num = self._get_chunk_number(pin_num)
         address = self.OLATA if chunk is 'A' else self.OLATB
         self._set_bit_register(address, pin_num+1, value)
-
+    
     def _read_interface(self, address):
         """Wrapper to interface read function."""
         pass

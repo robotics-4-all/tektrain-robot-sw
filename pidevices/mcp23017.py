@@ -47,6 +47,11 @@ class MCP23017(MCP23x17):
     def _read_interface(self, address):
         return self.hardware_interfaces[self._i2c].read(self._address, address)
 
+    def _read_sequential(self, address, byte_num):
+        return self.hardware_interfaces[self._i2c].read(self._address,
+                                                        address, 
+                                                        byte_num)
+
     def _write_interface(self, address, value):
         self.hardware_interfaces[self._i2c].write(self._address, address, value)
 

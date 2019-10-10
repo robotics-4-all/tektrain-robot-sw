@@ -447,21 +447,37 @@ class Mcp23017GPIO(GPIO):
     #        # Raise exception output pin
     #        raise NotInputPin("Can's set event to a non input pin.")
 
-    #def wait_pin_for_edge(self, pin, timeout=None):
-    #    """Wait pin for an edge detection.
-    #    Args:
-    #        pin (str): Pin name.
-    #        timeout (int): The time until it stops waiting for an edge signal.
-    #    """
+    def _int_preprocess(self, pin):
+        """Enable interrupt."""
+        # Enable interrupt on specifin pin
+        self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 1)
 
-    #    pin = self.pins[pin]
-    #    if pin.function is'input':
-    #        if timeout is None:
-    #            RPIGPIO.wait_for_edge(pin.pin_num, pin.edge)
-    #        else:
-    #            RPIGPIO.wait_for_edge(pin.pin_num, pin.edge, timeout=timeout)
-    #    else:
-    #        raise NotInputPin("Can's wait for an event to a non input pin.")
+    def _clean_int(self, pin):
+        """Clear interrupt."""
+        # Clear interrupt on specific pin
+        self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 0)
+
+    def wait_pin_for_edge(self, pin, timeout=None):
+        """Wait pin for an edge detection.
+        Args:
+            pin (str): Pin name.
+            timeout (int): The time until it stops waiting for an edge signal.
+        """
+
+        pin = self.pins[pin]
+        if pin.function is'input':
+            if timeout is None:
+                # Enable interrupt on specifin pin
+                self._int_preprocess(pin)
+                
+                # Poll int register
+
+                # Clear interrupt on specific pin
+                self._clean_int(pin)
+            else:
+                pass
+        else:
+            raise NotInputPin("Can's wait for an event to a non input pin.")
 
     def close(self):
         """Close interface.input"""
