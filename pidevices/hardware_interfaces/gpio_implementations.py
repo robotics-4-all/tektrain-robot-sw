@@ -227,10 +227,37 @@ class Mcp23017GPIO(GPIO):
             implementation use the mcp23x17 devices.) For example for the 
             hc-sr04 sonar, it would be echo="A_1", trigger="B_2".
     """
+    class _edges:
+        """A private class for storing values for bits that define an interrupt
+        
+        For the mcp modules these values are intcon bit and defval. If intcon
+        bit is set then the interrupt happens to the specified pin when the 
+        value is different than the value that is stored in the defval bit
+        (usefull for interrupts that occur only on rising or falling edges). 
+        Else if the intcon is cleared then the interrupt occur when the pin 
+        value is different than the previous value.
+
+        Args:
+            intcon: Int representing the int con value
+            defval: Int representing the defval
+        """
+        def __init__(self, intcon, defval):
+            """Constructor"""
+            self.intcon = intcon
+            self.defval = defval
 
     MCP_FUNCTION = {'input': 1, 'output': 0}
+
     MCP_POLARITY = {'reverse': 1, 'same': 0}
+
     MCP_PULL = {'up': 1, 'down': 0}
+
+    MCP_EDGES = {
+        'rising': _edges(intcon=1, defval=0),
+        'falling': _edges(intcon=1, defval=1),    
+        'both': _edges(intcon=0, defval=0),
+    }
+
     PIN_NUMBER_MAP = {
         'A_0': 0, 
         'A_1': 1, 
@@ -279,6 +306,10 @@ class Mcp23017GPIO(GPIO):
     def initialize(self):
         """Initialize hardware and os resources."""
         self._device = MCP23017(bus=self._bus, address=self._address)
+
+        # Configuration for interrupts
+        self._device.set_mirror(0)  # Clear the mirror bit for separate interrupts
+        self._device.set_intpol(1)  # Set int output to active high.
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
@@ -379,14 +410,18 @@ class Mcp23017GPIO(GPIO):
     #    else:
     #        raise NotPwmPin("Can't set frequency to a non pwm pin.")
 
-    #def set_pin_edge(self, pin, edge):
-    #    pin = self.pins[pin]
-    #    if edge not in self.RPIGPIO_EDGES:
-    #        raise TypeError("Wrong edge name, should be rising, falling or both")
-    #    if pin.function is 'input':
-    #        pin.edge = self.RPIGPIO_EDGES[edge]
-    #    else:
-    #        raise NotInputPin("Can't set edge to a non input pin.")
+    def set_pin_edge(self, pin, edge):
+        pin = self.pins[pin]
+        if edge not in self.MCP_EDGES:
+            raise TypeError("Wrong edge name, should be rising, falling or both")
+        if pin.function is 'input':
+            pin.edge = edge
+            self._device.set_pin_intcon(self.PIN_NUMBER_MAP[pin.pin_num],
+                                        self.MCP_EDGES[pin.edge].intcon)
+            self._device.set_pin_def_val(self.PIN_NUMBER_MAP[pin.pin_num],
+                                         self.MCP_EDGES[pin.edge].defval)
+        else:
+            raise NotInputPin("Can't set edge to a non input pin.")
 
     #def set_pin_bounce(self, pin, bounce):
     #    self.pins[pin].bounce = bounce
