@@ -81,8 +81,8 @@ class SMBus2(I2C):
             A list with byte_num elements.
         """
 
-        msg = i2c_msg.read(address, byte_num)
-        self._smbus.i2c_rdwr(msg)
+        read = i2c_msg.read(address, byte_num)
+        self._smbus.i2c_rdwr(read)
         res = [ord(read.buf[i]) for i in range(byte_num)]
 
         return res
