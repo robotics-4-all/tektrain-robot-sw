@@ -185,6 +185,9 @@ class CytronLfLSS05(LineFollower):
             pulses: The number of pulses to send.
         """
 
+        if self.cal is None:
+            raise NotConnectedCalPin("The calibration pin is not connected.")
+        
         for i in range(pulses):
             self.hardware_interfaces[self.gpio].write("cal", 0)
             c = 0

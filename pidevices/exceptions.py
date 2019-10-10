@@ -34,6 +34,10 @@ class InvalidMode(PidevicesError):
     """Error when inserting wrong operation mode for cytron lf."""
 
 
+class NotConnectedCalPin(PidevicesError):
+    """Error when trying to calibrate cytron lf without cal pin connected."""
+    
+
 class OutOfRange(PidevicesError):
     """Error when a distance sensor returns a measurment out of it's range."""
     pass
