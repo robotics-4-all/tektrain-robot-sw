@@ -18,6 +18,11 @@ class MCP23x17(Device):
           the INTCAP register. Subsequent interruptconditions on the port
           will not cause an interrupt tooccur as long as the interrupt is 
           not cleared by a readof INTCAP or GPIO.
+    
+    Seq and banks:
+        The module supports byte mode which doesn't increment the register 
+        counter. If has byte mode enable and bank 0 then the counter toggles
+        between the two registers A,B.
     """
 
     def __init__(self):

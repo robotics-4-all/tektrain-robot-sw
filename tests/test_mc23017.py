@@ -114,6 +114,19 @@ class TestMCP23017(unittest.TestCase):
         device.write("A_0", 0)
         self.assertEqual(device.read("A_0"), 0, "Should be 0")
 
+    def test_poll_int(self):
+        device = MCP23017(1, 0x20)
+        device.set_pin_dir("A_0", 0)
+
+        print("Only A")
+        device.poll_int(['A_0', 'A_1'], timeout=0.001)
+
+        print("Only B")
+        device.poll_int(['B_0', 'B_1'], timeout=0.001)
+
+        print("Both A B")
+        device.poll_int(['A_1', 'A_2', 'B_5', 'B_0', 'B_1'], timeout=0.001)
+
     def test_get_mult_intf(self):
         device = MCP23017(1, 0x20)
         device.set_pin_dir("A_0", 1)
