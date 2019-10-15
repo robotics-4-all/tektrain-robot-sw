@@ -109,10 +109,9 @@ class MCP23017(MCP23x17):
                     value = self._get_bit(data[index], num+1) ^ results[j]
 
                     if value:
-                        self.read(pin_nums[j])
+                        #print("Interrupt in {}".format(pin_nums[j]))
+                        #self.read(pin_nums[j])
                         results[j] = value  # TODO: Maybe be slow
-
-        return results
 
     def stop(self):
         """Free hardware and os resources."""
