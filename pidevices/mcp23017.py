@@ -52,17 +52,17 @@ class MCP23017(MCP23x17):
     def _write_interface(self, address, value):
         self.hardware_interfaces[self._i2c].write(self._address, address, value)
 
-    def poll_int(self, pin_nums, timeout=None):
+    def poll_int(self, pin_nums):
         """Poll the interrupt bit for the specified pin.
         
         Args:
             pin_num (list): List with the pin number in format A_x or B_x,
                 where A/B is the pin-chunk and x is the number. 
                 See modules's datasheet.
-            timeout (int): The time in s until stopping the polling.
 
         Returns:
-            Boolean indicating if an interrupt occured the specified pin.
+            List of integers indicating if an interrupt occured at 
+            the specified pin.
         """
         
         num_butes = 24  # How many bytes to read
@@ -89,32 +89,28 @@ class MCP23017(MCP23x17):
         else:
             register = self.INTFA
 
-        loc_timeout = maxsize if timeout is None else timeout  # Set timeout
         step = 1 if bank else 2
         both = step - 1  # Variable indicates if we need both registers, 0 for not
 
-        # Init results
-        results = [0 for i in pin_nums]
-
         # Poll register
         while True:
-            t_start = time.time()
-            while time.time() - t_start < loc_timeout:
-                data = self.hardware_interfaces[self._i2c].read(self.address,
-                                                                register,
-                                                                num_butes)
-                # Read for every register
-                for i in range(0, num_butes, step):
-                    for j, (chunk, num) in enumerate(nums_chunks):
-                        index = (ord(chunk) - ord('A'))*both + i
-                        value = self._get_bit(data[i], num+1)
+            data = self.hardware_interfaces[self._i2c].read(self.address,
+                                                            register,
+                                                            num_butes)
+            # Init results
+            results = [0 for i in pin_nums]
+
+            # Read for every register
+            for i in range(0, num_butes, step):
+                for j, (chunk, num) in enumerate(nums_chunks):
+                    index = (ord(chunk) - ord('A'))*both + i
+
+                    # Slow TODO: make it faster
+                    value = self._get_bit(data[index], num+1) ^ results[j]
+
+                    if value:
+                        self.read(pin_nums[j])
                         results[j] = value  # TODO: Maybe be slow
-
-                        # Break outer loop
-                        loc_timeout = (value ^ 1) * loc_timeout  
-
-            if timeout is not None or not loc_timeout:
-                break
 
         return results
 

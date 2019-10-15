@@ -116,16 +116,17 @@ class TestMCP23017(unittest.TestCase):
 
     def test_poll_int(self):
         device = MCP23017(1, 0x20)
-        device.set_pin_dir("A_0", 0)
+        device.set_pin_dir("A_0", 1)
+        device.set_pin_intcon("A_0", 1) 
+        device.set_pin_def_val("A_0", 0)
+        device.set_pin_int("A_0", 1)
 
-        print("Only A")
-        device.poll_int(['A_0', 'A_1'], timeout=0.001)
+        device.set_pin_dir("A_1", 1)
+        device.set_pin_dir("A_1", 1)
+        device.set_pin_def_val("A_1", 0)
+        device.set_pin_int("A_1", 1)
 
-        print("Only B")
-        device.poll_int(['B_0', 'B_1'], timeout=0.001)
-
-        print("Both A B")
-        device.poll_int(['A_1', 'A_2', 'B_5', 'B_0', 'B_1'], timeout=0.001)
+        device.poll_int(['A_0', 'A_1'])
 
     def test_get_mult_intf(self):
         device = MCP23017(1, 0x20)
