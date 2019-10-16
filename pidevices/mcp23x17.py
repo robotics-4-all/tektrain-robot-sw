@@ -1,5 +1,6 @@
 """mcp23x17.py"""
 
+import time
 from abc import abstractmethod, ABCMeta
 from .devices import Device
 
@@ -28,7 +29,53 @@ class MCP23x17(Device):
     def __init__(self):
         super(MCP23x17, self).__init__(name="", max_data_length=0)
         self._set_registers(0)
+
+        self._debounce = {}      # Dictionary with debounce time for pins
+        self._int_handlers = {}  # Dictionary with int handling function for pins
     
+    def set_pin_debounce(self, pin_num, value):
+        """Set the debounce time for a pin.
+        
+        Args:
+            pin_num (str): The pin number, it must be in the form of A_x or 
+                B_x.
+            value (int): The debounce time in ms.
+
+        Raises:
+            TypeError: Error when the type of value is not int.
+        """
+        
+        if not isinstance(value, int):
+            raise TypeError("Wrong value type, should be int")
+
+        # Call it for the type checking
+        _ = self._get_chunk_number(pin_num)
+
+        self._debounce[pin_num] = value
+
+    def set_int_handl_func(self, pin_num, func, *args):
+        """Set interrupt handling function for a pin
+        
+        Args:
+            pin_num (str): The pin number, it must be in the form of A_x or 
+                B_x.
+            func: The function to be called when the interrupt occur.
+            *args: The arguments of func.
+        """
+        
+        def caller():
+            func(*args)
+
+            c = 0
+            limit = self._debounce[pin_num]
+            while c < limit:
+                time.sleep(0.00094)
+                c += 1
+            self.get_intcap(pin_num)
+            print("Read")
+        
+        self._int_handlers[pin_num] = caller
+
     def _set_registers(self, bank):
         """Set the registers address."""
 

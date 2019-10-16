@@ -116,17 +116,25 @@ class TestMCP23017(unittest.TestCase):
 
     def test_poll_int(self):
         device = MCP23017(1, 0x20)
+
+        def f(pin):
+            print("Interrupt on pin {}".format(pin))
+
         pin = "A_0"
         device.set_pin_dir(pin, 1)
         device.set_pin_intcon(pin, 1) 
         device.set_pin_def_val(pin, 0)
         device.set_pin_int(pin, 1)
+        device.set_pin_debounce(pin, 0)
+        device.set_int_handl_func(pin, f, pin)
 
         pin = "A_1"
         device.set_pin_dir(pin, 1)
         device.set_pin_intcon(pin, 1) 
         device.set_pin_def_val(pin, 0)
         device.set_pin_int(pin, 1)
+        device.set_pin_debounce(pin, 1000)
+        device.set_int_handl_func(pin, f, pin)
 
         device._poll_int(['A_0', 'A_1'])
 
