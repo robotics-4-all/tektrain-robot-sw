@@ -52,11 +52,11 @@ class MCP23017(MCP23x17):
     def _write_interface(self, address, value):
         self.hardware_interfaces[self._i2c].write(self._address, address, value)
 
-    def poll_int(self, pin_nums):
+    def _poll_int(self, pin_nums):
         """Poll the interrupt bit for the specified pin.
         
         Args:
-            pin_num (list): List with the pin number in format A_x or B_x,
+            pin_nums (list): List with the pin number in format A_x or B_x,
                 where A/B is the pin-chunk and x is the number. 
                 See modules's datasheet.
 
@@ -65,7 +65,7 @@ class MCP23017(MCP23x17):
             the specified pin.
         """
         
-        num_butes = 24  # How many bytes to read
+        num_butes = 25  # How many bytes to read
 
         pin_nums = pin_nums if isinstance(pin_nums, list) else [pin_nums]
 
@@ -97,16 +97,20 @@ class MCP23017(MCP23x17):
             data = self.hardware_interfaces[self._i2c].read(self.address,
                                                             register,
                                                             num_butes)
-            # Init results
-            results = [0 for i in pin_nums]
 
-            # Read for every register
-            for i in range(0, num_butes, step):
+            # Or all the values in order to not having to skip a 1 after finding
+            # it. For example if the byte 2 is 01... then until byte 23 it would
+            # be 01 and will have to call it again.
+            for d, d_ in zip(data[::step], data[1::step]):
+                data[0] |= d
+                data[1] |= d_
+            
+            for i in range(0, step, step):
+                # Read for every register
                 for j, (chunk, num) in enumerate(nums_chunks):
                     index = (ord(chunk) - ord('A'))*both + i
 
-                    # Slow TODO: make it faster
-                    value = self._get_bit(data[index], num+1) ^ results[j]
+                    value = self._get_bit(data[index], num+1)
 
                     if value:
                         #print("Interrupt in {}".format(pin_nums[j]))
