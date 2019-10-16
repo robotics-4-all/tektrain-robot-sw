@@ -54,7 +54,7 @@ class MCP23017(MCP23x17):
     def _write_interface(self, address, value):
         self.hardware_interfaces[self._i2c].write(self._address, address, value)
 
-    def _poll_int(self, pin_nums):
+    def poll_int(self, pin_nums):
         """Poll the interrupt bit for the specified pin.
         
         Args:
@@ -67,6 +67,9 @@ class MCP23017(MCP23x17):
             the specified pin.
         """
         
+        self._poll_flag = True
+        self._poll_end = False
+
         num_butes = 25  # How many bytes to read
 
         pin_nums = pin_nums if isinstance(pin_nums, list) else [pin_nums]
@@ -95,7 +98,7 @@ class MCP23017(MCP23x17):
         both = step - 1  # Variable indicates if we need both registers, 0 for not
 
         # Poll register
-        while True:
+        while self._poll_flag:
             data = self.hardware_interfaces[self._i2c].read(self.address,
                                                             register,
                                                             num_butes)
@@ -117,9 +120,12 @@ class MCP23017(MCP23x17):
                         # Create a thread with the handling function
                         threading.Thread(target=self._int_handlers[pin_nums[j]],
                                          args=()).start()
+        self._poll_end = True
 
     def stop(self):
         """Free hardware and os resources."""
+
+        self.stop_poll_int_async()
 
         if len(self.hardware_interfaces):
             self.set_bank(0)

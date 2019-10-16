@@ -142,7 +142,40 @@ class TestMCP23017(unittest.TestCase):
         f.c = 0
         device.set_int_handl_func(pin, f, pin)
 
-        device._poll_int(['A_0', 'A_1'])
+        device.poll_int(['A_0', 'A_1'])
+
+    def test_poll_int_async(self):
+        device = MCP23017(1, 0x20)
+
+        def f_1(pin):
+            print("{} Interrupt on pin {}".format(f_1.c, pin))
+            f_1.c += 1
+
+        pin = "A_0"
+        device.set_pin_dir(pin, 1)
+        device.set_pin_intcon(pin, 1) 
+        device.set_pin_def_val(pin, 0)
+        device.set_pin_int(pin, 1)
+        device.set_pin_debounce(pin, 200)
+        f_1.c = 0
+        device.set_int_handl_func(pin, f_1, pin)
+
+        def f(pin):
+            print("{} Interrupt on pin {}".format(f.c, pin))
+            f.c += 1
+        pin = "A_1"
+        device.set_pin_dir(pin, 1)
+        device.set_pin_intcon(pin, 1) 
+        device.set_pin_def_val(pin, 0)
+        device.set_pin_int(pin, 1)
+        device.set_pin_debounce(pin, 200)
+        f.c = 0
+        device.set_int_handl_func(pin, f, pin)
+
+        device.poll_int_async(['A_0', 'A_1'])
+        time.sleep(5)
+        device.poll_int_async(['A_0', 'A_1'])
+        device.stop_poll_int_async()
 
     def test_get_mult_intf(self):
         device = MCP23017(1, 0x20)

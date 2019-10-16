@@ -1,6 +1,8 @@
 """mcp23x17.py"""
 
 import time
+import warnings
+from threading import Thread
 from abc import abstractmethod, ABCMeta
 from .devices import Device
 
@@ -32,6 +34,8 @@ class MCP23x17(Device):
 
         self._debounce = {}      # Dictionary with debounce time for pins
         self._int_handlers = {}  # Dictionary with int handling function for pins
+        self._poll_async = False
+        self._poll_flag = False
     
     def set_pin_debounce(self, pin_num, value):
         """Set the debounce time for a pin.
@@ -74,6 +78,24 @@ class MCP23x17(Device):
         
         caller.t_s = -10000
         self._int_handlers[pin_num] = caller
+
+    def poll_int_async(self, pin_nums):
+        """Async polling of interrupt flags."""
+        if self._poll_flag:
+            warnings.warn("Already polling for interrupts")
+        else:
+            Thread(target=self.poll_int, args=(pin_nums,)).start()
+            self._poll_async = True
+
+    def stop_poll_int_async(self):
+        """Stop async polling"""
+
+        if self._poll_flag and self._poll_async:
+            self._poll_flag = False
+
+            # Wait polling thread to exit
+            while not self._poll_end:
+                time.sleep(1)
 
     def _set_registers(self, bank):
         """Set the registers address."""
