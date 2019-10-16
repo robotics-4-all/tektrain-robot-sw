@@ -94,16 +94,11 @@ class MCP23017(MCP23x17):
         step = 1 if bank else 2
         both = step - 1  # Variable indicates if we need both registers, 0 for not
 
-        # Save previous flags
-        prev = [0 for i in pin_nums]
-
         # Poll register
-        c = 0
         while True:
             data = self.hardware_interfaces[self._i2c].read(self.address,
                                                             register,
                                                             num_butes)
-            print(data)
             # Or all the values in order to not having to skip a 1 after finding
             # it. For example if the byte 2 is 01... then until byte 23 it would
             # be 01 and will have to call it again.
@@ -118,63 +113,10 @@ class MCP23017(MCP23x17):
 
                     value = self._get_bit(data[index], num+1)
 
-                    #if value:
-                    #    print("INT pin {}".format(pin_nums[j]))
-                    #    print(value, prev[j], value ^ prev[j])
-
-                    #    if c < 1:
-                    #        print("READ")
-                    #        time.sleep(1)
-                    #        self.read('A_0')
-                    #        self.read('A_1')
-                    #        data = self.hardware_interfaces[self._i2c].read(self.address,
-                    #                                                        register,
-                    #                                                        num_butes)
-                    #        print(data)
-                    #        sys.exit()
-                    #    c += 1
-
-                    if value and (value ^ prev[j]):
-                        print("INT pin {}".format(pin_nums[j]))
+                    if value: 
                         # Create a thread with the handling function
                         threading.Thread(target=self._int_handlers[pin_nums[j]],
                                          args=()).start()
-                        #self._int_handlers[pin_nums[j]]()
-                        #self.read(pin_nums[j])
-
-                    prev[j] = value
-
-    def _int_handler(self, pin_num):
-        """Handle interrupt occurences
-        
-        Call for every pin the handling function. In the handling function 
-        check for the debounce time and clear the register.
-        """
-        pass
-    
-    def _A_0_handler(self):
-        pass
-
-    def _A_1_handler(self):
-        pass
-
-    def _A_2_handler(self):
-        pass
-
-    def _A_3_handler(self):
-        pass
-
-    def _A_4_handler(self):
-        pass
-
-    def _A_5_handler(self):
-        pass
-
-    def _A_6_handler(self):
-        pass
-
-    def _A_7_handler(self):
-        pass
 
     def stop(self):
         """Free hardware and os resources."""

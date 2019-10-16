@@ -51,7 +51,7 @@ class MCP23x17(Device):
         # Call it for the type checking
         _ = self._get_chunk_number(pin_num)
 
-        self._debounce[pin_num] = value
+        self._debounce[pin_num] = value * 1e-3
 
     def set_int_handl_func(self, pin_num, func, *args):
         """Set interrupt handling function for a pin
@@ -64,16 +64,15 @@ class MCP23x17(Device):
         """
         
         def caller():
-            func(*args)
 
-            c = 0
+            t_now = time.time()
             limit = self._debounce[pin_num]
-            while c < limit:
-                time.sleep(0.00094)
-                c += 1
+            if t_now - caller.t_s > limit:
+                func(*args)
+                caller.t_s = t_now
             self.get_intcap(pin_num)
-            print("Read")
         
+        caller.t_s = -10000
         self._int_handlers[pin_num] = caller
 
     def _set_registers(self, bank):
