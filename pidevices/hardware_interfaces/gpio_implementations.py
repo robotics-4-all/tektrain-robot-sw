@@ -2,6 +2,7 @@
 
 from .hardware_interfaces import GPIO, GPIOPin
 from ..exceptions import NotInputPin, NotOutputPin, NotPwmPin
+from threading import Thread
 
 try:
     import RPi.GPIO as RPIGPIO
@@ -423,29 +424,41 @@ class Mcp23017GPIO(GPIO):
         else:
             raise NotInputPin("Can't set edge to a non input pin.")
 
-    #def set_pin_bounce(self, pin, bounce):
-    #    self.pins[pin].bounce = bounce
+    def set_pin_bounce(self, pin, bounce):
+        pin = self.pins[pin]
 
-    #def set_pin_event(self, pin, event, *args):
-    #    # The function which needs the arguments
-    #    def callback(channel):
-    #        event(*args)
+        if pin.function is 'input':
+            self._device.set_pin_bounce(self.PIN_NUMBER_MAP[pin.pin_num], bounce)
+            self.pins[pin].bounce = bounce
+        else:
+            raise NotInputPin("Can't set edge to a non input pin.")
 
-    #    pin = self.pins[pin]
+    def set_pin_event(self, pin, event, *args):
+        if pin.function is 'input':
+            if pin.bounce is None:
+                self.set_pin_bounce(pin, 0)
+            
+            pin = self.pins[pin]
 
-    #    if pin.function is 'input':
-    #        if pin.bounce is None:
-    #            RPIGPIO.add_event_detect(pin.pin_num, pin.edge)
-    #        else:
-    #            RPIGPIO.add_event_detect(pin.pin_num,
-    #                                     pin.edge,
-    #                                     bouncetime=pin.bounce)
+            # Enable interrupts on pin
+            self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 1)
 
-    #        pin.event = event
-    #        RPIGPIO.add_event_callback(pin.pin_num, callback)
-    #    else:
-    #        # Raise exception output pin
-    #        raise NotInputPin("Can's set event to a non input pin.")
+            # Set event
+            pin.event = event
+            self._device.set_int_handl_func(self.PIN_NUMBER_MAP[pin.pin_num],
+                                            event,
+                                            *args)
+        else:
+            # Raise exception output pin
+            raise NotInputPin("Can's set event to a non input pin.")
+
+    def start_polling(self, pins):
+        """Start polling for interrupts the specified pins."""
+        self._device.poll_int_async(pins)
+
+    def stop_polling(self, pins):
+        """Stop polling for interrupts"""
+        self._device.stop_poll_int_async()
 
     def _int_preprocess(self, pin):
         """Enable interrupt."""
