@@ -29,11 +29,7 @@ class Button(Sensor):
 
     def start(self):
         """Init hardware and os resources."""
-
-        self._gpio = self.init_interface('gpio', button=self.pin_num)
-        self.hardware_interfaces[self._gpio].init_input('button', 'up')
-        self.hardware_interfaces[self._gpio].set_pin_bounce('button', 200)
-        self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
+        pass
     
     def read(self):
         """Read current state of button.
@@ -66,3 +62,26 @@ class Button(Sensor):
         """Free hardware and os resources."""
 
         self.hardware_interfaces[self._gpio].close()
+
+
+class ButtonRPiGPIO(Button):
+    """A single button with rpigpio implementation extends :class:`Button`.
+    
+    Args:
+        pin_num (int): BCM number of the pin.
+    """
+    
+    def __init__(self, pin_num, name='', max_data_length=0):
+        """Constructor"""
+
+        super(ButtonRPiGPIO, self).__init__(pin_num, name, max_data_length)
+
+    def start(self):
+        """Init hardware and OS resources."""
+
+        self._gpio = self.init_interface('gpio',
+                                         impl="RPiGPIO",
+                                         button=self.pin_num)
+        self.hardware_interfaces[self._gpio].init_input('button', 'up')
+        self.hardware_interfaces[self._gpio].set_pin_bounce('button', 200)
+        self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
