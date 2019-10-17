@@ -85,3 +85,39 @@ class ButtonRPiGPIO(Button):
         self.hardware_interfaces[self._gpio].init_input('button', 'up')
         self.hardware_interfaces[self._gpio].set_pin_bounce('button', 200)
         self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
+
+
+class ButtonMcp23017(Button):
+    """A single button with mcp23017 implementation extends :class:`Button`.
+    
+    Args:
+        pin_num (int): The module's pin number.
+    """
+    
+    def __init__(self, pin_num, name='', max_data_length=0):
+        """Constructor"""
+
+        super(ButtonMcp23017, self).__init__(pin_num, name, max_data_length)
+
+    def start(self):
+        """Init hardware and OS resources."""
+
+        self._gpio = self.init_interface('gpio',
+                                         impl="Mcp23017GPIO",
+                                         button=self.pin_num)
+        self.hardware_interfaces[self._gpio].init_input('button', 'down')
+        self.hardware_interfaces[self._gpio].set_pin_bounce('button', 400)
+        self.hardware_interfaces[self._gpio].set_pin_edge('button', 'rising')
+
+    def when_pressed(self, func, *args):
+        """Set the function to be called when the button is pressed.
+        
+        Set a function for asynchronous call when the button is pressed.
+
+        Args:
+            func (function): The function.
+            *args: Arguments for the function.
+        """
+
+        self.hardware_interfaces[self._gpio].set_pin_event('button', func, *args)
+        self.hardware_interfaces[self._gpio].start_polling('button')
