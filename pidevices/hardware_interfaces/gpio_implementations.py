@@ -215,14 +215,10 @@ class RPiGPIO(GPIO):
         self.remove_pins(*self.pins.keys())
 
 
-class Mcp23017GPIO(GPIO):
+class Mcp23x17GPIO(GPIO):
     """GPIO class implementation using mcp23017 chip. Extends :class:`GPIO`
     
     Args:
-        bus (int): Optional argument for specifying the i2c bus of the mcp23017
-            module. Defaults to :data:`1`.
-        address (int): Optional argument for specifying the i2c address of the 
-            mcp23017 module. Defaults to :data:`0x20`.
         **kwargs: Could be multiple keyword arguments in the form of
             pin_name = pin_number(pin number is A_x or B_x, because the 
             implementation use the mcp23x17 devices.) For example for the 
@@ -294,24 +290,18 @@ class Mcp23017GPIO(GPIO):
         15: 'B_7', 
     }
 
-    def __init__(self, bus=1, address=0x20, **kwargs):
+    def __init__(self, **kwargs):
         """Contructor"""
 
         self._pins = {}
         self._int_pins = []
         self.add_pins(**kwargs)
 
-        self._bus = bus
-        self._address = address
         self.initialize()
 
     def initialize(self):
         """Initialize hardware and os resources."""
-        self._device = MCP23017(bus=self._bus, address=self._address)
-
-        # Configuration for interrupts
-        self._device.set_mirror(0)  # Clear the mirror bit for separate interrupts
-        self._device.set_intpol(1)  # Set int output to active high.
+        pass
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
@@ -378,40 +368,6 @@ class Mcp23017GPIO(GPIO):
         else:
             raise NotInputPin("Can't set pull up resistor to a non input pin.")
 
-    #def set_pin_pwm(self, pin, pwm):
-    #    if not isinstance(pwm, bool):
-    #        raise TypeError("Invalid pwm type, should be boolean.")
-
-    #    pin_name = pin
-    #    pin = self.pins[pin]
-
-    #    if pin.function is not 'output':
-    #        raise NotOutputPin("Can't set pwm to a non output pin.")
-
-    #    if not pin.pwm and pwm:
-    #        # The pwm is deactivated and it will be activated.
-    #        pin.frequency = 1
-    #        pin.duty_cycle = 0
-    #        self.pwm_pins[pin_name] = RPIGPIO.PWM(pin.pin_num, pin.frequency)
-    #        self.pwm_pins[pin_name].start(pin.duty_cycle)
-    #    elif pin.pwm and not pwm:
-    #        # The pwm is activated and will be deactivated.
-    #        pin.frequency = None
-    #        pin.duty_cycle = None
-    #        self.pwm_pins[pin_name].stop()
-    #        del self.pwm_pins[pin_name]
-
-    #    pin.pwm = pwm
-
-    #def set_pin_frequency(self, pin, frequency):
-    #    pin_name = pin
-    #    pin = self.pins[pin]
-    #    if pin.pwm:
-    #        pin.frequency = frequency
-    #        self.pwm_pins[pin_name].ChangeFrequency(frequency)
-    #    else:
-    #        raise NotPwmPin("Can't set frequency to a non pwm pin.")
-
     def set_pin_edge(self, pin, edge):
         pin = self.pins[pin]
         if edge not in self.MCP_EDGES:
@@ -463,6 +419,7 @@ class Mcp23017GPIO(GPIO):
 
     def stop_polling(self):
         """Stop polling for interrupts"""
+
         self._device.stop_poll_int_async()
 
     def wait_pin_for_edge(self, pin, timeout=None):
@@ -495,3 +452,34 @@ class Mcp23017GPIO(GPIO):
             del self._int_pins[0]
 
         self.remove_pins(*self.pins.keys())
+        self._device.stop()
+
+
+class Mcp23017GPIO(Mcp23x17GPIO):
+    """GPIO class implementation using mcp23017 chip. Extends :class:`GPIO`
+    
+    Args:
+        bus (int): Optional argument for specifying the i2c bus of the mcp23017
+            module. Defaults to :data:`1`.
+        address (int): Optional argument for specifying the i2c address of the 
+            mcp23017 module. Defaults to :data:`0x20`.
+        **kwargs: Could be multiple keyword arguments in the form of
+            pin_name = pin_number(pin number is A_x or B_x, because the 
+            implementation use the mcp23x17 devices.) For example for the 
+            hc-sr04 sonar, it would be echo="A_1", trigger="B_2".
+    """
+
+    def __init__(self, bus=1, address=0x20, **kwargs):
+        """Contructor"""
+
+        self._bus = bus
+        self._address = address
+        super(Mcp23017GPIO, self).__init__(**kwargs)
+
+    def initialize(self):
+        """Initialize hardware and os resources."""
+        self._device = MCP23017(bus=self._bus, address=self._address)
+
+        # Configuration for interrupts
+        self._device.set_mirror(0)  # Clear the mirror bit for separate interrupts
+        self._device.set_intpol(1)  # Set int output to active high.
