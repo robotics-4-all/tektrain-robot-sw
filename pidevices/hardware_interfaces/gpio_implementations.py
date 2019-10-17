@@ -298,6 +298,7 @@ class Mcp23017GPIO(GPIO):
         """Contructor"""
 
         self._pins = {}
+        self._int_pins = []
         self.add_pins(**kwargs)
 
         self._bus = bus
@@ -428,20 +429,23 @@ class Mcp23017GPIO(GPIO):
         pin = self.pins[pin]
 
         if pin.function is 'input':
-            self._device.set_pin_bounce(self.PIN_NUMBER_MAP[pin.pin_num], bounce)
-            self.pins[pin].bounce = bounce
+            self._device.set_pin_debounce(self.PIN_NUMBER_MAP[pin.pin_num],
+                                          bounce)
+            pin.bounce = bounce
         else:
             raise NotInputPin("Can't set edge to a non input pin.")
 
     def set_pin_event(self, pin, event, *args):
+        pin_name = pin
+        pin = self.pins[pin]
+
         if pin.function is 'input':
             if pin.bounce is None:
-                self.set_pin_bounce(pin, 0)
-            
-            pin = self.pins[pin]
+                self.set_pin_bounce(pin_name, 0)
 
             # Enable interrupts on pin
             self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 1)
+            self._int_pins.append(pin)  # Append to list with intrpt enable pins
 
             # Set event
             pin.event = event
@@ -454,21 +458,12 @@ class Mcp23017GPIO(GPIO):
 
     def start_polling(self, pins):
         """Start polling for interrupts the specified pins."""
+        pins = [self.PIN_NUMBER_MAP[self.pins[pin].pin_num] for pin in pins]
         self._device.poll_int_async(pins)
 
-    def stop_polling(self, pins):
+    def stop_polling(self):
         """Stop polling for interrupts"""
         self._device.stop_poll_int_async()
-
-    def _int_preprocess(self, pin):
-        """Enable interrupt."""
-        # Enable interrupt on specifin pin
-        self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 1)
-
-    def _clean_int(self, pin):
-        """Clear interrupt."""
-        # Clear interrupt on specific pin
-        self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 0)
 
     def wait_pin_for_edge(self, pin, timeout=None):
         """Wait pin for an edge detection.
@@ -480,13 +475,7 @@ class Mcp23017GPIO(GPIO):
         pin = self.pins[pin]
         if pin.function is'input':
             if timeout is None:
-                # Enable interrupt on specifin pin
-                self._int_preprocess(pin)
-                
-                # Poll int register
-
-                # Clear interrupt on specific pin
-                self._clean_int(pin)
+                pass
             else:
                 pass
         else:
@@ -494,5 +483,11 @@ class Mcp23017GPIO(GPIO):
 
     def close(self):
         """Close interface.input"""
+
+        # Clear interrupts from pins that have them enabled.
+        for i in range(len(self._int_pins)):
+            pin = self._int_pins[0]
+            self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 0)
+            del self._int_pins[0]
 
         self.remove_pins(*self.pins.keys())
