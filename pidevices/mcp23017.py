@@ -122,12 +122,59 @@ class MCP23017(MCP23x17):
                                          args=()).start()
         self._poll_end = True
 
+    def wait_pin_for_edge(self, pin_num, timeout=None):
+        """Wait for an edge signal on a pin.
+        
+        Args:
+            pin_num (str): The pin number in format A_x or B_x,
+                where A/B is the pin-chunk and x is the number. 
+            timeout (int): The time of waiting in ms. If it is none will wait 
+                until the edge signal occur. Defaults to :data:`None`.
+
+        Return:
+            An integer indicating if the interrupt occured.
+        """
+
+        # Enable interrupts
+        self.set_pin_int(pin_num, 1)
+
+        self.set_seqop(1)
+        self.set_bank(1)
+
+        chunk, pin_num = self._get_chunk_number(pin_num)
+        address = self.INTFA if chunk is 'A' else self.INTFB
+
+        num_butes = 24
+
+        # Use timeout
+        if timeout is None:
+            timeout = maxsize
+        else:
+            timeout /= 1000
+
+        iter_flag = 0
+        t_s = time.time()
+        while (not iter_flag) and (time.time() - t_s < timeout):
+            data = self.hardware_interfaces[self._i2c].read(self.address,
+                                                            address,
+                                                            num_butes)
+            for d in data:
+                iter_flag = self._get_bit(d, pin_num+1)
+
+        self.read(chunk + "_" + str(pin_num))
+
+        # Disable interrupts
+        self.set_pin_int(chunk + "_" + str(pin_num), 0)
+
+        return iter_flag
+
     def stop(self):
         """Free hardware and os resources."""
 
         self.stop_poll_int_async()
 
         if len(self.hardware_interfaces):
+            self.set_seqop(0)
             self.set_bank(0)
             self.hardware_interfaces[self._i2c].close()
             del self.hardware_interfaces[self._i2c]

@@ -213,6 +213,15 @@ class TestMCP23017(unittest.TestCase):
         self.assertEqual(device.IODIRB, 0x10, "Should be {}".format(0x10))
         self.assertEqual(d, 100, "Should be {}".format(100))
 
+    def test_wait_for_edge(self):
+        device = MCP23017(1, 0x20)
+
+        pin = "A_0"
+        device.set_pin_dir(pin, 1)
+        device.set_pin_intcon(pin, 1) 
+        device.set_pin_def_val(pin, 0)
+        device.wait_pin_for_edge(pin)
         
+
 if __name__ == "__main__":
     unittest.main()
