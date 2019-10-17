@@ -414,6 +414,8 @@ class Mcp23x17GPIO(GPIO):
 
     def start_polling(self, pins):
         """Start polling for interrupts the specified pins."""
+        pins = pins if isinstance(pins, list) else [pins]
+
         pins = [self.PIN_NUMBER_MAP[self.pins[pin].pin_num] for pin in pins]
         self._device.poll_int_async(pins)
 
