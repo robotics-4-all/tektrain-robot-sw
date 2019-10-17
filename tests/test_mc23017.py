@@ -177,26 +177,6 @@ class TestMCP23017(unittest.TestCase):
         device.poll_int_async(['A_0', 'A_1'])
         device.stop_poll_int_async()
 
-    def test_get_mult_intf(self):
-        device = MCP23017(1, 0x20)
-        device.set_pin_dir("A_0", 1)
-        device.read_olat("B_0")
-        #device.set_pin_dir("A_1", 0)
-        #device.set_pin_dir("B_1", 0)
-        
-        device.set_seqop(1)
-        print(device.hardware_interfaces[device._i2c].read(device._address,
-                                                           0,
-                                                           32))
-                                                           
-        for i in range(16):
-            print(device.hardware_interfaces[device._i2c].read(device._address,
-                                                               i))
-
-        for i in range(2):
-            data = device.get_mult_intf("A_0")
-            print(data)
-    
     def test_set_bank(self):
         device = MCP23017(1, 0x20)
         device.hardware_interfaces[device._i2c].write(device._address, 

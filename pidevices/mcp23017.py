@@ -120,6 +120,9 @@ class MCP23017(MCP23x17):
                         # Create a thread with the handling function
                         threading.Thread(target=self._int_handlers[pin_nums[j]],
                                          args=()).start()
+
+        self.set_seqop(0)
+        self.set_bank(0)
         self._poll_end = True
 
     def wait_pin_for_edge(self, pin_num, timeout=None):

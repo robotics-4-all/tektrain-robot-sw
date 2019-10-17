@@ -132,7 +132,7 @@ class TestMcp23017GPIO(unittest.TestCase):
         interface.set_pin_event("trigger", f_1, trigger_pin_num)
 
         interface.start_polling(["echo", "trigger"])
-        time.sleep(15)
+        time.sleep(5)
         interface.stop_polling()
         interface.close()
 
