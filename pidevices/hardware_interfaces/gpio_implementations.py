@@ -467,19 +467,23 @@ class Mcp23017GPIO(GPIO):
 
     def wait_pin_for_edge(self, pin, timeout=None):
         """Wait pin for an edge detection.
+
         Args:
             pin (str): Pin name.
             timeout (int): The time until it stops waiting for an edge signal.
+
+        Returns:
+            An int indicating if the interrupt occured.
         """
 
         pin = self.pins[pin]
         if pin.function is'input':
-            if timeout is None:
-                pass
-            else:
-                pass
+            ret = self._device.wait_pin_for_edge(self.PIN_NUMBER_MAP[pin.pin_num],
+                                                 timeout)
         else:
             raise NotInputPin("Can's wait for an event to a non input pin.")
+        
+        return ret
 
     def close(self):
         """Close interface.input"""

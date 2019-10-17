@@ -136,6 +136,15 @@ class TestMcp23017GPIO(unittest.TestCase):
         interface.stop_polling()
         interface.close()
 
+    def test_wait_pin_for_edge(self):
+        interface = Mcp23017GPIO(echo='A_0', trigger='A_1')
+        interface.init_input("echo", "down")
+        interface.set_pin_edge("echo", "rising")
+        val = interface.wait_pin_for_edge("echo")
+        self.assertEqual(val, 1, "Should be 1")
+        val = interface.wait_pin_for_edge("echo", timeout=2000)
+        self.assertEqual(val, 0, "Should be 0")
+
 
 if __name__ == "__main__":
     unittest.main()
