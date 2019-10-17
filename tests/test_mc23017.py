@@ -220,7 +220,11 @@ class TestMCP23017(unittest.TestCase):
         device.set_pin_dir(pin, 1)
         device.set_pin_intcon(pin, 1) 
         device.set_pin_def_val(pin, 0)
-        device.wait_pin_for_edge(pin)
+        val = device.wait_pin_for_edge(pin)
+        self.assertEqual(val, 1, "Should be 1")
+
+        val = device.wait_pin_for_edge(pin, timeout=2000)
+        self.assertEqual(val, 0, "Should be 0")
         
 
 if __name__ == "__main__":

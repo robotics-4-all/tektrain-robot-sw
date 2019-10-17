@@ -161,7 +161,14 @@ class MCP23017(MCP23x17):
             for d in data:
                 iter_flag = self._get_bit(d, pin_num+1)
 
-        self.read(chunk + "_" + str(pin_num))
+        val = 1
+        while val:
+            data = self.hardware_interfaces[self._i2c].read(self.address,
+                                                            address,
+                                                            num_butes)
+            for d in data:
+                val = self._get_bit(d, pin_num+1)
+                self.read(chunk + "_" + str(pin_num))
 
         # Disable interrupts
         self.set_pin_int(chunk + "_" + str(pin_num), 0)
