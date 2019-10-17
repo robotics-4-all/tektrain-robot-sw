@@ -17,9 +17,12 @@ class TestButtonMcp23017(unittest.TestCase):
 
     def test_wait(self):
         button = ButtonMcp23017("A_0")
+        button_2 = ButtonMcp23017("A_1")
         button.wait_for_press()
         print("Pressed")
-        button.stop()
+        button_2.wait_for_press()
+        print("Pressed")
+        #button.stop()
 
     def test_when_pressed(self):
         def test(a1, a2):

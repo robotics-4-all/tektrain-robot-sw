@@ -176,6 +176,9 @@ class MCP23017(MCP23x17):
         # Disable interrupts
         self.set_pin_int(chunk + "_" + str(pin_num), 0)
 
+        self.set_seqop(0)
+        self.set_bank(0)
+
         return iter_flag
 
     def stop(self):

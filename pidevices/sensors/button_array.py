@@ -1,5 +1,7 @@
+"""button_array.py"""
+
 from ..devices import Sensor
-from .button import Button
+from .button import ButtonRPiGPIO, ButtonMcp23017
 
 
 class ButtonArray(Sensor):
@@ -14,7 +16,7 @@ class ButtonArray(Sensor):
 
         super(ButtonArray, self).__init__(name, max_data_length)
         self._pin_nums = pin_nums
-        self._buttons = []
+        self._buttons = {}
 
         self.start()
 
@@ -34,9 +36,9 @@ class ButtonArray(Sensor):
 
     def start(self):
         """Init hardware and os resources."""
-
+        
         for pin_num in self.pin_nums:
-            self.buttons.append(Button(pin_num))
+            self.buttons[pin_num] = self._button_class(pin_num)
     
     def read(self, button):
         """Read current state of button.
@@ -86,7 +88,7 @@ class ButtonArray(Sensor):
             pin_num (int): BCM number of the pin.
         """
 
-        self.buttons.append(Button(pin_num))
+        self.buttons[pin_num] = self._button_class(pin_num)
 
     def remove_button(self, button):
         """Remove a button from the array.
@@ -96,3 +98,31 @@ class ButtonArray(Sensor):
         """
 
         del self.buttons[button]
+
+
+class ButtonArrayRPiGPIO(ButtonArray):
+    """An array of buttons, extends :class:`ButtonArray`.
+    
+    Args:
+        pin_nums: List with the gpio numbers for buttons.
+    """
+
+    def __init__(self, pin_nums, name='', max_data_length=0):
+        """Constructor"""
+
+        self._button_class = ButtonRPiGPIO
+        super(ButtonArrayRPiGPIO, self).__init__(pin_nums, name, max_data_length)
+
+
+class ButtonArrayMcp23017(ButtonArray):
+    """An array of buttons, extends :class:`ButtonArray`.
+    
+    Args:
+        pin_nums: List with the module's numbers for buttons.
+    """
+
+    def __init__(self, pin_nums, name='', max_data_length=0):
+        """Constructor"""
+
+        self._button_class = ButtonMcp23017
+        super(ButtonArrayMcp23017, self).__init__(pin_nums, name, max_data_length)
