@@ -6,7 +6,7 @@ from pidevices.sensors.button import ButtonRPiGPIO
 class TestButton(unittest.TestCase):
 
     def test_read(self):
-        button = ButtonRPiGPIO(23)
+        button = ButtonRPiGPIO(23, direction="up")
 
         t_start = time.time()
         while time.time() - t_start < 10:
@@ -16,7 +16,7 @@ class TestButton(unittest.TestCase):
         button.stop()
 
     def test_wait(self):
-        button = ButtonRPiGPIO(23)
+        button = ButtonRPiGPIO(23, direction="up")
         button.wait_for_press()
         print("Pressed")
         button.stop()
@@ -26,7 +26,7 @@ class TestButton(unittest.TestCase):
             print("{} args {} {}".format(test.c, a1, a2))
             test.c += 1
         test.c = 0 
-        button = ButtonRPiGPIO(23)
+        button = ButtonRPiGPIO(23, direction="up")
         button.when_pressed(test, 1, 2)
         t_start = time.time()
         while time.time() - t_start < 10:

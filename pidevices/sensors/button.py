@@ -8,13 +8,20 @@ class Button(Sensor):
     
     Args:
         pin_num (int): BCM number of the pin.
+        direction (str): Indicating the it will use pull up or pull down resistor
+            . Could be :data:`up` or data:`down`.
+        bounce (int): The bounce time of the button. Defaults to 200ms
     """
 
-    def __init__(self, pin_num, name='', max_data_length=0):
+    def __init__(self, pin_num,
+                 direction, bounce=200,
+                 name='', max_data_length=0):
         """Constructor"""
 
         super(Button, self).__init__(name, max_data_length)
         self._pin_num = pin_num
+        self._dir = direction
+        self._bounce = bounce
 
         self.start()
 
@@ -27,9 +34,41 @@ class Button(Sensor):
     def pin_num(self, value):
         self._pin_num = value
 
+    @property
+    def dir(self):
+        """The direction of the pull resistor."""
+        return self._dir
+
+    @dir.setter
+    def dir(self, value):
+        self._dir = value
+
+    @property
+    def bounce(self):
+        """The bounceection of the pull resistor."""
+        return self._bounce
+
+    @bounce.setter
+    def bounce(self, value):
+        self._bounce = value
+
     def start(self):
         """Init hardware and os resources."""
-        pass
+
+        self._gpio = self.init_interface('gpio',
+                                         impl=self._impl,
+                                         button=self.pin_num)
+
+        self.hardware_interfaces[self._gpio].init_input('button', self._dir)
+
+        self.hardware_interfaces[self._gpio].set_pin_bounce('button', 
+                                                            self._bounce)
+        if self._dir is 'up':
+            self.hardware_interfaces[self._gpio].set_pin_edge('button', 
+                                                              'falling')
+        else:
+            self.hardware_interfaces[self._gpio].set_pin_edge('button', 
+                                                              'rising')
     
     def read(self):
         """Read current state of button.
@@ -69,22 +108,19 @@ class ButtonRPiGPIO(Button):
     
     Args:
         pin_num (int): BCM number of the pin.
+        direction (str): Indicating the it will use pull up or pull down resistor
+            . Could be :data:`up` or data:`down`.
+        bounce (int): The bounce time of the button. Defaults to 200ms
     """
     
-    def __init__(self, pin_num, name='', max_data_length=0):
+    def __init__(self, pin_num,
+                 direction, bounce=200,
+                 name='', max_data_length=0):
         """Constructor"""
 
-        super(ButtonRPiGPIO, self).__init__(pin_num, name, max_data_length)
-
-    def start(self):
-        """Init hardware and OS resources."""
-
-        self._gpio = self.init_interface('gpio',
-                                         impl="RPiGPIO",
-                                         button=self.pin_num)
-        self.hardware_interfaces[self._gpio].init_input('button', 'up')
-        self.hardware_interfaces[self._gpio].set_pin_bounce('button', 200)
-        self.hardware_interfaces[self._gpio].set_pin_edge('button', 'falling')
+        self._impl = "RPiGPIO"
+        super(ButtonRPiGPIO, self).__init__(pin_num, direction, bounce, 
+                                            name, max_data_length)
 
 
 class ButtonMcp23017(Button):
@@ -92,22 +128,19 @@ class ButtonMcp23017(Button):
     
     Args:
         pin_num (int): The module's pin number.
+        direction (str): Indicating the it will use pull up or pull down resistor
+            . Could be :data:`up` or data:`down`.
+        bounce (int): The bounce time of the button. Defaults to 200ms
     """
     
-    def __init__(self, pin_num, name='', max_data_length=0):
+    def __init__(self, pin_num,
+                 direction, bounce=200,
+                 name='', max_data_length=0):
         """Constructor"""
 
-        super(ButtonMcp23017, self).__init__(pin_num, name, max_data_length)
-
-    def start(self):
-        """Init hardware and OS resources."""
-
-        self._gpio = self.init_interface('gpio',
-                                         impl="Mcp23017GPIO",
-                                         button=self.pin_num)
-        self.hardware_interfaces[self._gpio].init_input('button', 'down')
-        self.hardware_interfaces[self._gpio].set_pin_bounce('button', 400)
-        self.hardware_interfaces[self._gpio].set_pin_edge('button', 'rising')
+        self._impl = "Mcp23017GPIO"
+        super(ButtonMcp23017, self).__init__(pin_num, direction, bounce,
+                                             name, max_data_length)
 
     def when_pressed(self, func, *args):
         """Set the function to be called when the button is pressed.
