@@ -47,12 +47,22 @@ class MCP23017(MCP23x17):
         """Init hardware and os resources."""
 
         self._i2c = self.init_interface('i2c', bus=self._bus)
+        self.clear_ints()
     
     def _read_interface(self, address):
         return self.hardware_interfaces[self._i2c].read(self._address, address)
 
     def _write_interface(self, address, value):
         self.hardware_interfaces[self._i2c].write(self._address, address, value)
+
+    def clear_ints(self):
+        """Disable interrupts on every pin."""
+        self.hardware_interfaces[self._i2c].write(self._address,
+                                                  self.GPINTENA,
+                                                  0)
+        self.hardware_interfaces[self._i2c].write(self._address,
+                                                  self.GPINTENB,
+                                                  0)
 
     def poll_int(self, pin_nums):
         """Poll the interrupt bit for the specified pin.
@@ -112,10 +122,12 @@ class MCP23017(MCP23x17):
             for i in range(0, step, step):
                 # Read for every register
                 for j, (chunk, num) in enumerate(nums_chunks):
-                    index = (ord(chunk) - ord('A'))*both + i
+                    index = (ord(chunk) - ord('A'))*both + i    
 
                     value = self._get_bit(data[index], num+1)
 
+                    #if chunk is 'A' and num is 0:
+                    #    print("Num {} and value {}".format(num, value))
                     if value: 
                         # Create a thread with the handling function
                         threading.Thread(target=self._int_handlers[pin_nums[j]],
