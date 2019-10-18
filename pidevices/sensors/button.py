@@ -63,12 +63,8 @@ class Button(Sensor):
 
         self.hardware_interfaces[self._gpio].set_pin_bounce('button', 
                                                             self._bounce)
-        if self._dir is 'up':
-            self.hardware_interfaces[self._gpio].set_pin_edge('button', 
-                                                              'falling')
-        else:
-            self.hardware_interfaces[self._gpio].set_pin_edge('button', 
-                                                              'rising')
+        edge = "falling" if self._dir is 'up' else "rising"
+        self._hardware_interfaces[self._gpio].set_pin_edge('button', edge)
     
     def read(self):
         """Read current state of button.

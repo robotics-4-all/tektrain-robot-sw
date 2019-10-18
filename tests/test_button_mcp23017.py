@@ -6,7 +6,7 @@ from pidevices.sensors.button import ButtonMcp23017
 class TestButtonMcp23017(unittest.TestCase):
 
     def test_read(self):
-        button = ButtonMcp23017("A_0")
+        button = ButtonMcp23017("A_0", direction="down")
 
         t_start = time.time()
         while time.time() - t_start < 10:
@@ -16,11 +16,8 @@ class TestButtonMcp23017(unittest.TestCase):
         button.stop()
 
     def test_wait(self):
-        button = ButtonMcp23017("A_0")
-        button_2 = ButtonMcp23017("A_1")
+        button = ButtonMcp23017("A_0", direction="down")
         button.wait_for_press()
-        print("Pressed")
-        button_2.wait_for_press()
         print("Pressed")
         #button.stop()
 
@@ -29,7 +26,7 @@ class TestButtonMcp23017(unittest.TestCase):
             print("{} args {} {}".format(test.c, a1, a2))
             test.c += 1
         test.c = 0 
-        button = ButtonMcp23017("A_0")
+        button = ButtonMcp23017("A_0", direction="down")
         button.when_pressed(test, 1, 2)
         t_start = time.time()
         while time.time() - t_start < 10:
