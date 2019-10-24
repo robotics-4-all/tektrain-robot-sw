@@ -17,4 +17,5 @@ from .microphone import *
 from .picamera import *
 from .pressure_sensor import *
 from .temperature_sensor import *
+from .df_robot_wheel_encoders import *
 #from .vl53l1x import *
