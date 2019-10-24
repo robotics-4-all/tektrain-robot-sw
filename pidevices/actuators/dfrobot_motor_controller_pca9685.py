@@ -4,6 +4,7 @@ from collections import namedtuple
 from math import pi
 from .motor_controller import MotorController
 from .pca9685 import PCA9685
+from .dfrobot_motor_controller import Motor
 
 
 # Channel
@@ -180,49 +181,3 @@ class DfrobotMotorControllerPCA(MotorController):
     def stop(self):
         """Clear hardware and os resources."""
         self._device.stop()
-
-
-class Motor(object):
-    """Abstract class for a motor.
-    
-    Args:
-        v_spec: Voltage specification, at no load state
-        rpm_spec: Rpm specification for v_spec at no load state
-        voltage: The power suply voltage.
-        
-    """
-
-    def __init__(self, v_spec, rpm_spec, voltage):
-        """Contructor"""
-
-        self.speed = 0
-        self._k = self._compute_k(v_spec, rpm_spec)
-        self._voltage = voltage
-        self._rpm = (voltage/self._k * 60) / (2 * pi)
-
-    @property
-    def k(self):
-        return self._k
-
-    @property
-    def voltage(self):
-        """Voltage in use."""
-        return self._voltage
-
-    @property
-    def rpm(self):
-        """Max rpm value given the voltage in use."""
-        return self._rpm
-
-    def _compute_k(self, voltage, rpm):
-        """Compute k from V and rpm at no-load state."""
-        return voltage / (rpm * (1/60. * 2*pi))
-
-    def set_parameters(self, voltage):
-        """Set the voltage and compute the new max rpm value at no load-state.
-        
-        Args:
-            voltage: The power suply voltage.
-        """
-        self._voltage = voltage
-        self._rpm = (voltage/self._k * 60) / (2 * pi)
