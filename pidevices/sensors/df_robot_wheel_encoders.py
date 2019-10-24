@@ -1,6 +1,7 @@
 """df_robot_wheel_encoders.py"""
 
 import atexit
+import time
 from .wheel_encoders import WheelEncoder
 
 
@@ -11,7 +12,9 @@ class DfRobotWheelEncoder(WheelEncoder):
         pin_num: The pin number of encoder's signal.
     """
 
-    RESOLUTION = 20
+    RESOLUTION = 20     # PPR value.
+    DIVISOR = 2         # Divisor of the resolution for faster measurment.
+    SLEEP_TIME = 0.001  # The sleep time in s
 
     def __init__(self, pin, name='', max_data_length=0):
         """Constructor."""
@@ -39,7 +42,7 @@ class DfRobotWheelEncoder(WheelEncoder):
 
     def _int_handler(self):
         """Function for handling edge signals."""
-        pass
+        self._counter += 1
 
     def read(self):
         """Get current state of encoder.
@@ -49,6 +52,39 @@ class DfRobotWheelEncoder(WheelEncoder):
         """
 
         return self.hardware_interfaces[self._gpio].read('signal')
+
+    def read_rpm(self):
+        """Get rpm value of wheel.
+        
+        Count until res/divisor pulses and then use the interval to compute
+        the rounds per minute.
+
+        Returns:
+            A number indicating the rpm value of the wheel.
+        """
+
+        # Initial value of counter
+        init_count = self._counter
+        count = 0
+        it = 0
+
+        # Measure time after limit pulses
+        limit = self.res / self.DIVISOR
+        t_s = time.time()
+        while count < limit:
+            count = self._counter - init_count
+
+            # Use it to break in case of too slow speed value
+            it += 1
+            if(it > 100) and not count:
+                return 0
+            time.sleep(self.SLEEP_TIME)
+
+        interval = time.time() - t_s
+        print(interval)
+        rpm = (60 / (interval*self.DIVISOR))
+
+        return rpm
 
     def stop(self):
         """Free hardware and os resources."""
@@ -121,8 +157,3 @@ class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
                                                            self._int_handler)
         self.hardware_interfaces[self._gpio].start_polling('signal')
 
-    def _int_handler(self):
-        """Function for handling edge signals."""
-
-        if self.hardware_interfaces[self._gpio].read('signal'):
-            self._counter += 1

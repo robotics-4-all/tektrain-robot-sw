@@ -32,17 +32,30 @@ class TestDfRobotWheelEncoderMcp23017(unittest.TestCase):
             time.sleep(0.1)
         self.assertEqual(f, True, "Should be True")
 
+        encoder.stop()
+
     def test_counter(self):
         encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=3, address=0x22)
         
         value = 0
+        limit = 10
         while True:
             value = encoder._counter
             print("Counter: {}".format(value))
-            if (value > 9):
+            if (value > (limit - 1)):
                 break
+            time.sleep(0.1)
+        self.assertEqual(value, limit, "Should be {}".format(limit))
+
+        encoder.stop()
+
+    def test_rpm(self):
+        encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=3, address=0x22)
+
+        t_s = time.time()
+        while time.time() - t_s < 60:
+            print("RPM: {}".format(encoder.read_rpm()))
             time.sleep(1)
-        self.assertEqual(value, 10, "Should be 10")
 
         encoder.stop()
 
