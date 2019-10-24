@@ -1,6 +1,7 @@
 """Import all actuators"""
 
 from .dfrobot_motor_controller import *
+from .dfrobot_motor_controller_pca9685 import *
 from .motor_controller import *
 from .neopixel_rgb import *
 from .pca9685 import *
