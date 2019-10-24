@@ -1,5 +1,6 @@
 """df_robot_wheel_encoders.py"""
 
+import atexit
 from .wheel_encoders import WheelEncoder
 
 
@@ -15,8 +16,10 @@ class DfRobotWheelEncoder(WheelEncoder):
     def __init__(self, pin, name='', max_data_length=0):
         """Constructor."""
 
+        atexit.register(self.stop)
         super(DfRobotWheelEncoder, self).__init__(name, max_data_length)
         self._pin_num = pin
+        self._counter = 0  # Counter that counts the edge signals
         self.res = self.RESOLUTION
 
         self.start()
@@ -32,15 +35,11 @@ class DfRobotWheelEncoder(WheelEncoder):
 
     def start(self):
         """Initialize hardware and os resources."""
+        pass
 
-        self._gpio = self.init_interface('gpio',
-                                         impl='RPiGPIO',
-                                         signal=self.pin_num)
-
-        # Init pin
-        self.hardware_interfaces[self._gpio].init_input('signal', 'down')
-        #self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'both')
-        #self.hardware_interfaces[self._gpio].set_pin_event('signal', )
+    def _int_handler(self):
+        """Function for handling edge signals."""
+        pass
 
     def read(self):
         """Get current state of encoder.
@@ -80,9 +79,11 @@ class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
                                          signal=self.pin_num)
 
         # Init pin
+        self.hardware_interfaces[self._gpio].set_pin_function('signal', 'input')
         self.hardware_interfaces[self._gpio].init_input('signal', 'down')
-        #self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'both')
-        #self.hardware_interfaces[self._gpio].set_pin_event('signal', )
+        self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'rising')
+        self.hardware_interfaces[self._gpio].set_pin_event('signal', 
+                                                           self._int_handler)
 
 
 class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
@@ -114,6 +115,14 @@ class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
 
         # Init pin
         self.hardware_interfaces[self._gpio].set_pin_function('signal', 'input')
-        #self.hardware_interfaces[self._gpio].init_input('signal', 'down')
-        #self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'both')
-        #self.hardware_interfaces[self._gpio].set_pin_event('signal', )
+        self.hardware_interfaces[self._gpio].init_input('signal', 'down')
+        self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'both')
+        self.hardware_interfaces[self._gpio].set_pin_event('signal', 
+                                                           self._int_handler)
+        self.hardware_interfaces[self._gpio].start_polling('signal')
+
+    def _int_handler(self):
+        """Function for handling edge signals."""
+
+        if self.hardware_interfaces[self._gpio].read('signal'):
+            self._counter += 1
