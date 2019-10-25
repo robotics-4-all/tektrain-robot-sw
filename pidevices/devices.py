@@ -152,6 +152,23 @@ class Device(object):
             _ = self.data.popleft()
             self.data.append(value)
 
+    def get_data(self, n):
+        """Get last n data.
+        
+        For getting just the last element it is better to use self.data[-1]
+        than this method.
+
+        Args:
+            n: The n last elements. Defaults to :data:`1`.
+
+        Returns:
+            A list with elements or just one element.
+        """
+
+        len_data = len(self.data)
+
+        return list(islice(self.data, len_data - n, len_data)
+
     def start(self):
         """Empty function for starting devices, which will be overloaded."""
         pass
