@@ -53,11 +53,14 @@ class DfRobotWheelEncoder(WheelEncoder):
 
         return self.hardware_interfaces[self._gpio].read('signal')
 
-    def read_rpm(self):
+    def read_rpm(self, save=False):
         """Get rpm value of wheel.
         
         Count until res/divisor pulses and then use the interval to compute
         the rounds per minute.
+
+        Args:
+            save: Flag for saving the measurment to device data deque.
 
         Returns:
             A number indicating the rpm value of the wheel.
@@ -81,8 +84,10 @@ class DfRobotWheelEncoder(WheelEncoder):
             time.sleep(self.SLEEP_TIME)
 
         interval = time.time() - t_s
-        print(interval)
         rpm = (60 / (interval*self.DIVISOR))
+        
+        if save:
+            self.update_data(rpm)
 
         return rpm
 

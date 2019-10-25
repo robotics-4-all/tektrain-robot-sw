@@ -146,6 +146,7 @@ class Device(object):
 
     def update_data(self, value):
         """Insert an element to the end of the data deque."""
+
         if len(self.data) < self.max_data_length:
             self.data.append(value)
         else:
@@ -159,7 +160,7 @@ class Device(object):
         than this method.
 
         Args:
-            n: The n last elements. Defaults to :data:`1`.
+            n: The n last elements. 
 
         Returns:
             A list with elements or just one element.
