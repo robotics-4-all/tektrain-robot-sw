@@ -168,7 +168,7 @@ class Device(object):
 
         len_data = len(self.data)
 
-        return list(islice(self.data, len_data - n, len_data)
+        return list(islice(self.data, len_data - n, len_data))
 
     def start(self):
         """Empty function for starting devices, which will be overloaded."""
