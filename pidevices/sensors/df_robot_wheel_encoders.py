@@ -72,6 +72,7 @@ class DfRobotWheelEncoder(WheelEncoder):
         it = 0
 
         # Measure time after limit pulses
+        rpm = -1
         limit = self.res / self.DIVISOR
         t_s = time.time()
         while count < limit:
@@ -80,11 +81,13 @@ class DfRobotWheelEncoder(WheelEncoder):
             # Use it to break in case of too slow speed value
             it += 1
             if(it > 100) and not count:
-                return 0
+                rpm = 0
+                break
             time.sleep(self.SLEEP_TIME)
 
-        interval = time.time() - t_s
-        rpm = (60 / (interval*self.DIVISOR))
+        if rpm is -1:
+            interval = time.time() - t_s
+            rpm = (60 / (interval*self.DIVISOR))
         
         if save:
             self.update_data(rpm)
