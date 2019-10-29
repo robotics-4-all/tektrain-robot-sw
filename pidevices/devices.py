@@ -1,3 +1,6 @@
+"""devices.py"""
+
+from itertools import islice
 from collections import deque
 from importlib import import_module
 from .exceptions import NotSupportedInterface, NotInstalledInterface
@@ -153,22 +156,24 @@ class Device(object):
             _ = self.data.popleft()
             self.data.append(value)
 
-    def get_data(self, n):
+    def get_data(self, start, end):
         """Get last n data.
         
         For getting just the last element it is better to use self.data[-1]
         than this method.
 
         Args:
-            n: The n last elements. 
+            start (int): Start index to get elements from data deque.
+            end: End index of data.
 
         Returns:
             A list with elements or just one element.
         """
+        
+        start = start if start >= 0 else len(self.data) + start
+        end = end if end >= 0 else len(self.data) + (end+1)
 
-        len_data = len(self.data)
-
-        return list(islice(self.data, len_data - n, len_data))
+        return list(islice(self.data, start, end))
 
     def start(self):
         """Empty function for starting devices, which will be overloaded."""
