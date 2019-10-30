@@ -13,7 +13,7 @@ class DfRobotWheelEncoder(WheelEncoder):
     """
 
     RESOLUTION = 20     # PPR value.
-    DIVISOR = 2         # Divisor of the resolution for faster measurment.
+    DIVISOR = 1         # Divisor of the resolution for faster measurment.
     SLEEP_TIME = 0.001  # The sleep time in s
 
     def __init__(self, pin, name='', max_data_length=0):
