@@ -62,6 +62,8 @@ class CytronLfLSS05Mcp23017(CytronLfLSS05):
 
             # Set mode
             self._control_cal(self._MODES[self.mode])
+            # TODO: Not so good solution for first initialization.
+            self._control_cal(self._MODES[self.mode])
 
         # Settle hardware resources
         sleep(1)
