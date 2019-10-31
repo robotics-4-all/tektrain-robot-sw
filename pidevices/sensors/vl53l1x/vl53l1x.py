@@ -102,10 +102,12 @@ class VL53L1X(DistanceSensor):
     """
 
     def __init__(self, bus=1, VL53L1X_ADDRESS=0x29,
-                 mode=VL53L1xDistanceMode.LONG):
+                 mode=VL53L1xDistanceMode.LONG,
+                 name="",
+                 max_data_length=0):
         # tca9548a_num=255, tca9548a_addr=0):
         """Initialize the VL53L1X ToF Sensor from ST"""
-        super(VL53L1X, self).__init__(name='', max_data_length=0)
+        super(VL53L1X, self).__init__(name=name, max_data_length=max_data_length)
         self.max_distance = 4
         self.min_distance = 0.04
 
