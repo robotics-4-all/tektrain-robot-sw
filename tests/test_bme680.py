@@ -77,7 +77,7 @@ class TestBME680(unittest.TestCase):
         p_over = 4
         iir_coef = 3
         g_status = 1
-        sensor = BME680(1, 0,
+        sensor = BME680(0, 0,
                         t_oversample=t_over, 
                         h_oversample=h_over,
                         p_oversample=p_over,
