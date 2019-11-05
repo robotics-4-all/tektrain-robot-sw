@@ -170,8 +170,14 @@ class Device(object):
             A list with elements or just one element.
         """
         
+        if abs(start) > len(self.data):
+            raise RuntimeError("Empty data queue.")
+
         start = start if start >= 0 else len(self.data) + start
         end = end if end >= 0 else len(self.data) + (end+1)
+        
+        if start < end:
+            raise RuntimeError("Start value after end value")
 
         return list(islice(self.data, start, end))
 
