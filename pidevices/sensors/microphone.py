@@ -1,3 +1,5 @@
+"""microphone.py"""
+
 import wave
 import time
 import os
@@ -9,8 +11,8 @@ import alsaaudio
 class Microphone(Sensor):
     """Class representing a usb microphone. Extends :class:`Sensor`. 
     
-    It uses pyalsaaudio library. 
-    It captures from the microphone and saves the record to a file. Currently 
+    It uses pyalsaaudio library.
+    It captures from the microphone and saves the record to a file. Currently
     supports only wav files.
     For consistent naming a udev rule has been written for identifing the device
     and an example asoundrc file.
@@ -138,6 +140,16 @@ class Microphone(Sensor):
         t_start = time.time()
         while time.time() - t_start < secs:
             l, data = self._device.read()
+            #print(len(data))
+            #data_int = int.from_bytes(data, byteorder='little')
+            #print(data_int)
+            #data_str = str(data_int)
+            #data_bytes = (int(data_str).to_bytes(512, byteorder='little'))
+            #c = 0
+            #for d, b in zip(data, data_bytes):
+            #    if d != b:
+            #        c += 1
+            #print(c)
             if l:
                 f.writeframes(data)
 
@@ -190,4 +202,3 @@ class Microphone(Sensor):
 
         self._device.close()
         self._mixer.close()
-

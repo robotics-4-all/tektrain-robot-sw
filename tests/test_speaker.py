@@ -8,7 +8,7 @@ class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
         speaker = Speaker()
-        speaker.write(cmd_par, 85, times=1)
+        speaker.write(cmd_par, 55, times=1)
 
     def test_pause(self):
         speaker = Speaker()
@@ -43,10 +43,10 @@ class TestSpeaker(unittest.TestCase):
         speaker.pause()
         speaker.write('maybe-next-time-huh.wav', 30, times=2)
 
-
     def test_path(self):
         speaker = Speaker()
         speaker._fix_path('f')
+
 
 if __name__ == "__main__":
     cmd_par = sys.argv[2]
