@@ -1,6 +1,10 @@
+"""speaker.py"""
+
 import wave
 import os
 import threading
+import base64
+import warnings
 from ..devices import Actuator
 import alsaaudio
 
@@ -18,7 +22,6 @@ class Speaker(Actuator):
         super(Speaker, self).__init__(name, max_data_length)
         self.dev_name = dev_name
         self.start()
-        self._init_thread()
 
     @property
     def dev_name(self):
@@ -41,70 +44,77 @@ class Speaker(Actuator):
         if self._mixer.getmute():
             self._mixer.setmute(0)
 
-    def _init_thread(self):
-        self._playing_mutex = threading.Condition()
         self._playing = False
-        self._paused = False
 
-    def write(self, file_path, volume=50, times=1):
+    def write(self, source, volume=50, times=1, file_flag=False):
         """Write data to the speaker. Actually it just plays a playback.
         
         Args:
-            file_path: The file path of the file to be played. Currently it
-                supports only wav file format.
+            source: The file path of the file to be played. Currently it
+                supports only wav file format. Or base64 ascii encoded string
             volume: Volume percenatage
             times: How many time to play the same file.
+            file_flag: Flag indicating if read from file or from raw data.
         """
 
-        # Get playing mutex
-        self._playing_mutex.acquire()
-
-        # Stop another playback if it is running
         if self._playing:
-            # Mute for to play the last sector of previous file
-            self._mixer.setmute(1)
+            warnings.warn("Already playing", RuntimeWarning)
+            return None
 
-            # Unstop at first
-            if self._paused:
-                self.pause(False)
+        periodsize = 256
 
-            # Change kill flag
-            self._playing = False
-            self._playing_mutex.wait()
+        if file_flag:
+            # Open the wav file
+            f = wave.open(self._fix_path(source), 'rb')
 
-            # Unmute
-            self._mixer.setmute(0)
-        
-        # Open the wav file
-        f = wave.open(self._fix_path(file_path), 'rb')
+            channels = f.getnchannels()
+            framerate = f.getframerate()
+            sample_width = f.getsampwidth()
+
+            # Read data from file
+            data = []
+            sample = f.readframes(periodsize)
+            while sample:
+                data.append(sample)
+                sample = f.readframes(periodsize)
+
+            # Close file 
+            f.close()
+        else:
+            channels = 1
+            framerate = 44100 
+            sample_width = 2
+
+            # Read data from encoded string
+            audio = base64.b64decode(source.encode("ascii"))
+            n = len(audio)
+            step = sample_width * periodsize
+            data = [audio[i:i+step] for i in range(0, n, step)]
 
         # Set Device attributes for playback
-        self._device.setchannels(f.getnchannels())
-        self._device.setrate(f.getframerate())
+        self._device.setchannels(channels)
+        self._device.setrate(framerate)
 
         # Set volume for channels
         self._mixer.setvolume(volume) 
 
         # 8bit is unsigned in wav files
-        if f.getsampwidth() == 1:
+        if sample_width == 1:
             self._device.setformat(alsaaudio.PCM_FORMAT_U8)
         # Otherwise we assume signed data, little endian
-        elif f.getsampwidth() == 2:
+        elif sample_width == 2:
             self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-        elif f.getsampwidth() == 3:
+        elif sample_width == 3:
             self._device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
-        elif f.getsampwidth() == 4:
+        elif sample_width == 4:
             self._device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
         else:
             raise ValueError('Unsupported format')
-
-        periodsize = 256
 
         self._device.setperiodsize(periodsize)
 
         # Set playing flag
         self._playing = True      
-        self._playing_mutex.release()
 
         # Play the file
         for i in range(times):
@@ -112,32 +122,15 @@ class Speaker(Actuator):
             if not self._playing:
                 break
 
-            data = f.readframes(periodsize)
-            while data:
-                # Read data from stdin
-                self._device.write(data)
-                data = f.readframes(periodsize)
+            for d in data:
+                self._device.write(d)
 
-                # kill Thread
-                self._playing_mutex.acquire()
                 if not self._playing:
-                    data = False
-                self._playing_mutex.release()
+                    break
 
-            f.rewind()
-
-        # Close file and restart device
-        f.close()
         self.restart()
-
-        self._playing_mutex.acquire()
-        if self._playing:
-            self._playing = False
-        else:
-            self._playing_mutex.notify()
-        self._playing_mutex.release()
     
-    def async_write(self, file_path, volume, times=1):
+    def async_write(self, source, volume=50, times=1, file_flag=False):
         """Async write data to the speaker. Actually it just plays a playback.
         
         Args:
@@ -148,9 +141,13 @@ class Speaker(Actuator):
         """
 
         thread = threading.Thread(target=self.write, 
-                                  args=(file_path, volume, times),
+                                  args=(source, volume, times, file_flag,),
                                   daemon=True)
         thread.start()
+
+    def cancel(self):
+        """Cancel playaback"""
+        self._playing = False
 
     def pause(self, enabled=True):
         """Pause or resume the playback.
@@ -161,7 +158,6 @@ class Speaker(Actuator):
         """
 
         self._device.pause(enabled)
-        self._paused = enabled
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""

@@ -8,40 +8,30 @@ class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
         speaker = Speaker()
-        speaker.write(cmd_par, 55, times=1)
+        speaker.write(cmd_par, 10, times=1, file_flag=True)
+
+    def test_async(self):
+        speaker = Speaker()
+        speaker.async_write(cmd_par, 10, times=1, file_flag=True)
+        time.sleep(10)
 
     def test_pause(self):
         speaker = Speaker()
-        speaker.async_write('open-the-goddamn-door.wav', 15, times=6)
-        time.sleep(4)
-        speaker.pause()
+        speaker.async_write(cmd_par, 10, times=1, file_flag=True)
         time.sleep(2)
+        speaker.pause()
+        print("Pause")
+        time.sleep(2)
+        print("continue")
         speaker.pause(False)
-        time.sleep(5)
+        time.sleep(6)
 
     def test_multi(self):
         speaker = Speaker()
-
-        # In the middle of the playback change
-        speaker.async_write('open-the-goddamn-door.wav', 15, times=5)
-        time.sleep(5)
-        speaker.write('maybe-next-time-huh.wav', 30, times=2)
-
-        # In the end of the playback change
-        speaker.async_write('open-the-goddamn-door.wav', 15, times=1)
-        time.sleep(5)
-        speaker.write('maybe-next-time-huh.wav', 30, times=2)
-
-        # In the start of the playback
-        speaker.async_write('open-the-goddamn-door.wav', 15, times=2)
-        speaker.async_write('maybe-next-time-huh.wav', 30, times=2)
-        time.sleep(5)
-
-        # Change with pause
-        speaker.async_write('open-the-goddamn-door.wav', 15, times=5)
+        speaker.async_write(cmd_par, 10, times=1, file_flag=True)
         time.sleep(2)
-        speaker.pause()
-        speaker.write('maybe-next-time-huh.wav', 30, times=2)
+        speaker.async_write(cmd_par, 10, times=1, file_flag=True)
+        time.sleep(5)
 
     def test_path(self):
         speaker = Speaker()
