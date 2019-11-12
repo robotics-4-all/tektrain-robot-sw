@@ -7,7 +7,7 @@ class TestMicrophone(unittest.TestCase):
 
     def test_one(self):
         mic = Microphone()
-        mic.read(file_path='test.wav', secs=4, volume=100)
+        audio = mic.read(secs=5, volume=100, file_path="test.wav", file_flag=True)
 
     def test_multi(self):
         mic = Microphone()
@@ -23,7 +23,6 @@ class TestMicrophone(unittest.TestCase):
         time.sleep(1)
         mic.read(file_path='test_two.wav', secs=2, volume=100)
 
-
     def test_pause(self):
         mic = Microphone()
         mic.async_read(file_path='test.wav', secs=6, volume=100)
@@ -38,6 +37,7 @@ class TestMicrophone(unittest.TestCase):
     def test_path(self):
         mic = Microphone()
         mic._fix_path('f')
+
 
 if __name__ == "__main__":
     unittest.main()

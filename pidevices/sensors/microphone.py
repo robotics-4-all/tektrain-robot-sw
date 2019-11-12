@@ -3,7 +3,10 @@
 import wave
 import time
 import os
+import sys
 import threading
+import base64
+import warnings
 from ..devices import Sensor
 import alsaaudio
 
@@ -27,7 +30,6 @@ class Microphone(Sensor):
         super(Microphone, self).__init__(name, max_data_length)
         self.dev_name = dev_name
         self.start()
-        self._init_thread()
 
     @property
     def dev_name(self):
@@ -49,14 +51,12 @@ class Microphone(Sensor):
     @recording.setter
     def recording(self, value):
         self._recording = value
-
+    
     @property
-    def paused(self):
-        return self._paused
-
-    @paused.setter
-    def paused(self, value):
-        self._paused = value
+    def record(self):
+        while self._record is None:
+            time.sleep(0.1)
+        return self._record
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -64,15 +64,15 @@ class Microphone(Sensor):
         self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
                                      device=self.dev_name)
         self._mixer = alsaaudio.Mixer(control='Mic', device=self.dev_name)
-
-    def _init_thread(self):
-        self._recording_mutex = threading.Condition()
         self._recording = False
-        self._paused = False
+        self._cancelled = False
+        self._record = None
 
-    def read(self, secs, file_path, volume=100):
+    def read(self, secs, file_path=None, volume=100, file_flag=False):
         """Read data from microphone
         
+        Also set self.recording for use in a threaded environment
+
         Args:
             secs: The time in seconds of the capture.
             file_path: The file path of the file to be played. Currently it
@@ -80,36 +80,23 @@ class Microphone(Sensor):
             volume: Volume percenatage
 
         Returns:
-            It doesn't return a value but it saves the recording to a file.
+            Return the path or the data in base64 format.
+
+        Raises:
+            RuntimeError: If already recording
         """
 
-        # Get recording mutex
-        self.recording_mutex.acquire()
+        if self._recording:
+            warnings.warn("Already recording", RuntimeWarning)
+            return None
 
-        # Wait for another record to stop
-        if self.recording:
-
-            if self.paused:
-                self.pause(False)
-
-            # Change record flag
-            self.recording = False
-            self.recording_mutex.wait()
-            
-        # Open the wav file
-        f = wave.open(self._fix_path(file_path), 'wb')
+        self._record = None
 
         # Set attributes
         channels = 1
         framerate = 44100 
         sample_width = 2
         periodsize = 256
-
-        # Set file attributes
-        f.setnchannels(channels)
-        f.setframerate(framerate)
-        f.setsampwidth(sample_width)
-        f.setnframes(periodsize)
 
         # Set Device attributes for playback
         self._device.setchannels(channels)
@@ -134,37 +121,44 @@ class Microphone(Sensor):
         self._device.setperiodsize(periodsize)
         
         self.recording = True
-        self.recording_mutex.release()
 
         # Start recording
         t_start = time.time()
-        while time.time() - t_start < secs:
+        audio = bytearray() 
+        while time.time() - t_start < secs and self.recording:
+            # Get data from device
             l, data = self._device.read()
-            #print(len(data))
-            #data_int = int.from_bytes(data, byteorder='little')
-            #print(data_int)
-            #data_str = str(data_int)
-            #data_bytes = (int(data_str).to_bytes(512, byteorder='little'))
-            #c = 0
-            #for d, b in zip(data, data_bytes):
-            #    if d != b:
-            #        c += 1
-            #print(c)
             if l:
-                f.writeframes(data)
+                for d in data:
+                    audio.append(d)
 
-        f.close()
-        self.restart()
+        # Save to file
+        if file_flag:
+            # Open the wav file
+            f = wave.open(self._fix_path(file_path), 'wb')
 
-        # Notify the other recording
-        self.recording_mutex.acquire()
-        if self.recording:
-            self.recording = False
+            # Set file attributes
+            f.setnchannels(channels)
+            f.setframerate(framerate)
+            f.setsampwidth(sample_width)
+            f.setnframes(periodsize)
+
+            for sample in audio:
+                f.writeframes(sample)
+
+            f.close()
+            ret = self._fix_path(file_path)
         else:
-            self.recording_mutex.notify()
-        self.recording_mutex.release()
+            # Encode to base64
+            ret = base64.b64encode(audio).decode("ascii")
+
+        self.restart()
+        
+        self._record = ret
+
+        return ret
     
-    def async_read(self, secs, file_path, volume=100):
+    def async_read(self, secs, file_path=None, volume=100, file_flag=False):
         """Async read data from microphone
         
         Args:
@@ -178,7 +172,7 @@ class Microphone(Sensor):
         """
        
         thread = threading.Thread(target=self.read, 
-                                  args=(secs, file_path, volume,),
+                                  args=(secs, file_path, volume, file_flag,),
                                   daemon=True)
         thread.start()
 
@@ -186,7 +180,11 @@ class Microphone(Sensor):
         """Pause or resume the playback."""
 
         self._device.pause(enabled)
-        self.paused = True
+    
+    def cancel(self):
+        """Cancel recording"""
+
+        self._recording = False
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
