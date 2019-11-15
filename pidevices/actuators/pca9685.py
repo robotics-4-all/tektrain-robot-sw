@@ -55,10 +55,10 @@ class PCA9685(ServoDriver):
     SWRST = 0x00
     RESET = 0x06
 
-    def __init__(self, bus, frequency=None, oe=None, name="", max_data_lenght=1):
+    def __init__(self, bus, frequency=None, oe=None, name="", max_data_length=1):
         """Constructor"""
 
-        super(PCA9685, self).__init__(name, max_data_lenght)
+        super(PCA9685, self).__init__(name, max_data_length)
         self._frequency = frequency
         self._oe = oe
         self._bus = bus
