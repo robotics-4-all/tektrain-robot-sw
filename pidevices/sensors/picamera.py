@@ -102,7 +102,7 @@ class Camera(Sensor):
         self._camera.close()
 
     # For formats that are raw we need to know the collumns of the image
-    def read(self, batch=1, image_dims=None, image_format='rgb', SAVE=True):
+    def read(self, batch=1, image_dims=None, image_format='rgb', save=False):
         """Take a batch of frames from camera.
         
         Args:
@@ -110,7 +110,7 @@ class Camera(Sensor):
             image_dims: a dims tuple or a simple tuple with width, height
                 values
             image_format: the image image_format
-            SAVE: flag for appending the stream to the data deque
+            save: flag for appending the stream to the data deque
 
         Returns:
            A deque with CameraData objects.
@@ -131,7 +131,7 @@ class Camera(Sensor):
             capture.close()
 
         # Append frame to data
-        if SAVE:
+        if save:
             for frame in frames:
                 self.update_data(frame)
 
