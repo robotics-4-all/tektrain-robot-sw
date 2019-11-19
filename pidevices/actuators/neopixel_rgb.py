@@ -162,6 +162,9 @@ class LedController(Actuator):
         for i in range(self.strip.numPixels()):
             self.strip.setPixelColor(i, Color(0, 0, 0))
             self.strip.show()
+        
+        self.strip._cleanup()
+        del self.strip
 
     def _color_wipe(self, rgb_color=[0, 0, 255], wait_ms=50, brightness=60):
         """Wipe color across display a pixel at a time."""

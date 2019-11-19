@@ -14,6 +14,8 @@ class TestLedController(unittest.TestCase):
         
         time.sleep(5)
         led_controller.write([[0, 0, 0, 150]], wipe=True)
+
+        #led_controller.restart()
         print("All colors per three led.")
 
         r = [255, 0, 0, 150]
