@@ -86,10 +86,9 @@ class Speaker(Actuator):
             sample_width = 2
 
             # Read data from encoded string
-            audio = base64.b64decode(source.encode("ascii"))
-            n = len(audio)
+            n = len(source)
             step = sample_width * periodsize
-            data = [audio[i:i+step] for i in range(0, n, step)]
+            data = [source[i:i+step] for i in range(0, n, step)]
 
         # Set Device attributes for playback
         self._device.setchannels(channels)

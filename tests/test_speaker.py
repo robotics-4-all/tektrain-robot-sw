@@ -8,7 +8,7 @@ class TestSpeaker(unittest.TestCase):
 
     def test_one(self):
         speaker = Speaker()
-        speaker.write(cmd_par, 10, times=1, file_flag=True)
+        speaker.write(cmd_par, 80, times=1, file_flag=True)
 
     def test_async(self):
         speaker = Speaker()

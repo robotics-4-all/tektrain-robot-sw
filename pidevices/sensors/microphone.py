@@ -5,7 +5,7 @@ import time
 import os
 import sys
 import threading
-import base64
+#import base64
 import warnings
 from ..devices import Sensor
 import alsaaudio
@@ -150,7 +150,7 @@ class Microphone(Sensor):
             ret = self._fix_path(file_path)
         else:
             # Encode to base64
-            ret = base64.b64encode(audio).decode("ascii")
+            ret = audio
 
         self.restart()
         
