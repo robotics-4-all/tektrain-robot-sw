@@ -46,7 +46,7 @@ class TestPCA9685(unittest.TestCase):
 
     def test_write(self):
         channels = 2
-        kit = PCA9685(0, 50)
+        kit = PCA9685(5, 50)
         print("0 degrees to 180")
 
         for i in range(channels):
