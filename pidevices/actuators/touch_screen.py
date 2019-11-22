@@ -100,7 +100,8 @@ class TouchScreen(Actuator):
                 self.turnScreenOff()
                 raise Exception("show_image called without\
                                  image URI or waiting time")
-            ret = self._show_image(file_path, time_enabled, touch_enabled, text)		
+            ret = self._show_image(file_path, time_enabled,
+                                   touch_enabled, text, raw_image)		
         elif show_video:
             if file_path is None or time_window is None:	
                 self.turnScreenOff()
@@ -122,6 +123,9 @@ class TouchScreen(Actuator):
             img = pygame.image.load(image_uri)
         except Exception as e:
             raise Exception("Loading image failed with error: " + str(e))
+            
+            # Load image from string
+            img = pygame.image.fromstring(*image_uri)
 
         img_s = img.get_size()
         wr = self.screen_w * 1.0 / img_s[0]
