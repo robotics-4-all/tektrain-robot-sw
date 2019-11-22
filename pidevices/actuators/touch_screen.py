@@ -19,7 +19,7 @@ class TouchScreen(Actuator):
     def __init__(self, name="", max_data_length=0):
         """Constructor"""
 
-        super(Composite, self).__init__(name, max_data_length)
+        super(TouchScreen, self).__init__(name, max_data_length)
         self.screen_w = 800
         self.screen_h = 480
         self.start()
@@ -30,7 +30,7 @@ class TouchScreen(Actuator):
         self.eventX = ""
         for dev in devices:
             if dev.name == "ADS7846 Touchscreen":
-                self.eventX = dev.fn
+                self.eventX = dev.path
 
         pygame.init()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -321,10 +321,10 @@ class TouchScreen(Actuator):
 
 #if __name__ == "__main__":
 #    s = TouchScreen()
-#    print s.write(show_color=True, time_enabled=2, color_rgb=(0, 255, 0))
+#    print(s.write(show_color=True, time_enabled=2, color_rgb=(0, 255, 0)))
 #    time.sleep(1)
-#    print s.write(show_color=True, time_enabled=2,
-#                  color_rgb=(255, 255, 0), touch_enabled=True)
+#    print(s.write(show_color=True, time_enabled=2,
+#                  color_rgb=(255, 255, 0), touch_enabled=True))
 #    time.sleep(1)
 #    print s.write(show_image=True, file_path="/home/pi/t.png", 
 #                  time_enabled=5, touch_enabled=True)
