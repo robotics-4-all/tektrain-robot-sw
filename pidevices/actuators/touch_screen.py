@@ -294,6 +294,8 @@ class TouchScreen(Actuator):
                     running = False
                     break
         self._show_black()
+        if final_option is None:
+            final_option = ""
         return { 
             'reaction_time': time.time() - t_start,
             'selected': final_option
