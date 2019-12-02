@@ -32,6 +32,11 @@ class Speaker(Actuator):
     def dev_name(self, dev_name):
         self._dev_name = dev_name
 
+    @property
+    def playing(self):
+        """Flag indicating if the speaker is playing a sound"""
+        return self._playing
+
     def start(self):
         """Initialize hardware and os resources."""
         
@@ -126,6 +131,9 @@ class Speaker(Actuator):
 
                 if not self._playing:
                     break
+
+        # Clear the playing flag
+        self._playing = False
 
         self.restart()
     
