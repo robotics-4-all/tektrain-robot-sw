@@ -28,10 +28,28 @@ class TestSpeaker(unittest.TestCase):
 
     def test_multi(self):
         speaker = Speaker()
-        speaker.async_write(cmd_par, 10, times=1, file_flag=True)
-        time.sleep(2)
-        speaker.async_write(cmd_par, 10, times=1, file_flag=True)
-        time.sleep(5)
+        speaker.async_write(cmd_par, 50, times=1, file_flag=True)
+        #time.sleep(4)
+        while speaker.playing:
+            #time.sleep(0.1)
+            pass
+        speaker.async_write(cmd_par, 50, times=1, file_flag=True)
+        while speaker.playing:
+            #time.sleep(0.1)
+            pass
+
+    def test_cancel(self):
+        speaker = Speaker()
+        speaker.async_write(cmd_par, 50, times=3, file_flag=True)
+        time.sleep(4)
+        speaker.cancel()
+        #while speaker.playing:
+        #    #time.sleep(0.1)
+        #    pass
+        speaker.async_write(cmd_par, 50, times=1, file_flag=True)
+        while speaker.playing:
+            #time.sleep(0.1)
+            pass
 
     def test_path(self):
         speaker = Speaker()
