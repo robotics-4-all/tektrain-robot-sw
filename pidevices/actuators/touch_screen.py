@@ -32,7 +32,9 @@ class TouchScreen(Actuator):
             if dev.name == "ADS7846 Touchscreen":
                 self.eventX = dev.path
 
-        pygame.init()
+        #pygame.init()
+        pygame.font.init()
+        pygame.display.init()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
         self.background = pygame.Surface(self.screen.get_size())
