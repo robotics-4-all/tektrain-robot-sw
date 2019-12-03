@@ -50,8 +50,18 @@ class Speaker(Actuator):
             self._mixer.setmute(0)
 
         self._playing = False
-
+    
     def write(self, source, volume=50, times=1, file_flag=False):
+        if self._playing:
+            warnings.warn("Already playing", RuntimeWarning)
+            return None
+
+        # Set playing flag
+        self._playing = True      
+
+        self._write(source, volume, times, file_flag)
+
+    def _write(self, source, volume=50, times=1, file_flag=False):
         """Write data to the speaker. Actually it just plays a playback.
         
         Args:
@@ -61,10 +71,6 @@ class Speaker(Actuator):
             times: How many time to play the same file.
             file_flag: Flag indicating if read from file or from raw data.
         """
-
-        if self._playing:
-            warnings.warn("Already playing", RuntimeWarning)
-            return None
 
         periodsize = 256
 
@@ -117,9 +123,6 @@ class Speaker(Actuator):
 
         self._device.setperiodsize(periodsize)
 
-        # Set playing flag
-        self._playing = True      
-
         # Play the file
         for i in range(times):
             # Break the loop if another call is done
@@ -132,10 +135,10 @@ class Speaker(Actuator):
                 if not self._playing:
                     break
 
+        self.restart()
+
         # Clear the playing flag
         self._playing = False
-
-        self.restart()
     
     def async_write(self, source, volume=50, times=1, file_flag=False):
         """Async write data to the speaker. Actually it just plays a playback.
@@ -147,9 +150,18 @@ class Speaker(Actuator):
             times: How many time to play the same file.
         """
 
-        thread = threading.Thread(target=self.write, 
+        thread = threading.Thread(target=self._write, 
                                   args=(source, volume, times, file_flag,),
                                   daemon=True)
+
+        # Check if another thread is running
+        if self._playing:
+            warnings.warn("Already playing", RuntimeWarning)
+            return None
+
+        # Set playing flag
+        self._playing = True      
+
         thread.start()
 
     def cancel(self):
