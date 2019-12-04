@@ -6,7 +6,7 @@ from pidevices.actuators.neopixel_rgb import LedController
 class TestLedController(unittest.TestCase):
 
     def test_write(self):
-        led_count = 30
+        led_count = 19
         led_controller = LedController(led_count, 13, 700000, 255, led_channel=1)
 
         print("Color wipe red")
@@ -27,7 +27,7 @@ class TestLedController(unittest.TestCase):
         b_index = 2
 
         data = [white for i in range(led_count)] 
-        for j in range(2*led_count):
+        for j in range(4):
             data[r_index] = r
             data[g_index] = g
             data[b_index] = b
@@ -39,6 +39,8 @@ class TestLedController(unittest.TestCase):
             r_index = (r_index+1) % led_count
             g_index = (g_index+1) % led_count
             b_index = (b_index+1) % led_count
+
+        led_controller.write([[0, 0, 0, 150]], wipe=True)
 
 
 if __name__ == "__main__":

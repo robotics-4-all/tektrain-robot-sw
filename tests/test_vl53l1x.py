@@ -6,7 +6,7 @@ from pidevices.sensors.vl53l1x import VL53L1X
 class TestVL53L1X(unittest.TestCase):
 
     def test_read(self):
-        sensor = VL53L1X(bus=4)
+        sensor = VL53L1X(bus=3)
         for i in range(10):
             print(sensor.read())
             time.sleep(1)

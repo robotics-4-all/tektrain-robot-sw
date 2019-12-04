@@ -11,7 +11,7 @@ speed_2 = 0
 class TestDfrobotMotorControllerPCA(unittest.TestCase):
 
     def test_write(self):
-        controller = DfrobotMotorControllerPCA(bus=0, E1=6, M1=7, E2=12, M2=13)
+        controller = DfrobotMotorControllerPCA(bus=5, E1=6, M1=7, E2=12, M2=13)
 
         print("Left full speed")
         controller.write(speed_1=1, speed_2=1)
@@ -33,7 +33,7 @@ class TestDfrobotMotorControllerPCA(unittest.TestCase):
         controller.stop()
 
     def test_args(self):
-        controller = DfrobotMotorControllerPCA(bus=0, E1=6, M1=7, E2=12, M2=13)
+        controller = DfrobotMotorControllerPCA(bus=5, E1=6, M1=7, E2=12, M2=13)
         print(speed_1, speed_2)
         controller.write(speed_1, speed_2)
 
