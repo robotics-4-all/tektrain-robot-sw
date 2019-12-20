@@ -1,3 +1,5 @@
+"""icm_20948_imu.py"""
+
 from collections import namedtuple
 from ..devices import Sensor
 
@@ -553,7 +555,7 @@ class ICM_20948(Sensor):
         """Constructor."""
 
         super(ICM_20948, self).__init__(name, max_data_length)
-        self.ICM_ADDRESS = 0x68
+        self.ICM_ADDRESS = 0x69
         self.MAG_AKO9916 = 0x0C
         self._bus = bus
 
@@ -568,7 +570,7 @@ class ICM_20948(Sensor):
         self.reset()
         self.sleep(0)
         self.low_power(0)
-        self._set_sample_mode(accel_data=1, gyro_data=1)
+        self._set_sample_mode(accel_mode=1, gyro_mode=1)
         self._set_accel_full_scale(0)
         self._set_gyro_full_scale(0)
         self._set_accel_dlpf_cfg(7)
@@ -583,8 +585,20 @@ class ICM_20948(Sensor):
         self._i2c_master_passthrough(1)
         self._set_magn_mode(8)
 
-    def read(self, sensors):
-        """Read measuremnets from sensors."""
+    def read(self, accel_flag=True, magn_flag=True,
+             gyro_flag=True, temp_flag=True):
+        """Read measuremnets from sensors.
+        
+        Args:
+            accel_flag: Flag for activating acceleromenter measurment. Defaults
+                to :data:`True`.
+            magn_flag: Flag for activating magnetometer measurment. Defaults
+                to :data:`True`.
+            gyro_flag: Flag for activating gyroscope measurment. Defaults
+                to :data:`True`.
+            temp_flag: Flag for activating temperature measurment. Defaults
+                to :data:`True`.
+        """
         
         # Init results
         accel_data = None
@@ -592,16 +606,16 @@ class ICM_20948(Sensor):
         gyro_data = None
         temp_data = None
 
-        if 'accel' in sensors:
+        if accel_flag:
             accel_data = self._read_accel()
 
-        if 'gyro' in sensors:
+        if gyro_flag:
             gyro_data = self._read_gyro()
 
-        if 'temp' in data:
+        if temp_flag:
             temp_data = self._read_temp()
 
-        if 'magn' in data:
+        if magn_flag:
             magn_data = self._read_magn()
 
         res = icm_data(accel=accel_data, gyro=gyro_data,
@@ -624,7 +638,7 @@ class ICM_20948(Sensor):
         self._set_bank(2)
         fss = self._get_register(self.ICM_ADDRESS,
                                  self.ACCEL_CONFIG,
-                                 self.ACCEL_FS_SEL_BITS
+                                 self.ACCEL_FS_SEL_BITS,
                                  self.ACCEL_FS_SEL)
 
         if fss == 0:
@@ -659,7 +673,7 @@ class ICM_20948(Sensor):
         self._set_bank(2)
         fss = self._get_register(self.ICM_ADDRESS,
                                  self.GYRO_CONFIG,
-                                 self.GYRO_FS_SEL_BITS
+                                 self.GYRO_FS_SEL_BITS,
                                  self.GYRO_FS_SEL)
 
         if fss == 0:
@@ -801,17 +815,17 @@ class ICM_20948(Sensor):
 
         if i2c_mode is not None:
             self._raise_exc(i2c_mode, 0, 1, "Sample mode")
-            register = self._get_bits(register, self.I2C_MST_CYCLE_BITS,
+            register = self._set_bits(register, self.I2C_MST_CYCLE_BITS,
                                       self.I2C_MST_CYCLE, i2c_mode)
 
         if accel_mode is not None:
             self._raise_exc(accel_mode, 0, 1, "Sample mode")
-            register = self._get_bits(register, self.ACCEL_CYCLE_BITS,
+            register = self._set_bits(register, self.ACCEL_CYCLE_BITS,
                                       self.ACCEL_CYCLE, accel_mode)
 
         if gyro_mode is not None:
             self._raise_exc(gyro_mode, 0, 1, "Sample mode")
-            register = self._get_bits(register, self.GYRO_CYCLE_BITS,
+            register = self._set_bits(register, self.GYRO_CYCLE_BITS,
                                       self.GYRO_CYCLE, gyro_mode)
 
         self._set_register(self.ICM_ADDRESS, self.LP_CONFIG, 8, 0, register)
@@ -999,7 +1013,7 @@ class ICM_20948(Sensor):
                            self.RAW_DATA_0_RDY_EN_BITS, self.RAW_DATA_0_RDY_EN, 
                            value)
 
-    def _int_enable_overflow_fifo(self. fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
+    def _int_enable_overflow_fifo(self, fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
         """Enable fifo interrupt."""
 
         value = (fifo_0 | (fifo_1 << 1) | (fifo_2 << 2) 
@@ -1009,7 +1023,7 @@ class ICM_20948(Sensor):
                            self.FIFO_OVERFLOW_EN_BITS, self.FIFO_OVERFLOW_EN, 
                            value)
 
-    def _int_enable_wm_fifo(self. fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
+    def _int_enable_wm_fifo(self, fifo_0, fifo_1, fifo_2, fifo_3, fifo_4):
 
         value = (fifo_0 | (fifo_1 << 1) | (fifo_2 << 2) 
                  | (fifo_3 << 3) | (fifo_4 << 4))
