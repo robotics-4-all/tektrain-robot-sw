@@ -10,15 +10,24 @@ class TestICM_20948(unittest.TestCase):
 
     def test_read(self):
         imu = ICM_20948(3)
-        timeout = 5
+        timeout = 10
         
         t_s = time.time()
-        while time.time() - t_s < timeout:
+        #while time.time() - t_s < timeout:
+        while True:
             data = imu.read()
-            print("Accel: {}".format(data.accel))
-            print("Magnetometer: {}".format(data.magne))
-            print("Gyroscope: {}".format(data.gyro))
-            print("Temperature: {}".format(data.temp))
+            print("Accl: x: {}, y: {}, z: {}".format(data.accel.x,
+                                                     data.accel.y,
+                                                     data.accel.z))
+            print("Gyro: x: {}, y: {}, z: {}".format(data.gyro.x,
+                                                     data.gyro.y,
+                                                     data.gyro.z))
+            print("Magn: x: {}, y: {}, z: {}".format(data.magne.x,
+                                                     data.magne.y,
+                                                     data.magne.z))
+            #print("Temperature: {}".format(data.temp))
+
+            time.sleep(0.25)
 
 
 if __name__ == "__main__":
