@@ -74,6 +74,7 @@ class ICM_20948(Sensor):
         self._bus = bus
         self._bank = -1
         self._addr = i2c_addr
+        self.g_to_ms = 9.84
         
         self.start()
 
@@ -232,6 +233,10 @@ class ICM_20948(Sensor):
         ax /= gs
         ay /= gs
         az /= gs
+
+        ax *= self.g_to_ms
+        ay *= self.g_to_ms
+        az *= self.g_to_ms
 
         # Read back the degrees per second rate and
         # use it to compensate the self._reading to dps
