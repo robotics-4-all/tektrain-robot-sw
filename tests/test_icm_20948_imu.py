@@ -25,9 +25,12 @@ class TestICM_20948(unittest.TestCase):
             print("Magn: x: {}, y: {}, z: {}".format(data.magne.x,
                                                      data.magne.y,
                                                      data.magne.z))
+            print("Degrees: {}".format(imu.convert_to_degrees(data.magne.x,
+                                                              data.magne.y,
+                                                              data.magne.z)))
             #print("Temperature: {}".format(data.temp))
 
-            time.sleep(0.25)
+            time.sleep(1)
 
 
 if __name__ == "__main__":

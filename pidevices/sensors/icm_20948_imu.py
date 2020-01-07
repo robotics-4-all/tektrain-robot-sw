@@ -3,6 +3,7 @@
 from collections import namedtuple
 from ..devices import Sensor
 import time
+import math
 import struct
 
 
@@ -41,6 +42,7 @@ ICM20948_ACCEL_WOM_THR = 0x13
 ICM20948_ACCEL_CONFIG = 0x14
 ICM20948_ACCEL_XOUT_H = 0x2D
 ICM20948_GRYO_XOUT_H = 0x33
+ICM20948_TEMP_OUT_H = 0x39
 
 AK09916_I2C_ADDR = 0x0c
 
@@ -75,6 +77,7 @@ class ICM_20948(Sensor):
         self._bank = -1
         self._addr = i2c_addr
         self.g_to_ms = 9.84
+        self.dps_to_rads = (1/360) * (1/0.159154943091895)
         
         self.start()
 
@@ -215,6 +218,30 @@ class ICM_20948(Sensor):
 
         return x, y, z
 
+    def convert_to_degrees(self, x, y, z):
+        """Convert magnetometer readings to degrees
+        
+        Args:
+            x (float): Readings from magnetometer from the x axis.
+            y (float): Readings from magnetometer from the y axis.
+            z (float): Readings from magnetometer from the z axis.
+
+        Returns:
+            float: Indicating the degrees of rotation.
+        """
+
+        if y > 0:
+            degrees = 90 - (math.atan(x / y)) * 180/math.pi 
+        elif y < 0:
+            degrees = 270 - (math.atan(x / y)) * 180/math.pi 
+        else:
+            if x > 0:
+                degrees = 180
+            else:
+                degrees = 0
+
+        return degrees
+
     def _read_accelerometer_gyro_data(self):
         self.bank(0)
         data = self._read_bytes(ICM20948_ACCEL_XOUT_H, 12)
@@ -234,6 +261,7 @@ class ICM_20948(Sensor):
         ay /= gs
         az /= gs
 
+        # Convert to m/s^2
         ax *= self.g_to_ms
         ay *= self.g_to_ms
         az *= self.g_to_ms
@@ -248,6 +276,11 @@ class ICM_20948(Sensor):
         gx /= dps
         gy /= dps
         gz /= dps
+
+        # Convert to rad/s
+        gx *= self.dps_to_rads
+        gy *= self.dps_to_rads
+        gz *= self.dps_to_rads
 
         return ax, ay, az, gx, gy, gz
 
