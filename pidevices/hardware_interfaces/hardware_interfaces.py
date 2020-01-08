@@ -183,8 +183,8 @@ class GPIO(HardwareInterface):
         """Write a value to an output pin.
 
         Args:
-            pin: The pin's name.
-            value: The output value. The value should be 0 or 1 for a simple
+            pin (str): The pin's name.
+            value (int): The output value. The value should be 0 or 1 for a simple
                 output pin and if it is pwm should be between [0, 1].
 
         Raises:
@@ -198,10 +198,10 @@ class GPIO(HardwareInterface):
         """Read the value of an input pin.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
 
         Returns:
-            An int that is 1 for high voltage, 0 for low voltage.
+            int: that is 1 for high voltage, 0 for low voltage.
 
         Raises:
             NotInputPin: Try to read from non input pin.
@@ -242,7 +242,7 @@ class GPIO(HardwareInterface):
 
         Args:
             pin (str): The pin name.
-            value (float): The output value.
+            value (int): The output value.
         """
 
         self.set_pin_function(pin, "output")
@@ -304,10 +304,10 @@ class GPIO(HardwareInterface):
         """Get a pin's pull up.
 
         Args:
-            pin: The pin's name.
+            pin (str): The pin's name.
 
         Returns:
-            A string containing the pin's pull.
+            str: containing the pin's pull value.
         """
 
         return self._pins[pin].pull
@@ -332,7 +332,7 @@ class GPIO(HardwareInterface):
             pin (str): The pin's name.
 
         Returns:
-            Boolean that represents if the pin is pwm.
+            bool: that represents if the pin is pwm.
         """
 
         return self._pins[pin].pwm
@@ -357,14 +357,15 @@ class GPIO(HardwareInterface):
             pin (str): The pin's name.
 
         Returns:
-            An int with the pin's pwm frequency.
+            int: with the pin's pwm frequency.
         """
 
         return self._pins[pin].frequency
 
-    # TODO: check if it is uneccessary atttibute.
     def set_pin_duty_cycle(self, pin, duty_cycle):
         """Set a pwm pin's duty_cycle.
+        
+        Maybe it is unnecessary.
 
         Args:
             pin (str): The pin's name.
@@ -377,6 +378,9 @@ class GPIO(HardwareInterface):
 
         Args:
             pin (str): The pin's name.
+
+        Returns:
+            float: Representing the duty cycle.
         """
 
         return self._pins[pin].duty_cycle
@@ -410,7 +414,7 @@ class GPIO(HardwareInterface):
 
         Args:
             pin (str): Pin name
-            event: Function pointer to the target function.
+            event (function): Function pointer to the target function.
             *args: The arguments of the target function.
 
         Raises:
@@ -446,14 +450,17 @@ class GPIO(HardwareInterface):
             pin (str): The pin's name.
 
         Returns:
-            Int representing the pin's bounce time.
+            int: Representing the pin's bounce time.
         """
 
         return self._pins[pin].bounce
 
 
 class SPI(HardwareInterface):
-    """Abstract class representing spi hardware interface."""
+    """Abstract class representing spi hardware interface. It is higly inspired 
+    from `gpiozero <https://gpiozero.readthedocs.io/en/stable/api_spi.html>`
+    SPI abstract class.
+    """
 
     def _get_clock_polarity(self):
         pass
@@ -547,7 +554,7 @@ class HPWM(HardwareInterface):
     (18, 19), (40, 41), (52, 53).
 
     Args:
-        pin: The pin number.
+        pin (int): The pin number.
 
     Raises:
         InvalidHPWMPin: Error with invalid pwm pin.
