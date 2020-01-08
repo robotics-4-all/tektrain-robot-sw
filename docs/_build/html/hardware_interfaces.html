@@ -327,8 +327,8 @@ each pin. Keys are the pin names and values the objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pin</strong> – The pin’s name.</p></li>
-<li><p><strong>value</strong> – The output value. The value should be 0 or 1 for a simple
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – The output value. The value should be 0 or 1 for a simple
 output pin and if it is pwm should be between [0, 1].</p></li>
 </ul>
 </dd>
@@ -348,13 +348,16 @@ output pin and if it is pwm should be between [0, 1].</p></li>
 <dd><p>Read the value of an input pin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pin</strong> – The pin’s name.</p>
+<dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An int that is 1 for high voltage, 0 for low voltage.</p>
+<dd class="field-even"><p>that is 1 for high voltage, 0 for low voltage.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -404,7 +407,7 @@ trigger=2.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
-<li><p><strong>value</strong> (<em>float</em>) – The output value.</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – The output value.</p></li>
 </ul>
 </dd>
 </dl>
@@ -483,10 +486,13 @@ Defaults to 0.</p></li>
 <dd><p>Get a pin’s pull up.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pin</strong> – The pin’s name.</p>
+<dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A string containing the pin’s pull.</p>
+<dd class="field-even"><p>containing the pin’s pull value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -520,7 +526,10 @@ Defaults to 0.</p></li>
 <dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Boolean that represents if the pin is pwm.</p>
+<dd class="field-even"><p>that represents if the pin is pwm.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -552,7 +561,10 @@ Defaults to 0.</p></li>
 <dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An int with the pin’s pwm frequency.</p>
+<dd class="field-even"><p>with the pin’s pwm frequency.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -561,6 +573,7 @@ Defaults to 0.</p></li>
 <dt id="pidevices.GPIO.set_pin_duty_cycle">
 <code class="sig-name descname">set_pin_duty_cycle</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">duty_cycle</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GPIO.set_pin_duty_cycle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a pwm pin’s duty_cycle.</p>
+<p>Maybe it is unnecessary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -578,6 +591,12 @@ Defaults to 0.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Representing the duty cycle.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -621,7 +640,7 @@ Defaults to 0.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pin</strong> (<em>str</em>) – Pin name</p></li>
-<li><p><strong>event</strong> – Function pointer to the target function.</p></li>
+<li><p><strong>event</strong> (<em>function</em>) – Function pointer to the target function.</p></li>
 <li><p><strong>*args</strong> – The arguments of the target function.</p></li>
 </ul>
 </dd>
@@ -668,7 +687,10 @@ Defaults to 0.</p></li>
 <dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Int representing the pin’s bounce time.</p>
+<dd class="field-even"><p>Representing the pin’s bounce time.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -693,7 +715,9 @@ Defaults to 0.</p></li>
 <dl class="class">
 <dt id="pidevices.SPI">
 <em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">SPI</code><a class="headerlink" href="#pidevices.SPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract class representing spi hardware interface.</p>
+<dd><p>Abstract class representing spi hardware interface. It is higly inspired
+from <cite>gpiozero &lt;https://gpiozero.readthedocs.io/en/stable/api_spi.html&gt;</cite>
+SPI abstract class.</p>
 <dl class="method">
 <dt id="pidevices.SPI.clock_polarity">
 <em class="property">property </em><code class="sig-name descname">clock_polarity</code><a class="headerlink" href="#pidevices.SPI.clock_polarity" title="Permalink to this definition">¶</a></dt>
@@ -786,7 +810,7 @@ in pairs that only one could be activated. This pairs are pins (12, 13),
 (18, 19), (40, 41), (52, 53).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pin</strong> – The pin number.</p>
+<dd class="field-odd"><p><strong>pin</strong> (<em>int</em>) – The pin number.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>InvalidHPWMPin</strong> – Error with invalid pwm pin.</p>
