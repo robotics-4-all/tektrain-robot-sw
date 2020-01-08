@@ -13,6 +13,19 @@ RPi.GPIO implementation
 .. autoclass:: pidevices.RPiGPIO
    :members:
 
+mcp23x17 chip family
+--------------------
+
+Mcp23x17GPIO
+^^^^^^^^^^^^
+.. autoclass:: pidevices.Mcp23x17GPIO
+   :members:
+
+Mcp23017GPIO
+^^^^^^^^^^^^
+.. autoclass:: pidevices.Mcp23017GPIO
+   :members:
+
 SPI Implementations
 ===================
 

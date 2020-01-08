@@ -185,7 +185,11 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.add_pins">add_pins() (pidevices.GPIO method)</a>
+
+      <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.add_pins">(pidevices.Mcp23x17GPIO method)</a>
 </li>
+      </ul></li>
       <li><a href="sensors.html#pidevices.Microphone.async_read">async_read() (pidevices.Microphone method)</a>
 </li>
       <li><a href="actuators.html#pidevices.Speaker.async_write">async_write() (pidevices.Speaker method)</a>
@@ -260,6 +264,8 @@
         <li><a href="hardware_interfaces.html#pidevices.I2C.close">(pidevices.I2C method)</a>
 </li>
         <li><a href="actuators.html#pidevices.LedController.close">(pidevices.LedController method)</a>
+</li>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.close">(pidevices.Mcp23x17GPIO method)</a>
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.close">(pidevices.RPiGPIO method)</a>
 </li>
@@ -426,10 +432,10 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.init_output">init_output() (pidevices.GPIO method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.init_pwm">init_pwm() (pidevices.GPIO method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.initialize">initialize() (pidevices.GPIO method)</a>
 
       <ul>
@@ -438,6 +444,10 @@
         <li><a href="hardware_interfaces.html#pidevices.HPWM.initialize">(pidevices.HPWM method)</a>
 </li>
         <li><a href="hardware_interfaces.html#pidevices.I2C.initialize">(pidevices.I2C method)</a>
+</li>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23017GPIO.initialize">(pidevices.Mcp23017GPIO method)</a>
+</li>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.initialize">(pidevices.Mcp23x17GPIO method)</a>
 </li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.initialize">(pidevices.RPiGPIO method)</a>
 </li>
@@ -500,9 +510,13 @@
 </li>
       <li><a href="sensors.html#pidevices.LineFollower.max_frequency">max_frequency() (pidevices.LineFollower property)</a>
 </li>
+      <li><a href="hardware_interfaces.html#pidevices.SPI.max_speed_hz">max_speed_hz() (pidevices.SPI property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hardware_interfaces.html#pidevices.SPI.max_speed_hz">max_speed_hz() (pidevices.SPI property)</a>
+      <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23017GPIO">Mcp23017GPIO (class in pidevices)</a>
+</li>
+      <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO">Mcp23x17GPIO (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.Mcp3002">Mcp3002 (class in pidevices)</a>
 </li>
@@ -603,6 +617,8 @@
 </li>
         <li><a href="sensors.html#pidevices.ICM_20948.read">(pidevices.ICM_20948 method)</a>
 </li>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.read">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="sensors.html#pidevices.Mcp3002.read">(pidevices.Mcp3002 method)</a>
 </li>
         <li><a href="sensors.html#pidevices.Microphone.read">(pidevices.Microphone method)</a>
@@ -637,6 +653,8 @@
       <li><a href="hardware_interfaces.html#pidevices.GPIO.remove_pins">remove_pins() (pidevices.GPIO method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.remove_pins">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.remove_pins">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
@@ -685,6 +703,8 @@
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_bounce">set_pin_bounce() (pidevices.GPIO method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.set_pin_bounce">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_bounce">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
@@ -693,12 +713,16 @@
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_edge">set_pin_edge() (pidevices.GPIO method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.set_pin_edge">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_edge">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_event">set_pin_event() (pidevices.GPIO method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.set_pin_event">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_event">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
@@ -711,12 +735,16 @@
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_function">set_pin_function() (pidevices.GPIO method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.set_pin_function">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_function">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_pull">set_pin_pull() (pidevices.GPIO method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.set_pin_pull">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_pull">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
@@ -736,10 +764,10 @@
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_4">so_4() (pidevices.CytronLfLSS05 property)</a>
 </li>
-      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_5">so_5() (pidevices.CytronLfLSS05 property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sensors.html#pidevices.CytronLfLSS05.so_5">so_5() (pidevices.CytronLfLSS05 property)</a>
+</li>
       <li><a href="actuators.html#pidevices.Speaker">Speaker (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.SPI">SPI (class in pidevices)</a>
@@ -780,6 +808,8 @@
         <li><a href="sensors.html#pidevices.VL53L1X.start">(pidevices.VL53L1X method)</a>
 </li>
       </ul></li>
+      <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.start_polling">start_polling() (pidevices.Mcp23x17GPIO method)</a>
+</li>
       <li><a href="sensors.html#pidevices.BME680.stop">stop() (pidevices.BME680 method)</a>
 
       <ul>
@@ -815,6 +845,8 @@
 </li>
       </ul></li>
       <li><a href="sensors.html#pidevices.Camera.stop_continuous">stop_continuous() (pidevices.Camera method)</a>
+</li>
+      <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.stop_polling">stop_polling() (pidevices.Mcp23x17GPIO method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -862,8 +894,12 @@
         <li><a href="sensors.html#pidevices.ButtonArray.wait_for_press">(pidevices.ButtonArray method)</a>
 </li>
       </ul></li>
-      <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.wait_pin_for_edge">wait_pin_for_edge() (pidevices.RPiGPIO method)</a>
+      <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.wait_pin_for_edge">wait_pin_for_edge() (pidevices.Mcp23x17GPIO method)</a>
+
+      <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.wait_pin_for_edge">(pidevices.RPiGPIO method)</a>
 </li>
+      </ul></li>
       <li><a href="sensors.html#pidevices.Button.when_pressed">when_pressed() (pidevices.Button method)</a>
 
       <ul>
@@ -886,6 +922,8 @@
         <li><a href="hardware_interfaces.html#pidevices.I2C.write">(pidevices.I2C method)</a>
 </li>
         <li><a href="actuators.html#pidevices.LedController.write">(pidevices.LedController method)</a>
+</li>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.write">(pidevices.Mcp23x17GPIO method)</a>
 </li>
         <li><a href="actuators.html#pidevices.PCA9685.write">(pidevices.PCA9685 method)</a>
 </li>

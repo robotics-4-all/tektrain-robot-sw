@@ -216,7 +216,7 @@ class RPiGPIO(GPIO):
 
 
 class Mcp23x17GPIO(GPIO):
-    """GPIO class implementation using mcp23017 chip. Extends :class:`GPIO`
+    """GPIO class implementation using mcp23x17 family chips. Extends :class:`GPIO`
     
     Args:
         **kwargs: Could be multiple keyword arguments in the form of
@@ -235,8 +235,8 @@ class Mcp23x17GPIO(GPIO):
         value is different than the previous value.
 
         Args:
-            intcon: Int representing the int con value
-            defval: Int representing the defval
+            intcon (int): Representing the int con value
+            defval (int): Representing the defval
         """
         def __init__(self, intcon, defval):
             """Constructor"""
@@ -413,7 +413,11 @@ class Mcp23x17GPIO(GPIO):
             raise NotInputPin("Can's set event to a non input pin.")
 
     def start_polling(self, pins):
-        """Start polling for interrupts the specified pins."""
+        """Start polling for interrupts the specified pins.
+        
+        Args:
+            pins (list): List with the names of the target pins to be polled.
+        """
         pins = pins if isinstance(pins, list) else [pins]
 
         pins = [self.PIN_NUMBER_MAP[self.pins[pin].pin_num] for pin in pins]
@@ -432,7 +436,10 @@ class Mcp23x17GPIO(GPIO):
             timeout (int): The time until it stops waiting for an edge signal.
 
         Returns:
-            An int indicating if the interrupt occured.
+            int: Indicating if the interrupt occured.
+
+        Raise:
+            NotInputPin: Can't wait for edge to a non input pin.
         """
 
         pin = self.pins[pin]
@@ -458,7 +465,7 @@ class Mcp23x17GPIO(GPIO):
 
 
 class Mcp23017GPIO(Mcp23x17GPIO):
-    """GPIO class implementation using mcp23017 chip. Extends :class:`GPIO`
+    """GPIO class implementation using mcp23017 chip. Extends :class:`Mcp23x17GPIO`
     
     Args:
         bus (int): Optional argument for specifying the i2c bus of the mcp23017

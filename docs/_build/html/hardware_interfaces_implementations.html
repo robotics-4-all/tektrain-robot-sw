@@ -87,6 +87,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware Interfaces Implementations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#gpio-implementations">GPIO Implementations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#rpi-gpio-implementation">RPi.GPIO implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcp23x17-chip-family">mcp23x17 chip family</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mcp23x17gpio">Mcp23x17GPIO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcp23017gpio">Mcp23017GPIO</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#spi-implementations">SPI Implementations</a><ul>
@@ -203,13 +208,16 @@
 <dd><p>Read the value of an input pin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pin</strong> – The pin’s name.</p>
+<dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An int that is 1 for high voltage, 0 for low voltage.</p>
+<dd class="field-even"><p>that is 1 for high voltage, 0 for low voltage.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,8 +229,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pin</strong> – The pin’s name.</p></li>
-<li><p><strong>value</strong> – The output value. The value should be 0 or 1 for a simple
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – The output value. The value should be 0 or 1 for a simple
 output pin and if it is pwm should be between [0, 1].</p></li>
 </ul>
 </dd>
@@ -361,7 +369,7 @@ output pin and if it is pwm should be between [0, 1].</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pin</strong> (<em>str</em>) – Pin name</p></li>
-<li><p><strong>event</strong> – Function pointer to the target function.</p></li>
+<li><p><strong>event</strong> (<em>function</em>) – Function pointer to the target function.</p></li>
 <li><p><strong>*args</strong> – The arguments of the target function.</p></li>
 </ul>
 </dd>
@@ -393,6 +401,257 @@ output pin and if it is pwm should be between [0, 1].</p></li>
 
 </dd></dl>
 
+</div>
+<div class="section" id="mcp23x17-chip-family">
+<h3>mcp23x17 chip family<a class="headerlink" href="#mcp23x17-chip-family" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="mcp23x17gpio">
+<h4>Mcp23x17GPIO<a class="headerlink" href="#mcp23x17gpio" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="pidevices.Mcp23x17GPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Mcp23x17GPIO</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPIO class implementation using mcp23x17 family chips. Extends <a class="reference internal" href="hardware_interfaces.html#pidevices.GPIO" title="pidevices.GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIO</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Could be multiple keyword arguments in the form of
+pin_name = pin_number(pin number is A_x or B_x, because the
+implementation use the mcp23x17 devices.) For example for the
+hc-sr04 sonar, it would be echo=”A_1”, trigger=”B_2”.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.add_pins">
+<code class="sig-name descname">add_pins</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.add_pins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new pins to the pins dictionary.
+:param **kwargs: Keyword arguments pin_name=pin_number.</p>
+<blockquote>
+<div><p>For example echo=”A_1”, trigger=”B_2”.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">pin</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the value of an input pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>that is 1 for high voltage, 0 for low voltage.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a value to an output pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – The output value. The value should be 0 or 1 for a simple
+output pin and if it is pwm should be between [0, 1].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Try to write non arithmetic value or use value greater
+    than 1 or use negative value.</p></li>
+<li><p><strong>NotOutputPin</strong> – Try to write to an input pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.remove_pins">
+<code class="sig-name descname">remove_pins</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.remove_pins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a pin/pins from the dictionary and free the resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> – String with the pin’s name, it could be more than one.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_function">
+<code class="sig-name descname">set_pin_function</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
+<li><p><strong>function</strong> (<em>str</em>) – The function value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Error occured using invalid function name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_pull">
+<code class="sig-name descname">set_pin_pull</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">pull</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s pull up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
+<li><p><strong>pull</strong> (<em>str</em>) – The pull up value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Error occured using invalid pull name.</p></li>
+<li><p><strong>NotInputPin</strong> – Try to set pull up resistor to a non input pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_edge">
+<code class="sig-name descname">set_pin_edge</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">edge</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s edge value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – The edge value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to set edge to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_bounce">
+<code class="sig-name descname">set_pin_bounce</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">bounce</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_bounce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s bounce time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>bounce</strong> (<em>int</em>) – The bounce value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_event">
+<code class="sig-name descname">set_pin_event</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">event</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the function that will be called with a new edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – Pin name</p></li>
+<li><p><strong>event</strong> (<em>function</em>) – Function pointer to the target function.</p></li>
+<li><p><strong>*args</strong> – The arguments of the target function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to set event to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.start_polling">
+<code class="sig-name descname">start_polling</code><span class="sig-paren">(</span><em class="sig-param">pins</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.start_polling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start polling for interrupts the specified pins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pins</strong> (<em>list</em>) – List with the names of the target pins to be polled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.stop_polling">
+<code class="sig-name descname">stop_polling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.stop_polling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop polling for interrupts</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.wait_pin_for_edge">
+<code class="sig-name descname">wait_pin_for_edge</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.wait_pin_for_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait pin for an edge detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – Pin name.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – The time until it stops waiting for an edge signal.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicating if the interrupt occured.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p>NotInputPin: Can’t wait for edge to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close interface.input</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="mcp23017gpio">
+<h4>Mcp23017GPIO<a class="headerlink" href="#mcp23017gpio" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="pidevices.Mcp23017GPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Mcp23017GPIO</code><span class="sig-paren">(</span><em class="sig-param">bus=1</em>, <em class="sig-param">address=32</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23017GPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPIO class implementation using mcp23017 chip. Extends <a class="reference internal" href="#pidevices.Mcp23x17GPIO" title="pidevices.Mcp23x17GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mcp23x17GPIO</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bus</strong> (<em>int</em>) – Optional argument for specifying the i2c bus of the mcp23017
+module. Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>address</strong> (<em>int</em>) – Optional argument for specifying the i2c address of the
+mcp23017 module. Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">0x20</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Could be multiple keyword arguments in the form of
+pin_name = pin_number(pin number is A_x or B_x, because the
+implementation use the mcp23x17 devices.) For example for the
+hc-sr04 sonar, it would be echo=”A_1”, trigger=”B_2”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Mcp23017GPIO.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23017GPIO.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 </div>
 <div class="section" id="spi-implementations">
