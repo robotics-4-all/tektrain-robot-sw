@@ -14,8 +14,8 @@ class Device(object):
     talk with the hardware.
     
     Args:
-        name: The optional name of the device.
-        max_data_length: The max length of the data deque.
+        name (str): The optional name of the device.
+        max_data_length (int): The max length of the data deque.
 
     Raises:
         TypeError: Invalid name type, or invalid max_data_length type.
@@ -87,7 +87,7 @@ class Device(object):
 
     # TODO: see if it is better practice to remove **kwargs from the function
     # and call the constructors with no arguments.
-    def init_interface(self, interface: str, impl=None, **kwargs):
+    def init_interface(self, interface, impl=None, **kwargs):
         """Choose an implementation for an interface.
         
         Basically using the impl parameter finds the implemented class and 
@@ -95,10 +95,10 @@ class Device(object):
 
         Args:
             interface (str): String representing the hardware interface type,
-                it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.
+                it should be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm.
             impl (str): The specific implementation to be used. If it is none the 
                 first that is installed will be used. Currently supported values
-                  - GPIO: "RPiGPIO"
+                  - GPIO: "RPiGPIO", "Mcp23017GPIO"
                   - SPI: "SPIimplementation"
                   - UART: 
                   - I2C: "SMBus2"
@@ -108,7 +108,7 @@ class Device(object):
                 interface.
 
         Returns:
-            Int representing the interface's index in the list.
+            int: representing the interface's index in the list.
 
         Raises:
             TypeError: Wrong interface type.
@@ -157,17 +157,17 @@ class Device(object):
             self.data.append(value)
 
     def get_data(self, start, end):
-        """Get last n data.
+        """Get last abs(end - start) data.
         
         For getting just the last element it is better to use self.data[-1]
         than this method.
 
         Args:
             start (int): Start index to get elements from data deque.
-            end: End index of data.
+            end (int): End index of data.
 
         Returns:
-            A list with elements or just one element.
+            list: That has the 
         """
         
         if abs(start) > len(self.data):

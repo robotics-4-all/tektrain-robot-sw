@@ -165,13 +165,13 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Pidevices’s main goal is the easy deployment of devices. A device could be anything
 that get’s connected to the pi(also the pi could be a device, but we don’t see it
-from that prespective). Pidevices distinct the devices in two categories sensors
+from that prespective). Pidevices distinct the devices in two categories sensors,
 which are devices that get any information from the environment and actuators
 that change the environment.</p>
 <p>To make things easier for the maker/developer pidevices use a common interface
 consisting of three functions start(), stop() and restart(). The distinction
 between sensors and actuators is a read() function that belongs to sensors and
-a write function that belongs only to actuatos.</p>
+a write() function that belongs only to actuatos.</p>
 <p>With that in mind a developer can contribute a new sensor or effector by
 just implementing these four functions and then any user could use it without
 having to know the specific implementation.</p>
@@ -187,8 +187,8 @@ talk with the hardware.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – The optional name of the device.</p></li>
-<li><p><strong>max_data_length</strong> – The max length of the data deque.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The optional name of the device.</p></li>
+<li><p><strong>max_data_length</strong> (<em>int</em>) – The max length of the data deque.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -215,7 +215,7 @@ talk with the hardware.</p>
 
 <dl class="method">
 <dt id="pidevices.devices.Device.init_interface">
-<code class="sig-name descname">init_interface</code><span class="sig-paren">(</span><em class="sig-param">interface: str</em>, <em class="sig-param">impl=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.init_interface" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_interface</code><span class="sig-paren">(</span><em class="sig-param">interface</em>, <em class="sig-param">impl=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.init_interface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose an implementation for an interface.</p>
 <p>Basically using the impl parameter finds the implemented class and
 creates a new instance of that class.</p>
@@ -223,12 +223,12 @@ creates a new instance of that class.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>interface</strong> (<em>str</em>) – String representing the hardware interface type,
-it should be GPIO-gpio, SPI-spi, UART-uart, I2C-i2c or HPWM-hpwm.</p></li>
+it should be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm.</p></li>
 <li><p><strong>impl</strong> (<em>str</em>) – <p>The specific implementation to be used. If it is none the
 first that is installed will be used. Currently supported values</p>
 <blockquote>
 <div><ul>
-<li><p>GPIO: “RPiGPIO”</p></li>
+<li><p>GPIO: “RPiGPIO”, “Mcp23017GPIO”</p></li>
 <li><p>SPI: “SPIimplementation”</p></li>
 <li><p>UART:</p></li>
 <li><p>I2C: “SMBus2”</p></li>
@@ -242,10 +242,13 @@ interface.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Int representing the interface’s index in the list.</p>
+<dd class="field-even"><p>representing the interface’s index in the list.</p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Wrong interface type.</p></li>
 <li><p><strong>NotSupportedInterface</strong> – An error occured accessing modules.</p></li>
 <li><p><strong>NotInstalledInterface</strong> – An error occured when there isn’t any
@@ -264,18 +267,21 @@ interface.</p></li>
 <dl class="method">
 <dt id="pidevices.devices.Device.get_data">
 <code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.get_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get last n data.</p>
+<dd><p>Get last abs(end - start) data.</p>
 <p>For getting just the last element it is better to use self.data[-1]
 than this method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start</strong> (<em>int</em>) – Start index to get elements from data deque.</p></li>
-<li><p><strong>end</strong> – End index of data.</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End index of data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list with elements or just one element.</p>
+<dd class="field-even"><p>That has the</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
