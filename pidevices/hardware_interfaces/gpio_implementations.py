@@ -392,6 +392,22 @@ class Mcp23x17GPIO(GPIO):
             raise NotInputPin("Can't set edge to a non input pin.")
 
     def set_pin_event(self, pin, event, *args):
+        """Set the function that will be called with a new edge.
+        
+        In RPi.GPIO calling this function enables interrupt handling. In this
+        implementation the :function:`start_polling` need to be called in order
+        to catch interrupts.
+
+        Args:
+            pin (str): Pin name
+            event (function): Function pointer to the target function.
+            *args: The arguments of the target function.
+
+        Raises:
+            NotInputPin: Try to set event to a non input pin.
+        """
+        pass
+
         pin_name = pin
         pin = self.pins[pin]
 

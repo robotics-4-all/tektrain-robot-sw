@@ -559,6 +559,9 @@ output pin and if it is pwm should be between [0, 1].</p></li>
 <dt id="pidevices.Mcp23x17GPIO.set_pin_event">
 <code class="sig-name descname">set_pin_event</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">event</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the function that will be called with a new edge.</p>
+<p>In RPi.GPIO calling this function enables interrupt handling. In this
+implementation the <a href="#id1"><span class="problematic" id="id2">:function:`start_polling`</span></a> need to be called in order
+to catch interrupts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
