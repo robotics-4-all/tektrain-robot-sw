@@ -101,6 +101,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#bme-680">BME-680</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imu">IMU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#icm-20948">ICM-20948</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#microphone">Microphone</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#camera">Camera</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adc">ADC</a><ul>
@@ -819,6 +823,126 @@ The format is (so_1, so_2, so_3, so_4, so_5).</p>
 
 </dd></dl>
 
+</div>
+<div class="section" id="imu">
+<h2>IMU<a class="headerlink" href="#imu" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="icm-20948">
+<h3>ICM-20948<a class="headerlink" href="#icm-20948" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.ICM_20948">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ICM_20948</code><span class="sig-paren">(</span><em class="sig-param">bus</em>, <em class="sig-param">i2c_addr=105</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948" title="Permalink to this definition">¶</a></dt>
+<dd><p>Driver for icm 20948 imu</p>
+<dl class="method">
+<dt id="pidevices.ICM_20948.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">accel_gyro_flag=True</em>, <em class="sig-param">magne_flag=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read measurments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_flag</strong> – </p></li>
+<li><p><strong>magne_flag</strong> – </p></li>
+<li><p><strong>gyro_flag</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.bank">
+<code class="sig-name descname">bank</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.bank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch register self.bank.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.mag_write">
+<code class="sig-name descname">mag_write</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.mag_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a byte to the slave magnetometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.mag_read">
+<code class="sig-name descname">mag_read</code><span class="sig-paren">(</span><em class="sig-param">reg</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.mag_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a byte from the slave magnetometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.mag_read_bytes">
+<code class="sig-name descname">mag_read_bytes</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.mag_read_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read up to 24 bytes from the slave magnetometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.magnetometer_ready">
+<code class="sig-name descname">magnetometer_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.magnetometer_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the magnetometer status self._ready bit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.convert_to_degrees">
+<code class="sig-name descname">convert_to_degrees</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.convert_to_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert magnetometer readings to degrees</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – Readings from magnetometer from the x axis.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – Readings from magnetometer from the y axis.</p></li>
+<li><p><strong>z</strong> (<em>float</em>) – Readings from magnetometer from the z axis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicating the degrees of rotation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_accelerometer_sample_rate">
+<code class="sig-name descname">set_accelerometer_sample_rate</code><span class="sig-paren">(</span><em class="sig-param">rate=125</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_accelerometer_sample_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the accelerometer sample rate in Hz.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_accelerometer_full_scale">
+<code class="sig-name descname">set_accelerometer_full_scale</code><span class="sig-paren">(</span><em class="sig-param">scale=16</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_accelerometer_full_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the accelerometer fulls cale range to +- the supplied value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_accelerometer_low_pass">
+<code class="sig-name descname">set_accelerometer_low_pass</code><span class="sig-paren">(</span><em class="sig-param">enabled=True</em>, <em class="sig-param">mode=5</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_accelerometer_low_pass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the accelerometer low pass filter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_gyro_sample_rate">
+<code class="sig-name descname">set_gyro_sample_rate</code><span class="sig-paren">(</span><em class="sig-param">rate=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_gyro_sample_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the gyro sample rate in Hz.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_gyro_full_scale">
+<code class="sig-name descname">set_gyro_full_scale</code><span class="sig-paren">(</span><em class="sig-param">scale=250</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_gyro_full_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the gyro full scale range to +- supplied value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_gyro_low_pass">
+<code class="sig-name descname">set_gyro_low_pass</code><span class="sig-paren">(</span><em class="sig-param">enabled=True</em>, <em class="sig-param">mode=5</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_gyro_low_pass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the gyro low pass filter.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="microphone">
 <h2>Microphone<a class="headerlink" href="#microphone" title="Permalink to this headline">¶</a></h2>

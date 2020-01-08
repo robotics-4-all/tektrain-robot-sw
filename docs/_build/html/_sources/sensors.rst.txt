@@ -64,6 +64,15 @@ BME-680
 .. autoclass:: pidevices.BME680
    :members:
 
+IMU
+===
+
+ICM-20948
+---------
+
+.. autoclass:: pidevices.ICM_20948
+   :members:
+
 Microphone
 ==========
 
