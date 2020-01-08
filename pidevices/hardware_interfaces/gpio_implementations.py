@@ -305,6 +305,7 @@ class Mcp23x17GPIO(GPIO):
 
     def add_pins(self, **kwargs):
         """Add new pins to the pins dictionary.
+
         Args:
             **kwargs: Keyword arguments pin_name=pin_number.
                 For example echo="A_1", trigger="B_2".
@@ -395,8 +396,8 @@ class Mcp23x17GPIO(GPIO):
         """Set the function that will be called with a new edge.
         
         In RPi.GPIO calling this function enables interrupt handling. In this
-        implementation the :function:`start_polling` need to be called in order
-        to catch interrupts.
+        implementation the :meth:`start_polling` function need to be called 
+        in order to catch interrupts.
 
         Args:
             pin (str): Pin name

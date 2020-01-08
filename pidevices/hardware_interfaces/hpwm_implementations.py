@@ -10,6 +10,9 @@ except ImportError:
 class HPWMPeriphery(HPWM):
     """Wrapper around python periphery pwm implementation extends :class:`HPWM`.
     
+    This class need the periphery module to be installed. Also some configuration
+    files need to be added to the system. More info in the repo's README.
+
     Args:
         pin (int): The pin number in bcm mode.
 
@@ -32,7 +35,7 @@ class HPWMPeriphery(HPWM):
         """Read from hardware pwm pin.
         
         Returns:
-            The duty cycle of the pwm pin.
+            float: The duty cycle of the pwm pin.
         """
 
         return self.duty_cycle

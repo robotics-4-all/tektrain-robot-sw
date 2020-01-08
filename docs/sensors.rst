@@ -4,16 +4,31 @@
 Sensors
 =======
 
-Button
-======
+Buttons
+=======
+
+Single Button
+-------------
 
 .. autoclass:: pidevices.Button
+   :members:
+
+.. autoclass:: pidevices.ButtonRPiGPIO
+   :members:
+
+.. autoclass:: pidevices.ButtonMcp23017
    :members:
 
 Button Array
 ------------
 
 .. autoclass:: pidevices.ButtonArray
+   :members:
+
+.. autoclass:: pidevices.ButtonArrayRPiGPIO
+   :members:
+
+.. autoclass:: pidevices.ButtonArrayMcp23017
    :members:
 
 Distance sensors
@@ -26,6 +41,12 @@ HC-SR04
 -------
 
 .. autoclass:: pidevices.HcSr04
+   :members:
+
+.. autoclass:: pidevices.HcSr04RPiGPIO
+   :members:
+
+.. autoclass:: pidevices.HcSr04Mcp23017
    :members:
 
 vl53l1x
@@ -58,6 +79,12 @@ Cytron lss05
 .. autoclass:: pidevices.CytronLfLSS05
    :members:
 
+.. autoclass:: pidevices.CytronLfLSS05Rpi
+   :members:
+
+.. autoclass:: pidevices.CytronLfLSS05Mcp23017
+   :members:
+
 BME-680
 =======
 
@@ -71,6 +98,24 @@ ICM-20948
 ---------
 
 .. autoclass:: pidevices.ICM_20948
+   :members:
+
+Wheel Encoders
+==============
+
+.. autoclass:: pidevices.WheelEncoder
+   :members:
+
+Df Robot Wheel Encoders
+-----------------------
+
+.. autoclass:: pidevices.DfRobotWheelEncoder
+   :members:
+
+.. autoclass:: pidevices.DfRobotWheelEncoderRpiGPIO
+   :members:
+
+.. autoclass:: pidevices.DfRobotWheelEncoderMcp23017
    :members:
 
 Microphone

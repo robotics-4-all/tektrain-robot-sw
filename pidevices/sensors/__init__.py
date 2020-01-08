@@ -4,8 +4,6 @@ from .bme680 import *
 from .button import *
 from .button_array import *
 from .cytron_line_sensor_lss05 import *
-from .cytron_line_sensor_lss05_rpigpio import *
-from .cytron_line_sensor_lss05_mcp23017 import *
 from .distance_sensor import *
 from .gas_sensor import *
 from .sharp_gp20axxx0f import *

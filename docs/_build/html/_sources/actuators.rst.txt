@@ -18,6 +18,9 @@ Dfrobot motor controller
 .. autoclass:: pidevices.DfrobotMotorController
    :members:
 
+.. autoclass:: pidevices.DfrobotMotorControllerPCA
+   :members:
+
 Servo driver
 ============
 

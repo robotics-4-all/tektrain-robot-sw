@@ -76,7 +76,8 @@ else:
 
 # TODO: Document args.
 class VL53L1X(DistanceSensor):
-    """VL53L1X ToF extends :class:`DistanceSensor`
+    """VL53L1X ToF extends :class:`DistanceSensor`. It uses 
+    `this <https://github.com/pimoroni/vl53l1x-python>`_ implementation.
 
     Hardware: 
         - voltage: 2.6V-5.5V

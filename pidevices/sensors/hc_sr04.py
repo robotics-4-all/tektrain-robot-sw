@@ -81,7 +81,8 @@ class HcSr04(DistanceSensor):
             SAVE (boolean): Flag for saving the measurment to the data list.
 
         Returns:
-            The distance in centimeters.
+            int: The distance in centimeters. If it return -1 it means the that
+                the measurment is out of the sensor's range.
 
         Raises:
             OutOfRange: Error when a measurment takes too long.
@@ -175,6 +176,8 @@ class HcSr04RPiGPIO(HcSr04):
 
 class HcSr04Mcp23017(HcSr04):
     """HcSr04 class extends :class:`DistanceSensor`
+    
+    **UNTESTED**
 
     Implementation of the HC-SR04 sensor class speed of sound is 
     33100 + 0.6*temperature(cm/s) considering temperature = 20, speed of sound 

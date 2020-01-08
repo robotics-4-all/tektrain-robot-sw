@@ -9,7 +9,7 @@ class Button(Sensor):
     Args:
         pin_num (int): BCM number of the pin.
         direction (str): Indicating the it will use pull up or pull down resistor
-            . Could be :data:`up` or data:`down`.
+            . Could be :data:`up` or :data:`down`.
         edge (str): At which edge signal it will call the function. It could
             be :data:`rising`, :data:`falling` and :data:`both`.
         bounce (int): The bounce time of the button. Defaults to 200ms
@@ -48,7 +48,7 @@ class Button(Sensor):
 
     @property
     def bounce(self):
-        """The bounceection of the pull resistor."""
+        """The bounce of the pull resistor."""
         return self._bounce
 
     @bounce.setter
@@ -59,17 +59,15 @@ class Button(Sensor):
         """Read current state of button.
         
         Returns:
-            An int that represents the state of the button. 0 for not pressed
-            1 for pressed.
+            int: Represents the state of the button. 0 for not pressed
+                1 for pressed.
         """
 
         return self.hardware_interfaces[self._gpio].read('button')
 
     def when_pressed(self, func, *args):
-        """Set the function to be called when the button is pressed.
+        """Set a function for asynchronous call when the button is pressed.
         
-        Set a function for asynchronous call when the button is pressed.
-
         Args:
             func (function): The function.
             *args: Arguments for the function.
@@ -160,14 +158,5 @@ class ButtonMcp23017(Button):
         self.hardware_interfaces[self._gpio].set_pin_edge('button', self._edge)
 
     def when_pressed(self, func, *args):
-        """Set the function to be called when the button is pressed.
-        
-        Set a function for asynchronous call when the button is pressed.
-
-        Args:
-            func (function): The function.
-            *args: Arguments for the function.
-        """
-        
         self.hardware_interfaces[self._gpio].set_pin_event('button', func, *args)
         self.hardware_interfaces[self._gpio].start_polling('button')

@@ -7,11 +7,11 @@ class ButtonArray(Sensor):
     """An array of buttons, extends :class:`Sensor`.
     
     Args:
-        pin_nums: List with the gpio numbers for buttons.
-        direction: Could be a list with different values per pin_num or single
-            value.
-        bounce: Could be a list with different value per pin_num or a single 
-            value.
+        pin_nums (list): List with the gpio numbers for buttons.
+        direction (list|str): Could be a list with different values per pin_num
+            or single value.
+        bounce (list|int): Could be a list with different value per pin_num or 
+            a single value.
     """
 
     def __init__(self, pin_nums, direction, bounce, name='', max_data_length=0):
@@ -85,15 +85,13 @@ class ButtonArray(Sensor):
             button (int): The number of the button.
 
         Returns:
-            An int with the button's current state.
+            int: Int with the button's current state.
         """
 
         return self.hardware_interfaces[self._gpio].read(self._b_names[button])
 
     def when_pressed(self, button, func, *args):
-        """Set the function to be called when a button is pressed.
-        
-        Set a function for asynchronous call when the button is pressed.
+        """Set a function for asynchronous call when the button is pressed.
 
         Args:
             button (int): The number of the button.
@@ -163,14 +161,14 @@ class ButtonArray(Sensor):
 
 
 class ButtonArrayRPiGPIO(ButtonArray):
-    """An array of buttons, extends :class:`Sensor`.
+    """An array of buttons, extends :class:`ButtonArray`.
     
     Args:
-        pin_nums: List with the gpio numbers for buttons.
-        direction: Could be a list with different values per pin_num or single
-            value.
-        bounce: Could be a list with different value per pin_num or a single 
-            value.
+        pin_nums (list): List with the gpio numbers for buttons.
+        direction (list|str): Could be a list with different values per pin_num
+            or single value.
+        bounce (list|int): Could be a list with different value per pin_num or 
+            a single value.
     """
 
     def __init__(self, pin_nums, direction, bounce, name='', max_data_length=0):
@@ -182,14 +180,14 @@ class ButtonArrayRPiGPIO(ButtonArray):
 
 
 class ButtonArrayMcp23017(ButtonArray):
-    """An array of buttons, extends :class:`Sensor`.
+    """An array of buttons, extends :class:`ButtonArray`.
     
     Args:
-        pin_nums: List with the gpio numbers for buttons.
-        direction: Could be a list with different values per pin_num or single
-            value.
-        bounce: Could be a list with different value per pin_num or a single 
-            value.
+        pin_nums (list): List with the gpio numbers for buttons.
+        direction (list|str): Could be a list with different values per pin_num
+            or single value.
+        bounce (list|int): Could be a list with different value per pin_num or 
+            a single value.
     """
 
     def __init__(self, pin_nums, direction, bounce, name='', max_data_length=0):

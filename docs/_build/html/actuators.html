@@ -299,6 +299,103 @@ to <code class="xref py py-data docutils literal notranslate"><span class="pre">
 
 </dd></dl>
 
+<dl class="class">
+<dt id="pidevices.DfrobotMotorControllerPCA">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">DfrobotMotorControllerPCA</code><span class="sig-paren">(</span><em class="sig-param">bus</em>, <em class="sig-param">E1</em>, <em class="sig-param">M1</em>, <em class="sig-param">E2</em>, <em class="sig-param">M2</em>, <em class="sig-param">motor_1=None</em>, <em class="sig-param">motor_2=None</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dfrobot motor controller implementation using hwpm pins. Extends
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MotorController</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>E1</strong> (<em>int</em>) – The pwm channel of the first pwm channel.</p></li>
+<li><p><strong>M1</strong> (<em>int</em>) – The pwm channel of the first direction pin.</p></li>
+<li><p><strong>E2</strong> (<em>int</em>) – The pwm channel of the second pwm channel.</p></li>
+<li><p><strong>M2</strong> (<em>int</em>) – The pwm channle of second direction pin.</p></li>
+<li><p><strong>motor_1</strong> – Optional instance of a motor object. Defaults to none.</p></li>
+<li><p><strong>motor_2</strong> – Optional instance of a motor object. Defaults to none.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.bus">
+<em class="property">property </em><code class="sig-name descname">bus</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.bus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pin number of first pwm channel.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.E1">
+<em class="property">property </em><code class="sig-name descname">E1</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.E1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pin number of first pwm channel.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.E2">
+<em class="property">property </em><code class="sig-name descname">E2</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.E2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pin number of second pwm channel.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.M1">
+<em class="property">property </em><code class="sig-name descname">M1</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.M1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pin number of first direction pin.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.M2">
+<em class="property">property </em><code class="sig-name descname">M2</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.M2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pin number of second direction pin.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.frequency">
+<em class="property">property </em><code class="sig-name descname">frequency</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frequency of pwm channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.motor_1">
+<em class="property">property </em><code class="sig-name descname">motor_1</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.motor_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Motor 1 instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.motor_2">
+<em class="property">property </em><code class="sig-name descname">motor_2</code><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.motor_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Motor 2 instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">speed_1=None</em>, <em class="sig-param">speed_2=None</em>, <em class="sig-param">RPM=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change motor’s speed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>speed_1</strong> – Channel 1 speed. The value could be pwm duty cycle or
+rpm. Also for backward movement the value should be negative.</p></li>
+<li><p><strong>speed_2</strong> – Channel 2 speed. The value could be pwm duty cycle or
+rpm. Also for backward movement the value should be negative.</p></li>
+<li><p><strong>RPM</strong> (<em>boolean</em>) – Flag stating the mode of the speed values. Defaults
+to <code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfrobotMotorControllerPCA.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfrobotMotorControllerPCA.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="servo-driver">

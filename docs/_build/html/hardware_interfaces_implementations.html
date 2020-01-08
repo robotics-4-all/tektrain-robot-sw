@@ -427,11 +427,13 @@ hc-sr04 sonar, it would be echo=”A_1”, trigger=”B_2”.</p>
 <dl class="method">
 <dt id="pidevices.Mcp23x17GPIO.add_pins">
 <code class="sig-name descname">add_pins</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.add_pins" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add new pins to the pins dictionary.
-:param **kwargs: Keyword arguments pin_name=pin_number.</p>
-<blockquote>
-<div><p>For example echo=”A_1”, trigger=”B_2”.</p>
-</div></blockquote>
+<dd><p>Add new pins to the pins dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Keyword arguments pin_name=pin_number.
+For example echo=”A_1”, trigger=”B_2”.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -560,8 +562,8 @@ output pin and if it is pwm should be between [0, 1].</p></li>
 <code class="sig-name descname">set_pin_event</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">event</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the function that will be called with a new edge.</p>
 <p>In RPi.GPIO calling this function enables interrupt handling. In this
-implementation the <a href="#id1"><span class="problematic" id="id2">:function:`start_polling`</span></a> need to be called in order
-to catch interrupts.</p>
+implementation the <a class="reference internal" href="#pidevices.Mcp23x17GPIO.start_polling" title="pidevices.Mcp23x17GPIO.start_polling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_polling()</span></code></a> function need to be called
+in order to catch interrupts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -724,6 +726,8 @@ equivalent number of words, returning them as a list of integers.</p>
 <dt id="pidevices.HPWMPeriphery">
 <em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">HPWMPeriphery</code><span class="sig-paren">(</span><em class="sig-param">pin</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HPWMPeriphery" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around python periphery pwm implementation extends <a class="reference internal" href="hardware_interfaces.html#pidevices.HPWM" title="pidevices.HPWM"><code class="xref py py-class docutils literal notranslate"><span class="pre">HPWM</span></code></a>.</p>
+<p>This class need the periphery module to be installed. Also some configuration
+files need to be added to the system. More info in the repo’s README.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pin</strong> (<em>int</em>) – The pin number in bcm mode.</p>
@@ -739,6 +743,9 @@ equivalent number of words, returning them as a list of integers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The duty cycle of the pwm pin.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
 </dd>
 </dl>
 </dd></dl>

@@ -158,8 +158,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Constructor
 
         Args:
-            bus: The i2c bus.
-            slave: The slave address. Should be 0 or 1
+            bus (int): The i2c bus.
+            slave (int): The slave address. Should be 0 or 1
         """
 
         super(BME680, self).__init__(name, max_data_length)
@@ -184,20 +184,23 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         
         self._i2c = self.init_interface("i2c", bus=self._bus)
 
-    def read(self, TEMP=True, HUM=True, PRES=True, GAS=True):
+    def read(self, temp=True, hum=True, pres=True, gas=True):
         """Get a measurment.
         
         Args:
-            meas: String that could be temperature, humidity, pressure or gas.
+            temp (bool): Indicating if a temparature measurment will be taken.
+            hum (bool): Indicating if a humidity measurment will be taken.
+            pres (bool): Indicating if a pressure measurment will be taken.
+            gas (bool): Indicating if a gas measurment will be taken.
         """
 
-        if not HUM:
+        if not hum:
             self.h_oversample = 0
-        if not TEMP:
+        if not temp:
             self.t_oversample = 0
-        if not PRES:
+        if not pres:
             self.p_oversample = 0
-        if not GAS:
+        if not gas:
             self.gas_status = 0
 
         self._set_register(self.CTRL_MEAS, self.MODE_BITS,
@@ -373,8 +376,8 @@ class BME680(HumiditySensor, TemperatureSensor, GasSensor, PressureSensor):
         """Set idac_heat_x registers.
         
         Args:
-            values: List with the values
-            indexes: List with indexes
+            values (list): List with the values
+            indexes (list): List with indexes
         """
 
         for val, i in zip(values, indexes):

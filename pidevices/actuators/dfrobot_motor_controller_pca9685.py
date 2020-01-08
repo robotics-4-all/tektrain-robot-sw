@@ -12,8 +12,10 @@ Channel = namedtuple("Channel", ["E", "M"])
 
 
 class DfrobotMotorControllerPCA(MotorController):
-    """Dfrobot motor controller implementation using hwpm pins. Extends 
+    """Dfrobot motor controller implementation using pca9685 driver. Extends 
     :class:`MotorController`.
+
+    TODO: To be a composite device.
     
     Args:
         E1 (int): The pwm channel of the first pwm channel.

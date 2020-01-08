@@ -6,7 +6,7 @@ from .wheel_encoders import WheelEncoder
 
 
 class DfRobotWheelEncoder(WheelEncoder):
-    """Class implementing df robot wheel encoders. Extends :class:WheelEncoder
+    """Class implementing df robot wheel encoders. Extends :class:`WheelEncoder`
     
     Args:
         pin_num: The pin number of encoder's signal.
@@ -102,10 +102,12 @@ class DfRobotWheelEncoder(WheelEncoder):
 
 class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
     """Class implementing df robot wheel encoders using rpigpio library. 
-    Extends :class:DfRobotWheelEncoder
+    Extends :class:`DfRobotWheelEncoder`
+
+    **UNTESTED**
     
     Args:
-        pin_num: The pin number of encoder's signal.
+        pin_num (int): The pin number of encoder's signal.
     """
 
     def __init__(self, pin, name='', max_data_length=0):
@@ -132,7 +134,7 @@ class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
 
 class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
     """Class implementing df robot wheel encoders using mcp23017 gpio extender.
-    Extends :class:DfRobotWheelEncoder
+    Extends :class:`DfRobotWheelEncoder`
     
     Args:
         pin_num: The pin number of encoder's signal.

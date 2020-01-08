@@ -4,7 +4,7 @@ from ..devices import Sensor
 
 
 class WheelEncoder(Sensor):
-    """Abstract class for a wheel encoders. Extends :class:Sensor"""
+    """Abstract class for a wheel encoders. Extends :class:`Sensor`"""
 
     def _set_res(self, value):
         """Resolution of the encoder."""
