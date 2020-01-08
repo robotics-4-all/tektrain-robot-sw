@@ -149,8 +149,8 @@ class CytronLfLSS05(LineFollower):
             SAVE: Flag for saving measurments to the data list.
 
         Returns:
-            An named tuple with every sensor measurment.
-            The format is (so_1, so_2, so_3, so_4, so_5).
+            tuple: An named tuple with every sensor measurment.
+                The format is (so_1, so_2, so_3, so_4, so_5).
         """
 
         so_1_res = self.hardware_interfaces[self.gpio].read("so_1")
@@ -203,3 +203,124 @@ class CytronLfLSS05(LineFollower):
 
         # Wait module to settle
         sleep(1.5)
+
+
+class CytronLfLSS05Rpi(CytronLfLSS05):
+    """Class implementing the driver of cytron line sensor using rpi.gpio 
+    implementation. Extends :class:`CytronLfLSS05`
+    
+    Args:
+        so_1 (int): BCM pin number for first ir sensor.
+        so_2 (int): BCM pin number for second ir sensor.
+        so_3 (int): BCM pin number for third ir sensor.
+        so_4 (int): BCM pin number for fourth ir sensor.
+        so_5 (int): BCM pin number for fifth ir sensor.
+        mode (str): Working mode of the sensor. Valid values dark(the
+            sensor returns one for dark line) and bright(the sesnor returns
+            one for bright line). Defaults to dark.
+        cal: Calibration pin BCM number. Defaults to None for disconnected 
+            calibration pin.
+    """
+
+    def __init__(self, so_1, so_2, 
+                 so_3, so_4, so_5, 
+                 mode="dark", cal=None,
+                 max_data_length=100, name=""):
+        "Constructor"
+
+        super(CytronLfLSS05Rpi, self).__init__(so_1, so_2, so_3,
+                                               so_4, so_5, mode,
+                                               cal, max_data_length, name)
+
+    def start(self):
+        """Init hardware and os resources."""
+
+        self.gpio = self.init_interface("gpio",
+                                        so_1=self.so_1,
+                                        so_2=self.so_2,
+                                        so_3=self.so_3,
+                                        so_4=self.so_4,
+                                        so_5=self.so_5)
+
+        # Init pins as input and pull down the resistors.
+        self.hardware_interfaces[self.gpio].init_input("so_1", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_2", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_3", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_4", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_5", pull="down")
+
+        # If calibration line pin is connected initialize it to high.
+        if self.cal is not None:
+            self.hardware_interfaces[self.gpio].add_pins(cal=self.cal)
+            self.hardware_interfaces[self.gpio].init_output("cal", 1)
+
+            # Set mode
+            self._control_cal(self._MODES[self.mode])
+
+        # Settle hardware resources
+        sleep(1)
+
+
+class CytronLfLSS05Mcp23017(CytronLfLSS05):
+    """Class implementing the driver of cytron line sensor using rpi.gpio 
+    implementation. Extends :class:`CytronLfLSS05`
+    
+    Args:
+        so_1 (int): Extender's pin number for first ir sensor.
+        so_2 (int): Extender's pin number for second ir sensor.
+        so_3 (int): Extender's pin number for third ir sensor.
+        so_4 (int): Extender's pin number for fourth ir sensor.
+        so_5 (int): Extender's pin number for fifth ir sensor.
+        mode (str): Working mode of the sensor. Valid values dark(the
+            sensor returns one for dark line) and bright(the sesnor returns
+            one for bright line). Defaults to dark.
+        cal: Calibration extender's pin number. Defaults to None for disconnected 
+            calibration pin.
+    """
+
+    def __init__(self, so_1, so_2, 
+                 so_3, so_4, so_5, 
+                 mode="dark", cal=None,
+                 bus=1, address=0x22,
+                 max_data_length=100, name=""):
+        "Constructor"
+
+        self._bus = bus
+        self._address = address
+
+        super(CytronLfLSS05Mcp23017, self).__init__(so_1, so_2, so_3,
+                                                    so_4, so_5, mode,
+                                                    cal, max_data_length, name)
+
+    def start(self):
+        """Init hardware and os resources."""
+
+        self.gpio = self.init_interface("gpio",
+                                        impl="Mcp23017GPIO",
+                                        bus=self._bus,
+                                        address=self._address,
+                                        so_1=self.so_1,
+                                        so_2=self.so_2,
+                                        so_3=self.so_3,
+                                        so_4=self.so_4,
+                                        so_5=self.so_5)
+
+        # Init pins as input and pull down the resistors.
+        self.hardware_interfaces[self.gpio].init_input("so_1", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_2", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_3", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_4", pull="down")
+        self.hardware_interfaces[self.gpio].init_input("so_5", pull="down")
+
+        # If calibration line pin is connected initialize it to high.
+        if self.cal is not None:
+            self.hardware_interfaces[self.gpio].add_pins(cal=self.cal)
+            self.hardware_interfaces[self.gpio].init_output("cal", 1)
+
+            # Set mode
+            self._control_cal(self._MODES[self.mode])
+            # TODO: Not so good solution for first initialization.
+            self._control_cal(self._MODES[self.mode])
+
+        # Settle hardware resources
+        sleep(1)
