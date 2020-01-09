@@ -94,5 +94,7 @@ from pidevices import ButtonRPiGPIO
 ```
 
 ## Docs
+The pidevices api documentation can be found [here](https://robotics-4-all.github.io/tektrain-robot-sw/).
 
 ## License
+[MIT](https://choosealicense.com/licenses/mit/)
