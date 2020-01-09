@@ -84,8 +84,10 @@
 <li class="toctree-l1"><a class="reference internal" href="devices_api.html">Devices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gpio_extender.html">GPIO Expanders</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actuators.html">Actuators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Pidevices Exceptions</a></li>
 </ul>
 
             
@@ -163,6 +165,7 @@
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -182,14 +185,16 @@
 </li>
       <li><a href="sensors.html#pidevices.ButtonArray.add_button">add_button() (pidevices.ButtonArray method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.add_pins">add_pins() (pidevices.GPIO method)</a>
 
       <ul>
         <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.add_pins">(pidevices.Mcp23x17GPIO method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gpio_extender.html#pidevices.MCP23017.address">address() (pidevices.MCP23017 property)</a>
+</li>
       <li><a href="sensors.html#pidevices.Microphone.async_read">async_read() (pidevices.Microphone method)</a>
 </li>
       <li><a href="actuators.html#pidevices.Speaker.async_write">async_write() (pidevices.Speaker method)</a>
@@ -216,6 +221,8 @@
 
       <ul>
         <li><a href="hardware_interfaces.html#pidevices.I2C.bus">(pidevices.I2C property)</a>
+</li>
+        <li><a href="gpio_extender.html#pidevices.MCP23017.bus">(pidevices.MCP23017 property)</a>
 </li>
         <li><a href="actuators.html#pidevices.PCA9685.bus">(pidevices.PCA9685 property)</a>
 </li>
@@ -256,6 +263,8 @@
         <li><a href="actuators.html#pidevices.Speaker.cancel">(pidevices.Speaker method)</a>
 </li>
       </ul></li>
+      <li><a href="gpio_extender.html#pidevices.MCP23017.clear_ints">clear_ints() (pidevices.MCP23017 method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.SPI.clock_mode">clock_mode() (pidevices.SPI property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.SPI.clock_phase">clock_phase() (pidevices.SPI property)</a>
@@ -398,27 +407,57 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_bank">get_bank() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="devices_api.html#pidevices.devices.Device.get_data">get_data() (pidevices.devices.Device method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_disslw">get_disslw() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.Camera.get_frame">get_frame() (pidevices.Camera method)</a>
 </li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_intcap">get_intcap() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_intf">get_intf() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_intpol">get_intpol() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_mirror">get_mirror() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_mult_intf">get_mult_intf() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_odr">get_odr() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_bounce">get_pin_bounce() (pidevices.GPIO method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_pin_def_val">get_pin_def_val() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_pin_dir">get_pin_dir() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_duty_cycle">get_pin_duty_cycle() (pidevices.GPIO method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_edge">get_pin_edge() (pidevices.GPIO method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_event">get_pin_event() (pidevices.GPIO method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_frequency">get_pin_frequency() (pidevices.GPIO method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_function">get_pin_function() (pidevices.GPIO method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_pin_int">get_pin_int() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_pin_intcon">get_pin_intcon() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_pin_pol">get_pin_pol() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_pull">get_pin_pull() (pidevices.GPIO method)</a>
 </li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_pin_pull_up">get_pin_pull_up() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.get_pin_pwm">get_pin_pwm() (pidevices.GPIO method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.get_seqop">get_seqop() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.GP2Y0A21YK0F">GP2Y0A21YK0F (class in pidevices)</a>
 </li>
@@ -472,8 +511,6 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.init_pwm">init_pwm() (pidevices.GPIO method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.initialize">initialize() (pidevices.GPIO method)</a>
 
       <ul>
@@ -492,6 +529,12 @@
         <li><a href="hardware_interfaces.html#pidevices.SPI.initialize">(pidevices.SPI method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="exceptions.html#pidevices.exceptions.InvalidHPWMPin">InvalidHPWMPin</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.InvalidMode">InvalidMode</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -558,9 +601,13 @@
 </li>
       <li><a href="hardware_interfaces.html#pidevices.SPI.max_speed_hz">max_speed_hz() (pidevices.SPI property)</a>
 </li>
+      <li><a href="gpio_extender.html#pidevices.MCP23017">MCP23017 (class in pidevices)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23017GPIO">Mcp23017GPIO (class in pidevices)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17">MCP23x17 (class in pidevices)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO">Mcp23x17GPIO (class in pidevices)</a>
 </li>
@@ -578,6 +625,8 @@
         <li><a href="sensors.html#pidevices.VL53L1X.mode">(pidevices.VL53L1X property)</a>
 </li>
       </ul></li>
+      <li><a href="exceptions.html#pidevices.exceptions.MoreValuesThanChannels">MoreValuesThanChannels</a>
+</li>
       <li><a href="actuators.html#pidevices.Motor">Motor (class in pidevices)</a>
 </li>
       <li><a href="actuators.html#pidevices.DfrobotMotorController.motor_1">motor_1() (pidevices.DfrobotMotorController property)</a>
@@ -595,10 +644,36 @@
   </ul></td>
 </tr></table>
 
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="exceptions.html#pidevices.exceptions.NotConnectedCalPin">NotConnectedCalPin</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.NotInputPin">NotInputPin</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.NotInstalledInterface">NotInstalledInterface</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="exceptions.html#pidevices.exceptions.NotModZero">NotModZero</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.NotOutputPin">NotOutputPin</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.NotPwmPin">NotPwmPin</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.NotSupportedInterface">NotSupportedInterface</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="actuators.html#pidevices.PCA9685.oe">oe() (pidevices.PCA9685 property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="exceptions.html#pidevices.exceptions.OutOfRange">OutOfRange</a>
 </li>
   </ul></td>
 </tr></table>
@@ -613,6 +688,10 @@
 </li>
       </ul></li>
       <li><a href="actuators.html#pidevices.PCA9685">PCA9685 (class in pidevices)</a>
+</li>
+      <li><a href="exceptions.html#module-pidevices.exceptions">pidevices.exceptions (module)</a>
+</li>
+      <li><a href="exceptions.html#pidevices.exceptions.PidevicesError">PidevicesError</a>
 </li>
       <li><a href="sensors.html#pidevices.Button.pin_num">pin_num() (pidevices.Button property)</a>
 
@@ -631,6 +710,10 @@
       <li><a href="actuators.html#pidevices.Speaker.playing">playing() (pidevices.Speaker property)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.HPWM.polarity">polarity() (pidevices.HPWM property)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23017.poll_int">poll_int() (pidevices.MCP23017 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.poll_int_async">poll_int_async() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.Mcp3002.port">port() (pidevices.Mcp3002 property)</a>
 </li>
@@ -677,6 +760,8 @@
 </li>
         <li><a href="sensors.html#pidevices.ICM_20948.read">(pidevices.ICM_20948 method)</a>
 </li>
+        <li><a href="gpio_extender.html#pidevices.MCP23x17.read">(pidevices.MCP23x17 method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.read">(pidevices.Mcp23x17GPIO method)</a>
 </li>
         <li><a href="sensors.html#pidevices.Mcp3002.read">(pidevices.Mcp3002 method)</a>
@@ -701,6 +786,8 @@
       <li><a href="sensors.html#pidevices.Camera.read_continuous">read_continuous() (pidevices.Camera method)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2.read_i2c">read_i2c() (pidevices.SMBus2 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.read_olat">read_olat() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.DfRobotWheelEncoder.read_rpm">read_rpm() (pidevices.DfRobotWheelEncoder method)</a>
 </li>
@@ -748,11 +835,17 @@
 </li>
       <li><a href="sensors.html#pidevices.ICM_20948.set_accelerometer_sample_rate">set_accelerometer_sample_rate() (pidevices.ICM_20948 method)</a>
 </li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_bank">set_bank() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_disslw">set_disslw() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="sensors.html#pidevices.ICM_20948.set_gyro_full_scale">set_gyro_full_scale() (pidevices.ICM_20948 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.ICM_20948.set_gyro_low_pass">set_gyro_low_pass() (pidevices.ICM_20948 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.ICM_20948.set_gyro_sample_rate">set_gyro_sample_rate() (pidevices.ICM_20948 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_haen">set_haen() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.BME680.set_heater_off">set_heater_off() (pidevices.BME680 method)</a>
 </li>
@@ -761,6 +854,14 @@
       <li><a href="sensors.html#pidevices.BME680.set_heating_time">set_heating_time() (pidevices.BME680 method)</a>
 </li>
       <li><a href="sensors.html#pidevices.BME680.set_idac_heat">set_idac_heat() (pidevices.BME680 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_int_handl_func">set_int_handl_func() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_intpol">set_intpol() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_mirror">set_mirror() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_odr">set_odr() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="actuators.html#pidevices.Motor.set_parameters">set_parameters() (pidevices.Motor method)</a>
 </li>
@@ -772,6 +873,12 @@
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_bounce">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_debounce">set_pin_debounce() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_def_val">set_pin_def_val() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_dir">set_pin_dir() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_duty_cycle">set_pin_duty_cycle() (pidevices.GPIO method)</a>
 </li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_edge">set_pin_edge() (pidevices.GPIO method)</a>
@@ -804,6 +911,12 @@
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_function">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_int">set_pin_int() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_intcon">set_pin_intcon() (pidevices.MCP23x17 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_pol">set_pin_pol() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_pull">set_pin_pull() (pidevices.GPIO method)</a>
 
       <ul>
@@ -812,12 +925,16 @@
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_pull">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_pin_pull_up">set_pin_pull_up() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="hardware_interfaces.html#pidevices.GPIO.set_pin_pwm">set_pin_pwm() (pidevices.GPIO method)</a>
 
       <ul>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.set_pin_pwm">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.set_seqop">set_seqop() (pidevices.MCP23x17 method)</a>
+</li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2">SMBus2 (class in pidevices)</a>
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_1">so_1() (pidevices.CytronLfLSS05 property)</a>
@@ -828,6 +945,8 @@
 </li>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_4">so_4() (pidevices.CytronLfLSS05 property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="sensors.html#pidevices.CytronLfLSS05.so_5">so_5() (pidevices.CytronLfLSS05 property)</a>
 </li>
       <li><a href="actuators.html#pidevices.Speaker">Speaker (class in pidevices)</a>
@@ -877,6 +996,8 @@
 </li>
         <li><a href="actuators.html#pidevices.LedController.start">(pidevices.LedController method)</a>
 </li>
+        <li><a href="gpio_extender.html#pidevices.MCP23017.start">(pidevices.MCP23017 method)</a>
+</li>
         <li><a href="sensors.html#pidevices.Mcp3002.start">(pidevices.Mcp3002 method)</a>
 </li>
         <li><a href="sensors.html#pidevices.Microphone.start">(pidevices.Microphone method)</a>
@@ -890,8 +1011,6 @@
         <li><a href="sensors.html#pidevices.VL53L1X.start">(pidevices.VL53L1X method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.start_polling">start_polling() (pidevices.Mcp23x17GPIO method)</a>
 </li>
       <li><a href="sensors.html#pidevices.BME680.stop">stop() (pidevices.BME680 method)</a>
@@ -919,6 +1038,8 @@
 </li>
         <li><a href="actuators.html#pidevices.LedController.stop">(pidevices.LedController method)</a>
 </li>
+        <li><a href="gpio_extender.html#pidevices.MCP23017.stop">(pidevices.MCP23017 method)</a>
+</li>
         <li><a href="sensors.html#pidevices.Mcp3002.stop">(pidevices.Mcp3002 method)</a>
 </li>
         <li><a href="sensors.html#pidevices.Microphone.stop">(pidevices.Microphone method)</a>
@@ -933,6 +1054,8 @@
 </li>
       </ul></li>
       <li><a href="sensors.html#pidevices.Camera.stop_continuous">stop_continuous() (pidevices.Camera method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.stop_poll_int_async">stop_poll_int_async() (pidevices.MCP23x17 method)</a>
 </li>
       <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.stop_polling">stop_polling() (pidevices.Mcp23x17GPIO method)</a>
 </li>
@@ -982,9 +1105,11 @@
         <li><a href="sensors.html#pidevices.ButtonArray.wait_for_press">(pidevices.ButtonArray method)</a>
 </li>
       </ul></li>
-      <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.wait_pin_for_edge">wait_pin_for_edge() (pidevices.Mcp23x17GPIO method)</a>
+      <li><a href="gpio_extender.html#pidevices.MCP23017.wait_pin_for_edge">wait_pin_for_edge() (pidevices.MCP23017 method)</a>
 
       <ul>
+        <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.wait_pin_for_edge">(pidevices.Mcp23x17GPIO method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.RPiGPIO.wait_pin_for_edge">(pidevices.RPiGPIO method)</a>
 </li>
       </ul></li>
@@ -1017,6 +1142,8 @@
 </li>
         <li><a href="actuators.html#pidevices.LedController.write">(pidevices.LedController method)</a>
 </li>
+        <li><a href="gpio_extender.html#pidevices.MCP23x17.write">(pidevices.MCP23x17 method)</a>
+</li>
         <li><a href="hardware_interfaces_implementations.html#pidevices.Mcp23x17GPIO.write">(pidevices.Mcp23x17GPIO method)</a>
 </li>
         <li><a href="actuators.html#pidevices.PCA9685.write">(pidevices.PCA9685 method)</a>
@@ -1037,6 +1164,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="hardware_interfaces_implementations.html#pidevices.SMBus2.write_i2c">write_i2c() (pidevices.SMBus2 method)</a>
+</li>
+      <li><a href="gpio_extender.html#pidevices.MCP23x17.write_olat">write_olat() (pidevices.MCP23x17 method)</a>
 </li>
   </ul></td>
 </tr></table>
