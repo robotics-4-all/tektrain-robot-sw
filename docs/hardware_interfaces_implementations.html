@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Hardware Interfaces Implementations &mdash; pidevices  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sensors" href="sensors.html" />
+    <link rel="prev" title="Hardware Interfaces" href="hardware_interfaces.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pidevices
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="devices_api.html">Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware Interfaces Implementations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gpio-implementations">GPIO Implementations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rpi-gpio-implementation">RPi.GPIO implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcp23x17-chip-family">mcp23x17 chip family</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mcp23x17gpio">Mcp23x17GPIO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcp23017gpio">Mcp23017GPIO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#spi-implementations">SPI Implementations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spidev-implementation">Spidev implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hwpm-implementations">HWPM Implementations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-periphery-hpwm">Python periphery HPWM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#i2c-implementations">I2C Implementations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#smbus2-implementation">SMBus2 implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actuators.html">Actuators</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pidevices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Hardware Interfaces Implementations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/hardware_interfaces_implementations.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="hardware-interfaces-implementations">
+<h1>Hardware Interfaces Implementations<a class="headerlink" href="#hardware-interfaces-implementations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="gpio-implementations">
+<h2>GPIO Implementations<a class="headerlink" href="#gpio-implementations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rpi-gpio-implementation">
+<h3>RPi.GPIO implementation<a class="headerlink" href="#rpi-gpio-implementation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.RPiGPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">RPiGPIO</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPIO hardware interface implementation using RPi.GPIO library extends
+<a class="reference internal" href="hardware_interfaces.html#pidevices.GPIO" title="pidevices.GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIO</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ImportError</strong> – If the rpigpio library is not installed.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.RPiGPIO.pwm_pins">
+<em class="property">property </em><code class="sig-name descname">pwm_pins</code><a class="headerlink" href="#pidevices.RPiGPIO.pwm_pins" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary that contains instances of RPi.GPIO’s pwm class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize RPi.GPIO mode. By default it inializes to RPi.GPIO.BCM</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">pin</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the value of an input pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>that is 1 for high voltage, 0 for low voltage.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a value to an output pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – The output value. The value should be 0 or 1 for a simple
+output pin and if it is pwm should be between [0, 1].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Try to write non arithmetic value or use value greater
+    than 1 or use negative value.</p></li>
+<li><p><strong>NotOutputPin</strong> – Try to write to an input pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.remove_pins">
+<code class="sig-name descname">remove_pins</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.remove_pins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a pin/pins from the dictionary and free the resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> – String with the pin’s name, it could be more than one.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_function">
+<code class="sig-name descname">set_pin_function</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
+<li><p><strong>function</strong> (<em>str</em>) – The function value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Error occured using invalid function name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_pull">
+<code class="sig-name descname">set_pin_pull</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">pull</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s pull up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
+<li><p><strong>pull</strong> (<em>str</em>) – The pull up value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Error occured using invalid pull name.</p></li>
+<li><p><strong>NotInputPin</strong> – Try to set pull up resistor to a non input pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_pwm">
+<code class="sig-name descname">set_pin_pwm</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">pwm</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_pwm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pwm pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>pwm</strong> (<em>int</em>) – The pwm value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Invalid pwm type.</p></li>
+<li><p><strong>NotOutputPin</strong> – Error occured trying to drive a non output pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_frequency">
+<code class="sig-name descname">set_pin_frequency</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">frequency</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pwm pin’s frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>frequency</strong> (<em>int</em>) – The frequency value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotPwmPin</strong> – Error occured trying to set pwm frequency to a non pwm
+    pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_edge">
+<code class="sig-name descname">set_pin_edge</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">edge</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s edge value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – The edge value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to set edge to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_bounce">
+<code class="sig-name descname">set_pin_bounce</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">bounce</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_bounce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s bounce time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>bounce</strong> (<em>int</em>) – The bounce value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.set_pin_event">
+<code class="sig-name descname">set_pin_event</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">event</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.set_pin_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the function that will be called with a new edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – Pin name</p></li>
+<li><p><strong>event</strong> (<em>function</em>) – Function pointer to the target function.</p></li>
+<li><p><strong>*args</strong> – The arguments of the target function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to set event to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.wait_pin_for_edge">
+<code class="sig-name descname">wait_pin_for_edge</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.wait_pin_for_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait pin for an edge detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – Pin name.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – The time until it stops waiting for an edge signal.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.RPiGPIO.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.RPiGPIO.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close interface.input</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="mcp23x17-chip-family">
+<h3>mcp23x17 chip family<a class="headerlink" href="#mcp23x17-chip-family" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="mcp23x17gpio">
+<h4>Mcp23x17GPIO<a class="headerlink" href="#mcp23x17gpio" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="pidevices.Mcp23x17GPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Mcp23x17GPIO</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPIO class implementation using mcp23x17 family chips. Extends <a class="reference internal" href="hardware_interfaces.html#pidevices.GPIO" title="pidevices.GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">GPIO</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Could be multiple keyword arguments in the form of
+pin_name = pin_number(pin number is A_x or B_x, because the
+implementation use the mcp23x17 devices.) For example for the
+hc-sr04 sonar, it would be echo=”A_1”, trigger=”B_2”.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.add_pins">
+<code class="sig-name descname">add_pins</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.add_pins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new pins to the pins dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Keyword arguments pin_name=pin_number.
+For example echo=”A_1”, trigger=”B_2”.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">pin</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the value of an input pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>that is 1 for high voltage, 0 for low voltage.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to read from non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a value to an output pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>value</strong> (<em>int</em>) – The output value. The value should be 0 or 1 for a simple
+output pin and if it is pwm should be between [0, 1].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Try to write non arithmetic value or use value greater
+    than 1 or use negative value.</p></li>
+<li><p><strong>NotOutputPin</strong> – Try to write to an input pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.remove_pins">
+<code class="sig-name descname">remove_pins</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.remove_pins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a pin/pins from the dictionary and free the resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> – String with the pin’s name, it could be more than one.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_function">
+<code class="sig-name descname">set_pin_function</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
+<li><p><strong>function</strong> (<em>str</em>) – The function value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Error occured using invalid function name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_pull">
+<code class="sig-name descname">set_pin_pull</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">pull</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s pull up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin name.</p></li>
+<li><p><strong>pull</strong> (<em>str</em>) – The pull up value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Error occured using invalid pull name.</p></li>
+<li><p><strong>NotInputPin</strong> – Try to set pull up resistor to a non input pin.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_edge">
+<code class="sig-name descname">set_pin_edge</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">edge</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s edge value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – The edge value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to set edge to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_bounce">
+<code class="sig-name descname">set_pin_bounce</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">bounce</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_bounce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a pin’s bounce time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – The pin’s name.</p></li>
+<li><p><strong>bounce</strong> (<em>int</em>) – The bounce value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.set_pin_event">
+<code class="sig-name descname">set_pin_event</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">event</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.set_pin_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the function that will be called with a new edge.</p>
+<p>In RPi.GPIO calling this function enables interrupt handling. In this
+implementation the <a class="reference internal" href="#pidevices.Mcp23x17GPIO.start_polling" title="pidevices.Mcp23x17GPIO.start_polling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_polling()</span></code></a> function need to be called
+in order to catch interrupts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – Pin name</p></li>
+<li><p><strong>event</strong> (<em>function</em>) – Function pointer to the target function.</p></li>
+<li><p><strong>*args</strong> – The arguments of the target function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotInputPin</strong> – Try to set event to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.start_polling">
+<code class="sig-name descname">start_polling</code><span class="sig-paren">(</span><em class="sig-param">pins</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.start_polling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start polling for interrupts the specified pins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pins</strong> (<em>list</em>) – List with the names of the target pins to be polled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.stop_polling">
+<code class="sig-name descname">stop_polling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.stop_polling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop polling for interrupts</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.wait_pin_for_edge">
+<code class="sig-name descname">wait_pin_for_edge</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.wait_pin_for_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait pin for an edge detection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin</strong> (<em>str</em>) – Pin name.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – The time until it stops waiting for an edge signal.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicating if the interrupt occured.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p>NotInputPin: Can’t wait for edge to a non input pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp23x17GPIO.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23x17GPIO.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close interface.input</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="mcp23017gpio">
+<h4>Mcp23017GPIO<a class="headerlink" href="#mcp23017gpio" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="pidevices.Mcp23017GPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Mcp23017GPIO</code><span class="sig-paren">(</span><em class="sig-param">bus=1</em>, <em class="sig-param">address=32</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23017GPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>GPIO class implementation using mcp23017 chip. Extends <a class="reference internal" href="#pidevices.Mcp23x17GPIO" title="pidevices.Mcp23x17GPIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mcp23x17GPIO</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bus</strong> (<em>int</em>) – Optional argument for specifying the i2c bus of the mcp23017
+module. Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>address</strong> (<em>int</em>) – Optional argument for specifying the i2c address of the
+mcp23017 module. Defaults to <code class="xref py py-data docutils literal notranslate"><span class="pre">0x20</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Could be multiple keyword arguments in the form of
+pin_name = pin_number(pin number is A_x or B_x, because the
+implementation use the mcp23x17 devices.) For example for the
+hc-sr04 sonar, it would be echo=”A_1”, trigger=”B_2”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Mcp23017GPIO.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp23017GPIO.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="spi-implementations">
+<h2>SPI Implementations<a class="headerlink" href="#spi-implementations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spidev-implementation">
+<h3>Spidev implementation<a class="headerlink" href="#spidev-implementation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.SPIimplementation">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">SPIimplementation</code><span class="sig-paren">(</span><em class="sig-param">port</em>, <em class="sig-param">device</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SPIimplementation" title="Permalink to this definition">¶</a></dt>
+<dd><p>SPI imlementation wrapping spidev library. Extends <a class="reference internal" href="hardware_interfaces.html#pidevices.SPI" title="pidevices.SPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPI</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> (<em>int</em>) – SPI port on raspberry pi.</p></li>
+<li><p><strong>devive</strong> (<em>int</em>) – SPI device of raspberry.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ImportError</strong> – If spidev is not installed.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.SPIimplementation.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SPIimplementation.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read n words from spi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – The number of bytes to read from spi.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SPIimplementation.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SPIimplementation.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data to spi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em>) – A list with integers to be writter to the device.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SPIimplementation.read_write">
+<code class="sig-name descname">read_write</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SPIimplementation.read_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes data (a list of integer words where each word is assumed to have
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">bits_per_word</span></code> bits or less) to the SPI interface, and reads an
+equivalent number of words, returning them as a list of integers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SPIimplementation.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SPIimplementation.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="hwpm-implementations">
+<h2>HWPM Implementations<a class="headerlink" href="#hwpm-implementations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-periphery-hpwm">
+<h3>Python periphery HPWM<a class="headerlink" href="#python-periphery-hpwm" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.HPWMPeriphery">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">HPWMPeriphery</code><span class="sig-paren">(</span><em class="sig-param">pin</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HPWMPeriphery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around python periphery pwm implementation extends <a class="reference internal" href="hardware_interfaces.html#pidevices.HPWM" title="pidevices.HPWM"><code class="xref py py-class docutils literal notranslate"><span class="pre">HPWM</span></code></a>.</p>
+<p>This class need the periphery module to be installed. Also some configuration
+files need to be added to the system. More info in the repo’s README.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin</strong> (<em>int</em>) – The pin number in bcm mode.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ImportError</strong> – Error if the periphery library is not installed.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.HPWMPeriphery.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HPWMPeriphery.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read from hardware pwm pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The duty cycle of the pwm pin.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HPWMPeriphery.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HPWMPeriphery.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write to the pwm pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – The new duty cycle value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HPWMPeriphery.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HPWMPeriphery.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="i2c-implementations">
+<h2>I2C Implementations<a class="headerlink" href="#i2c-implementations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="smbus2-implementation">
+<h3>SMBus2 implementation<a class="headerlink" href="#smbus2-implementation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.SMBus2">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">SMBus2</code><span class="sig-paren">(</span><em class="sig-param">bus</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for smbus2 library extends <a class="reference internal" href="hardware_interfaces.html#pidevices.I2C" title="pidevices.I2C"><code class="xref py py-class docutils literal notranslate"><span class="pre">I2C</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bus</strong> (<em>int</em>) – The i2c bus of the raspberry pi. The pi has two buses.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.SMBus2.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">register</em>, <em class="sig-param">byte_num=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read using the smbus protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address of the spi slave</p></li>
+<li><p><strong>register</strong> – The register’s address.</p></li>
+<li><p><strong>byte_num</strong> – How many bytes to read from the device. Max 32</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with byte_num elements.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SMBus2.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">register</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write using the smbus protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address of the spi slave</p></li>
+<li><p><strong>register</strong> – The address of the register inside the slave.</p></li>
+<li><p><strong>data</strong> – A list or a single byte, if it is a list max length 32 bytes.
+It is error prone so write less and make consecutive calls.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SMBus2.write_i2c">
+<code class="sig-name descname">write_i2c</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">register</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2.write_i2c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write using the i2c protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address of the spi slave</p></li>
+<li><p><strong>register</strong> – The address of the register inside the slave.</p></li>
+<li><p><strong>data</strong> – A list or a single byte, if it is a list max length 32 bytes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SMBus2.read_i2c">
+<code class="sig-name descname">read_i2c</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">byte_num</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2.read_i2c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read using the i2c protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address of the spi slave</p></li>
+<li><p><strong>byte_num</strong> – How many bytes to read from the device. Max 32</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with byte_num elements.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SMBus2.read_write">
+<code class="sig-name descname">read_write</code><span class="sig-paren">(</span><em class="sig-param">address</em>, <em class="sig-param">register</em>, <em class="sig-param">data</em>, <em class="sig-param">byte_num</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2.read_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combined read and write command using the i2c protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> – The address of the spi slave</p></li>
+<li><p><strong>register</strong> – The address of the register inside the slave.</p></li>
+<li><p><strong>data</strong> – A list or a single byte, if it is a list max length 32 bytes.</p></li>
+<li><p><strong>byte_num</strong> – How many bytes to read from the device. Max 32</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with byte_num elements.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.SMBus2.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.SMBus2.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sensors.html" class="btn btn-neutral float-right" title="Sensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hardware_interfaces.html" class="btn btn-neutral float-left" title="Hardware Interfaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Iasonas Paraskevopoulos
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

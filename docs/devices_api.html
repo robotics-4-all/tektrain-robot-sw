@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Devices &mdash; pidevices  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Hardware Interfaces" href="hardware_interfaces.html" />
+    <link rel="prev" title="Welcome to pidevices’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pidevices
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Devices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#device">Device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sensor">Sensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#actuator">Actuator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sensors.html">Sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actuators.html">Actuators</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pidevices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Devices</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/devices_api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="devices">
+<h1>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Pidevices’s main goal is the easy deployment of devices. A device could be anything
+that get’s connected to the pi(also the pi could be a device, but we don’t see it
+from that prespective). Pidevices distinct the devices in two categories sensors,
+which are devices that get any information from the environment and actuators
+that change the environment.</p>
+<p>To make things easier for the maker/developer pidevices use a common interface
+consisting of three functions start(), stop() and restart(). The distinction
+between sensors and actuators is a read() function that belongs to sensors and
+a write() function that belongs only to actuatos.</p>
+<p>With that in mind a developer can contribute a new sensor or effector by
+just implementing these four functions and then any user could use it without
+having to know the specific implementation.</p>
+<div class="section" id="device">
+<h3>Device<a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.devices.Device">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.devices.</code><code class="sig-name descname">Device</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for sensors and actuators.</p>
+<p>The purpose of this class is to provide the tools for the easy implementation
+of a new device. Every device uses at least one hardware interface to
+talk with the hardware.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The optional name of the device.</p></li>
+<li><p><strong>max_data_length</strong> (<em>int</em>) – The max length of the data deque.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Invalid name type, or invalid max_data_length type.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.devices.Device.hardware_interfaces">
+<em class="property">property </em><code class="sig-name descname">hardware_interfaces</code><a class="headerlink" href="#pidevices.devices.Device.hardware_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the objects of the device’s used hardware interfaces.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.max_data_length">
+<em class="property">property </em><code class="sig-name descname">max_data_length</code><a class="headerlink" href="#pidevices.devices.Device.max_data_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The max length of the data deque.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.id">
+<em class="property">property </em><code class="sig-name descname">id</code><a class="headerlink" href="#pidevices.devices.Device.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the device.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.init_interface">
+<code class="sig-name descname">init_interface</code><span class="sig-paren">(</span><em class="sig-param">interface</em>, <em class="sig-param">impl=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.init_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose an implementation for an interface.</p>
+<p>Basically using the impl parameter finds the implemented class and
+creates a new instance of that class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interface</strong> (<em>str</em>) – String representing the hardware interface type,
+it should be GPIO/gpio, SPI/spi, UART/uart, I2C/i2c or HPWM/hpwm.</p></li>
+<li><p><strong>impl</strong> (<em>str</em>) – <p>The specific implementation to be used. If it is none the
+first that is installed will be used. Currently supported values</p>
+<blockquote>
+<div><ul>
+<li><p>GPIO: “RPiGPIO”, “Mcp23017GPIO”</p></li>
+<li><p>SPI: “SPIimplementation”</p></li>
+<li><p>UART:</p></li>
+<li><p>I2C: “SMBus2”</p></li>
+<li><p>HPWM: “HPWMPeriphery”</p></li>
+</ul>
+</div></blockquote>
+<p>The above list has the form interface: implementation.</p>
+</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments for the constructor of the chosen
+interface.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>representing the interface’s index in the list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Wrong interface type.</p></li>
+<li><p><strong>NotSupportedInterface</strong> – An error occured accessing modules.</p></li>
+<li><p><strong>NotInstalledInterface</strong> – An error occured when there isn’t any
+    supported library installed for the current interface.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.update_data">
+<code class="sig-name descname">update_data</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.update_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an element to the end of the data deque.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.get_data">
+<code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get last abs(end - start) data.</p>
+<p>For getting just the last element it is better to use self.data[-1]
+than this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>int</em>) – Start index to get elements from data deque.</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – End index of data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>That has the</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empty function for starting devices, which will be overloaded.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empty function for stopping devices, which will be overloaded.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.devices.Device.restart">
+<code class="sig-name descname">restart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.devices.Device.restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restart the device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sensor">
+<h3>Sensor<a class="headerlink" href="#sensor" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.Sensor">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Sensor</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Sensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class of a sensor device. Extends <code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code>.</p>
+<dl class="method">
+<dt id="pidevices.Sensor.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Sensor.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empty function for reading from devices, which will be
+overloaded.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="actuator">
+<h3>Actuator<a class="headerlink" href="#actuator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.Actuator">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Actuator</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Actuator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class of an actuator device. Extends <code class="xref py py-class docutils literal notranslate"><span class="pre">Device</span></code>.</p>
+<dl class="method">
+<dt id="pidevices.Actuator.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Actuator.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstact method for driving an actuator which will be overloaded.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hardware_interfaces.html" class="btn btn-neutral float-right" title="Hardware Interfaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pidevices’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Iasonas Paraskevopoulos
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

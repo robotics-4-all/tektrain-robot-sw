@@ -1,0 +1,1623 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Sensors &mdash; pidevices  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Actuators" href="actuators.html" />
+    <link rel="prev" title="Hardware Interfaces Implementations" href="hardware_interfaces_implementations.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pidevices
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="devices_api.html">Devices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_interfaces.html">Hardware Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hardware_interfaces_implementations.html">Hardware Interfaces Implementations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sensors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#buttons">Buttons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#single-button">Single Button</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#button-array">Button Array</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#distance-sensors">Distance sensors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hc-sr04">HC-SR04</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vl53l1x">vl53l1x</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sharp-gp2y0axxxk0f-family">Sharp gp2y0axxxk0f family</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#line-follower">Line follower</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cytron-lss05">Cytron lss05</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bme-680">BME-680</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imu">IMU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#icm-20948">ICM-20948</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#wheel-encoders">Wheel Encoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#df-robot-wheel-encoders">Df Robot Wheel Encoders</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#microphone">Microphone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#camera">Camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adc">ADC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mcp-3002">MCP-3002</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="actuators.html">Actuators</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pidevices</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Sensors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/sensors.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="sensors">
+<h1>Sensors<a class="headerlink" href="#sensors" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="buttons">
+<h2>Buttons<a class="headerlink" href="#buttons" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="single-button">
+<h3>Single Button<a class="headerlink" href="#single-button" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.Button">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Button</code><span class="sig-paren">(</span><em class="sig-param">pin_num</em>, <em class="sig-param">direction</em>, <em class="sig-param">edge='rising'</em>, <em class="sig-param">bounce=200</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Button" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single button extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_num</strong> (<em>int</em>) – BCM number of the pin.</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – Indicating the it will use pull up or pull down resistor
+. Could be <code class="xref py py-data docutils literal notranslate"><span class="pre">up</span></code> or <code class="xref py py-data docutils literal notranslate"><span class="pre">down</span></code>.</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – At which edge signal it will call the function. It could
+be <code class="xref py py-data docutils literal notranslate"><span class="pre">rising</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">falling</span></code> and <code class="xref py py-data docutils literal notranslate"><span class="pre">both</span></code>.</p></li>
+<li><p><strong>bounce</strong> (<em>int</em>) – The bounce time of the button. Defaults to 200ms</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Button.pin_num">
+<em class="property">property </em><code class="sig-name descname">pin_num</code><a class="headerlink" href="#pidevices.Button.pin_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bcm pin number.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Button.dir">
+<em class="property">property </em><code class="sig-name descname">dir</code><a class="headerlink" href="#pidevices.Button.dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>The direction of the pull resistor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Button.bounce">
+<em class="property">property </em><code class="sig-name descname">bounce</code><a class="headerlink" href="#pidevices.Button.bounce" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bounce of the pull resistor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Button.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Button.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read current state of button.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Represents the state of the button. 0 for not pressed</dt><dd><p>1 for pressed.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Button.when_pressed">
+<code class="sig-name descname">when_pressed</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Button.when_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a function for asynchronous call when the button is pressed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>function</em>) – The function.</p></li>
+<li><p><strong>*args</strong> – Arguments for the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Button.wait_for_press">
+<code class="sig-name descname">wait_for_press</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Button.wait_for_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait to be pressed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Button.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Button.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.ButtonRPiGPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ButtonRPiGPIO</code><span class="sig-paren">(</span><em class="sig-param">pin_num</em>, <em class="sig-param">direction</em>, <em class="sig-param">edge='rising'</em>, <em class="sig-param">bounce=200</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonRPiGPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single button with rpigpio implementation extends <a class="reference internal" href="#pidevices.Button" title="pidevices.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_num</strong> (<em>int</em>) – BCM number of the pin.</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – Indicating the it will use pull up or pull down resistor
+. Could be <code class="xref py py-data docutils literal notranslate"><span class="pre">up</span></code> or data:<cite>down</cite>.</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – At which edge signal it will call the function. It could
+be <code class="xref py py-data docutils literal notranslate"><span class="pre">rising</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">falling</span></code> and <code class="xref py py-data docutils literal notranslate"><span class="pre">both</span></code>.</p></li>
+<li><p><strong>bounce</strong> (<em>int</em>) – The bounce time of the button. Defaults to 200ms</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.ButtonRPiGPIO.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonRPiGPIO.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.ButtonMcp23017">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ButtonMcp23017</code><span class="sig-paren">(</span><em class="sig-param">pin_num</em>, <em class="sig-param">direction</em>, <em class="sig-param">edge='rising'</em>, <em class="sig-param">bounce=200</em>, <em class="sig-param">bus=1</em>, <em class="sig-param">address=32</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonMcp23017" title="Permalink to this definition">¶</a></dt>
+<dd><p>A single button with mcp23017 implementation extends <a class="reference internal" href="#pidevices.Button" title="pidevices.Button"><code class="xref py py-class docutils literal notranslate"><span class="pre">Button</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_num</strong> (<em>int</em>) – The module’s pin number.</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – Indicating the it will use pull up or pull down resistor
+. Could be <code class="xref py py-data docutils literal notranslate"><span class="pre">up</span></code> or data:<cite>down</cite>.</p></li>
+<li><p><strong>bounce</strong> (<em>int</em>) – The bounce time of the button. Defaults to 200ms</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.ButtonMcp23017.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonMcp23017.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonMcp23017.when_pressed">
+<code class="sig-name descname">when_pressed</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonMcp23017.when_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a function for asynchronous call when the button is pressed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>function</em>) – The function.</p></li>
+<li><p><strong>*args</strong> – Arguments for the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="button-array">
+<h3>Button Array<a class="headerlink" href="#button-array" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.ButtonArray">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ButtonArray</code><span class="sig-paren">(</span><em class="sig-param">pin_nums</em>, <em class="sig-param">direction</em>, <em class="sig-param">bounce</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array of buttons, extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_nums</strong> (<em>list</em>) – List with the gpio numbers for buttons.</p></li>
+<li><p><strong>direction</strong> (<em>list|str</em>) – Could be a list with different values per pin_num
+or single value.</p></li>
+<li><p><strong>bounce</strong> (<em>list|int</em>) – Could be a list with different value per pin_num or
+a single value.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.ButtonArray.pin_nums">
+<em class="property">property </em><code class="sig-name descname">pin_nums</code><a class="headerlink" href="#pidevices.ButtonArray.pin_nums" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the pin nums of the buttons</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.directions">
+<em class="property">property </em><code class="sig-name descname">directions</code><a class="headerlink" href="#pidevices.ButtonArray.directions" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the direction of every button.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.debounce">
+<em class="property">property </em><code class="sig-name descname">debounce</code><a class="headerlink" href="#pidevices.ButtonArray.debounce" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the debounce time of every button.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">button</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read current state of button.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>button</strong> (<em>int</em>) – The number of the button.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Int with the button’s current state.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.when_pressed">
+<code class="sig-name descname">when_pressed</code><span class="sig-paren">(</span><em class="sig-param">button</em>, <em class="sig-param">func</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.when_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a function for asynchronous call when the button is pressed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>button</strong> (<em>int</em>) – The number of the button.</p></li>
+<li><p><strong>func</strong> (<em>function</em>) – The function.</p></li>
+<li><p><strong>*args</strong> – Arguments for the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.wait_for_press">
+<code class="sig-name descname">wait_for_press</code><span class="sig-paren">(</span><em class="sig-param">b</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.wait_for_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait to be pressed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>b</strong> (<em>int</em>) – The number of the button.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.add_button">
+<code class="sig-name descname">add_button</code><span class="sig-paren">(</span><em class="sig-param">pin_num</em>, <em class="sig-param">direction</em>, <em class="sig-param">bounce</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.add_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a button to the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin_num</strong> (<em>int</em>) – BCM number of the pin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ButtonArray.remove_button">
+<code class="sig-name descname">remove_button</code><span class="sig-paren">(</span><em class="sig-param">button</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArray.remove_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a button from the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>button</strong> (<em>int</em>) – The button index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.ButtonArrayRPiGPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ButtonArrayRPiGPIO</code><span class="sig-paren">(</span><em class="sig-param">pin_nums</em>, <em class="sig-param">direction</em>, <em class="sig-param">bounce</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArrayRPiGPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array of buttons, extends <a class="reference internal" href="#pidevices.ButtonArray" title="pidevices.ButtonArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ButtonArray</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_nums</strong> (<em>list</em>) – List with the gpio numbers for buttons.</p></li>
+<li><p><strong>direction</strong> (<em>list|str</em>) – Could be a list with different values per pin_num
+or single value.</p></li>
+<li><p><strong>bounce</strong> (<em>list|int</em>) – Could be a list with different value per pin_num or
+a single value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.ButtonArrayMcp23017">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ButtonArrayMcp23017</code><span class="sig-paren">(</span><em class="sig-param">pin_nums</em>, <em class="sig-param">direction</em>, <em class="sig-param">bounce</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArrayMcp23017" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array of buttons, extends <a class="reference internal" href="#pidevices.ButtonArray" title="pidevices.ButtonArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ButtonArray</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_nums</strong> (<em>list</em>) – List with the gpio numbers for buttons.</p></li>
+<li><p><strong>direction</strong> (<em>list|str</em>) – Could be a list with different values per pin_num
+or single value.</p></li>
+<li><p><strong>bounce</strong> (<em>list|int</em>) – Could be a list with different value per pin_num or
+a single value.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.ButtonArrayMcp23017.enable_pressed">
+<code class="sig-name descname">enable_pressed</code><span class="sig-paren">(</span><em class="sig-param">buttons</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ButtonArrayMcp23017.enable_pressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable when pressed interrupts for all button</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="distance-sensors">
+<h2>Distance sensors<a class="headerlink" href="#distance-sensors" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.DistanceSensor">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">DistanceSensor</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DistanceSensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class for distance sensors extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a> and
+a distance sensor using some common attributes.</p>
+<dl class="method">
+<dt id="pidevices.DistanceSensor.max_distance">
+<em class="property">property </em><code class="sig-name descname">max_distance</code><a class="headerlink" href="#pidevices.DistanceSensor.max_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The max distance that can be measured.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DistanceSensor.min_distance">
+<em class="property">property </em><code class="sig-name descname">min_distance</code><a class="headerlink" href="#pidevices.DistanceSensor.min_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The min distance that can be measured.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="hc-sr04">
+<h3>HC-SR04<a class="headerlink" href="#hc-sr04" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.HcSr04">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">HcSr04</code><span class="sig-paren">(</span><em class="sig-param">trigger_pin</em>, <em class="sig-param">echo_pin</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04" title="Permalink to this definition">¶</a></dt>
+<dd><p>HcSr04 class extends <a class="reference internal" href="#pidevices.DistanceSensor" title="pidevices.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a></p>
+<p>Implementation of the HC-SR04 sensor class speed of sound is
+33100 + 0.6*temperature(cm/s) considering temperature = 20, speed of sound
+at sea level.</p>
+<dl class="simple">
+<dt>Hardware specs:</dt><dd><ul class="simple">
+<li><p>Operating voltage: 5V</p></li>
+<li><p>Min distance: 2cm</p></li>
+<li><p>Max distance: 4m</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trigger_pin</strong> (<em>int</em>) – BCM number of the trigger pin.</p></li>
+<li><p><strong>echo_pin</strong> (<em>int</em>) – BCM number of the echo pin.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The optional name of the device.</p></li>
+<li><p><strong>max_data_length</strong> (<em>int</em>) – The max data of the data list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.HcSr04.trigger_pin">
+<em class="property">property </em><code class="sig-name descname">trigger_pin</code><a class="headerlink" href="#pidevices.HcSr04.trigger_pin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger pin number.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HcSr04.echo_pin">
+<em class="property">property </em><code class="sig-name descname">echo_pin</code><a class="headerlink" href="#pidevices.HcSr04.echo_pin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Echo pin number.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HcSr04.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HcSr04.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HcSr04.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">SAVE=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a distance measurment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>SAVE</strong> (<em>boolean</em>) – Flag for saving the measurment to the data list.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The distance in centimeters. If it return -1 it means the that</dt><dd><p>the measurment is out of the sensor’s range.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>OutOfRange</strong> – Error when a measurment takes too long.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.HcSr04RPiGPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">HcSr04RPiGPIO</code><span class="sig-paren">(</span><em class="sig-param">trigger_pin</em>, <em class="sig-param">echo_pin</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04RPiGPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>HcSr04 class extends <a class="reference internal" href="#pidevices.DistanceSensor" title="pidevices.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a></p>
+<p>Implementation of the HC-SR04 sensor class speed of sound is
+33100 + 0.6*temperature(cm/s) considering temperature = 20, speed of sound
+at sea level.</p>
+<dl class="simple">
+<dt>Hardware specs:</dt><dd><ul class="simple">
+<li><p>Operating voltage: 5V</p></li>
+<li><p>Min distance: 2cm</p></li>
+<li><p>Max distance: 4m</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trigger_pin</strong> (<em>int</em>) – BCM number of the trigger pin.</p></li>
+<li><p><strong>echo_pin</strong> (<em>int</em>) – BCM number of the echo pin.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The optional name of the device.</p></li>
+<li><p><strong>max_data_length</strong> (<em>int</em>) – The max data of the data list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.HcSr04RPiGPIO.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04RPiGPIO.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.HcSr04Mcp23017">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">HcSr04Mcp23017</code><span class="sig-paren">(</span><em class="sig-param">trigger_pin</em>, <em class="sig-param">echo_pin</em>, <em class="sig-param">bus=1</em>, <em class="sig-param">address=32</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04Mcp23017" title="Permalink to this definition">¶</a></dt>
+<dd><p>HcSr04 class extends <a class="reference internal" href="#pidevices.DistanceSensor" title="pidevices.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a></p>
+<p><strong>UNTESTED</strong></p>
+<p>Implementation of the HC-SR04 sensor class speed of sound is
+33100 + 0.6*temperature(cm/s) considering temperature = 20, speed of sound
+at sea level.</p>
+<dl class="simple">
+<dt>Hardware specs:</dt><dd><ul class="simple">
+<li><p>Operating voltage: 5V</p></li>
+<li><p>Min distance: 2cm</p></li>
+<li><p>Max distance: 4m</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trigger_pin</strong> (<em>int</em>) – BCM number of the trigger pin.</p></li>
+<li><p><strong>echo_pin</strong> (<em>int</em>) – BCM number of the echo pin.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The optional name of the device.</p></li>
+<li><p><strong>max_data_length</strong> (<em>int</em>) – The max data of the data list.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.HcSr04Mcp23017.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04Mcp23017.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.HcSr04Mcp23017.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">SAVE=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.HcSr04Mcp23017.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a distance measurment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>SAVE</strong> (<em>boolean</em>) – Flag for saving the measurment to the data list.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distance in centimeters.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>OutOfRange</strong> – Error when a measurment takes too long.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="vl53l1x">
+<h3>vl53l1x<a class="headerlink" href="#vl53l1x" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.VL53L1X">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">VL53L1X</code><span class="sig-paren">(</span><em class="sig-param">bus=1</em>, <em class="sig-param">VL53L1X_ADDRESS=41</em>, <em class="sig-param">mode=3</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X" title="Permalink to this definition">¶</a></dt>
+<dd><p>VL53L1X ToF extends <a class="reference internal" href="#pidevices.DistanceSensor" title="pidevices.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a>. It uses
+<a class="reference external" href="https://github.com/pimoroni/vl53l1x-python">this</a> implementation.</p>
+<dl class="simple">
+<dt>Hardware:</dt><dd><ul class="simple">
+<li><p>voltage: 2.6V-5.5V</p></li>
+<li><p>max_distance: 4m</p></li>
+</ul>
+</dd>
+</dl>
+<p>The VL53L1X offers three distance modes: short, medium, and long. Long
+distance mode allows the longest possible ranging distance of 4 m, but the
+maximum range is significantly affected by ambient light. Short distance
+mode is mostly immune to ambient light, but the maximum ranging distance is
+typically limited to 1.3 m (4.4 ft). The maximum sampling rate in short
+distance mode is 50 Hz while the maximum sampling rate for medium and long
+distance modes is 30 Hz. Performance can be improved in all modes by using
+lower sampling rates and longer timing budgets.</p>
+<p>First call start_ranging function and then read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bus</strong> (<em>int</em>) – The i2c bus.</p></li>
+<li><p><strong>VL53L1X_ADDRESS</strong> (<em>int</em>) – It is the i2c address of the device. Defaults to
+0x29.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – The ranging mode. Valid values 1(short), 2(medium),
+3(long). Defaults to 3.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.VL53L1X.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#pidevices.VL53L1X.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>The distance mode of the sensor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.VL53L1X.bus">
+<em class="property">property </em><code class="sig-name descname">bus</code><a class="headerlink" href="#pidevices.VL53L1X.bus" title="Permalink to this definition">¶</a></dt>
+<dd><p>The i2c bus of the device.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.VL53L1X.VL53L1X_ADDRESS">
+<em class="property">property </em><code class="sig-name descname">VL53L1X_ADDRESS</code><a class="headerlink" href="#pidevices.VL53L1X.VL53L1X_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sensor’s i2c address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.VL53L1X.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.VL53L1X.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.VL53L1X.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.VL53L1X.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get distance from VL53L1X ToF Sensor</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sharp-gp2y0axxxk0f-family">
+<h3>Sharp gp2y0axxxk0f family<a class="headerlink" href="#sharp-gp2y0axxxk0f-family" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.GP2Y0AxxxK0F">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">GP2Y0AxxxK0F</code><span class="sig-paren">(</span><em class="sig-param">datasheet_data</em>, <em class="sig-param">adc</em>, <em class="sig-param">interval</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GP2Y0AxxxK0F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sharp gp2y0axxxk0f family of ir distance sensors extends
+<a class="reference internal" href="#pidevices.DistanceSensor" title="pidevices.DistanceSensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistanceSensor</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datasheet_data</strong> – A 2d numpy array with the measurements from the
+datasheet. The array goes from max voltage to min voltage and
+every entry is of type voltage, cm.</p></li>
+<li><p><strong>adc</strong> – Instance of any adc class.</p></li>
+<li><p><strong>interval</strong> (<em>float</em>) – Interval between consecutive read.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.GP2Y0AxxxK0F.adc">
+<em class="property">property </em><code class="sig-name descname">adc</code><a class="headerlink" href="#pidevices.GP2Y0AxxxK0F.adc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adc instance of any adc class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.GP2Y0AxxxK0F.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GP2Y0AxxxK0F.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.GP2Y0AxxxK0F.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">n=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GP2Y0AxxxK0F.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a measurment.</p>
+<p>The result comes from the average of n measurments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – The number of consecutive measurments. Defaults to 1.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The measured distance.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>OutOfRange</strong> – If the measurment is out of min or max distance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.GP2Y0AxxxK0F.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GP2Y0AxxxK0F.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.GP2Y0A21YK0F">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">GP2Y0A21YK0F</code><span class="sig-paren">(</span><em class="sig-param">adc</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GP2Y0A21YK0F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sharp gp2y0a21yk0f ir distance sensor extends <a class="reference internal" href="#pidevices.GP2Y0AxxxK0F" title="pidevices.GP2Y0AxxxK0F"><code class="xref py py-class docutils literal notranslate"><span class="pre">GP2Y0AxxxK0F</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>adc</strong> – Instance of any adc class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.GP2Y0A41SK0F">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">GP2Y0A41SK0F</code><span class="sig-paren">(</span><em class="sig-param">adc</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.GP2Y0A41SK0F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shaprt gp2y0a21yk0f ir distance sensor extends <a class="reference internal" href="#pidevices.GP2Y0AxxxK0F" title="pidevices.GP2Y0AxxxK0F"><code class="xref py py-class docutils literal notranslate"><span class="pre">GP2Y0AxxxK0F</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>adc</strong> – Instance of any adc class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="line-follower">
+<h2>Line follower<a class="headerlink" href="#line-follower" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.LineFollower">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">LineFollower</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.LineFollower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class representing line following sensors.</p>
+<dl class="method">
+<dt id="pidevices.LineFollower.max_frequency">
+<em class="property">property </em><code class="sig-name descname">max_frequency</code><a class="headerlink" href="#pidevices.LineFollower.max_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max working frequency.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LineFollower.min_dist">
+<em class="property">property </em><code class="sig-name descname">min_dist</code><a class="headerlink" href="#pidevices.LineFollower.min_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum working distance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.LineFollower.max_dist">
+<em class="property">property </em><code class="sig-name descname">max_dist</code><a class="headerlink" href="#pidevices.LineFollower.max_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum working distance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="cytron-lss05">
+<h3>Cytron lss05<a class="headerlink" href="#cytron-lss05" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.CytronLfLSS05">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">CytronLfLSS05</code><span class="sig-paren">(</span><em class="sig-param">so_1</em>, <em class="sig-param">so_2</em>, <em class="sig-param">so_3</em>, <em class="sig-param">so_4</em>, <em class="sig-param">so_5</em>, <em class="sig-param">mode='dark'</em>, <em class="sig-param">cal=None</em>, <em class="sig-param">max_data_length=100</em>, <em class="sig-param">name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing cytron line sensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>so_1</strong> (<em>int</em>) – BCM pin number for first ir sensor.</p></li>
+<li><p><strong>so_2</strong> (<em>int</em>) – BCM pin number for second ir sensor.</p></li>
+<li><p><strong>so_3</strong> (<em>int</em>) – BCM pin number for third ir sensor.</p></li>
+<li><p><strong>so_4</strong> (<em>int</em>) – BCM pin number for fourth ir sensor.</p></li>
+<li><p><strong>so_5</strong> (<em>int</em>) – BCM pin number for fifth ir sensor.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Working mode of the sensor. Valid values dark(the
+sensor returns one for dark line) and bright(the sesnor returns
+one for bright line). Defaults to dark.</p></li>
+<li><p><strong>cal</strong> – Calibration pin BCM number. Defaults to None for disconnected
+calibration pin.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.so_1">
+<em class="property">property </em><code class="sig-name descname">so_1</code><a class="headerlink" href="#pidevices.CytronLfLSS05.so_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCM number of 1st ir sensor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.so_2">
+<em class="property">property </em><code class="sig-name descname">so_2</code><a class="headerlink" href="#pidevices.CytronLfLSS05.so_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCM number of 2nd ir sensor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.so_3">
+<em class="property">property </em><code class="sig-name descname">so_3</code><a class="headerlink" href="#pidevices.CytronLfLSS05.so_3" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCM number of 3rd ir sensor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.so_4">
+<em class="property">property </em><code class="sig-name descname">so_4</code><a class="headerlink" href="#pidevices.CytronLfLSS05.so_4" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCM number of 4th ir sensor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.so_5">
+<em class="property">property </em><code class="sig-name descname">so_5</code><a class="headerlink" href="#pidevices.CytronLfLSS05.so_5" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCM number of 5th ir sensor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.cal">
+<em class="property">property </em><code class="sig-name descname">cal</code><a class="headerlink" href="#pidevices.CytronLfLSS05.cal" title="Permalink to this definition">¶</a></dt>
+<dd><p>BCM number of calibration pin.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.mode">
+<em class="property">property </em><code class="sig-name descname">mode</code><a class="headerlink" href="#pidevices.CytronLfLSS05.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Working mode of sensor. Valid value dark and bright.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+<p>Will be overloaded from specific implementations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">SAVE=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a measurment from sensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>SAVE</strong> – Flag for saving measurments to the data list.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>An named tuple with every sensor measurment.</dt><dd><p>The format is (so_1, so_2, so_3, so_4, so_5).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05.calibrate">
+<code class="sig-name descname">calibrate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05.calibrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrate sensor.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.CytronLfLSS05Rpi">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">CytronLfLSS05Rpi</code><span class="sig-paren">(</span><em class="sig-param">so_1</em>, <em class="sig-param">so_2</em>, <em class="sig-param">so_3</em>, <em class="sig-param">so_4</em>, <em class="sig-param">so_5</em>, <em class="sig-param">mode='dark'</em>, <em class="sig-param">cal=None</em>, <em class="sig-param">max_data_length=100</em>, <em class="sig-param">name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05Rpi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing the driver of cytron line sensor using rpi.gpio
+implementation. Extends <a class="reference internal" href="#pidevices.CytronLfLSS05" title="pidevices.CytronLfLSS05"><code class="xref py py-class docutils literal notranslate"><span class="pre">CytronLfLSS05</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>so_1</strong> (<em>int</em>) – BCM pin number for first ir sensor.</p></li>
+<li><p><strong>so_2</strong> (<em>int</em>) – BCM pin number for second ir sensor.</p></li>
+<li><p><strong>so_3</strong> (<em>int</em>) – BCM pin number for third ir sensor.</p></li>
+<li><p><strong>so_4</strong> (<em>int</em>) – BCM pin number for fourth ir sensor.</p></li>
+<li><p><strong>so_5</strong> (<em>int</em>) – BCM pin number for fifth ir sensor.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Working mode of the sensor. Valid values dark(the
+sensor returns one for dark line) and bright(the sesnor returns
+one for bright line). Defaults to dark.</p></li>
+<li><p><strong>cal</strong> – Calibration pin BCM number. Defaults to None for disconnected
+calibration pin.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05Rpi.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05Rpi.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.CytronLfLSS05Mcp23017">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">CytronLfLSS05Mcp23017</code><span class="sig-paren">(</span><em class="sig-param">so_1</em>, <em class="sig-param">so_2</em>, <em class="sig-param">so_3</em>, <em class="sig-param">so_4</em>, <em class="sig-param">so_5</em>, <em class="sig-param">mode='dark'</em>, <em class="sig-param">cal=None</em>, <em class="sig-param">bus=1</em>, <em class="sig-param">address=34</em>, <em class="sig-param">max_data_length=100</em>, <em class="sig-param">name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05Mcp23017" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing the driver of cytron line sensor using rpi.gpio
+implementation. Extends <a class="reference internal" href="#pidevices.CytronLfLSS05" title="pidevices.CytronLfLSS05"><code class="xref py py-class docutils literal notranslate"><span class="pre">CytronLfLSS05</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>so_1</strong> (<em>int</em>) – Extender’s pin number for first ir sensor.</p></li>
+<li><p><strong>so_2</strong> (<em>int</em>) – Extender’s pin number for second ir sensor.</p></li>
+<li><p><strong>so_3</strong> (<em>int</em>) – Extender’s pin number for third ir sensor.</p></li>
+<li><p><strong>so_4</strong> (<em>int</em>) – Extender’s pin number for fourth ir sensor.</p></li>
+<li><p><strong>so_5</strong> (<em>int</em>) – Extender’s pin number for fifth ir sensor.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Working mode of the sensor. Valid values dark(the
+sensor returns one for dark line) and bright(the sesnor returns
+one for bright line). Defaults to dark.</p></li>
+<li><p><strong>cal</strong> – Calibration extender’s pin number. Defaults to None for disconnected
+calibration pin.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.CytronLfLSS05Mcp23017.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.CytronLfLSS05Mcp23017.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="bme-680">
+<h2>BME-680<a class="headerlink" href="#bme-680" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.BME680">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">BME680</code><span class="sig-paren">(</span><em class="sig-param">bus</em>, <em class="sig-param">slave</em>, <em class="sig-param">t_oversample=1</em>, <em class="sig-param">p_oversample=0</em>, <em class="sig-param">h_oversample=0</em>, <em class="sig-param">iir_coef=0</em>, <em class="sig-param">gas_status=0</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing BME680 sensor.</p>
+<dl class="method">
+<dt id="pidevices.BME680.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">temp=True</em>, <em class="sig-param">hum=True</em>, <em class="sig-param">pres=True</em>, <em class="sig-param">gas=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a measurment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp</strong> (<em>bool</em>) – Indicating if a temparature measurment will be taken.</p></li>
+<li><p><strong>hum</strong> (<em>bool</em>) – Indicating if a humidity measurment will be taken.</p></li>
+<li><p><strong>pres</strong> (<em>bool</em>) – Indicating if a pressure measurment will be taken.</p></li>
+<li><p><strong>gas</strong> (<em>bool</em>) – Indicating if a gas measurment will be taken.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empty function for stopping devices, which will be overloaded.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.set_idac_heat">
+<code class="sig-name descname">set_idac_heat</code><span class="sig-paren">(</span><em class="sig-param">indexes</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.set_idac_heat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set idac_heat_x registers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – List with the values</p></li>
+<li><p><strong>indexes</strong> – List with indexes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.set_heating_temp">
+<code class="sig-name descname">set_heating_temp</code><span class="sig-paren">(</span><em class="sig-param">indexes</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.set_heating_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set idac_heat_x registers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>list</em>) – List with the values</p></li>
+<li><p><strong>indexes</strong> (<em>list</em>) – List with indexes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.set_heating_time">
+<code class="sig-name descname">set_heating_time</code><span class="sig-paren">(</span><em class="sig-param">indexes</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.set_heating_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set gas wait registers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indexes</strong> – </p></li>
+<li><p><strong>values</strong><strong>,</strong> – </p></li>
+<li><p><strong>multis</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.BME680.set_heater_off">
+<code class="sig-name descname">set_heater_off</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.BME680.set_heater_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set heater of bit</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="imu">
+<h2>IMU<a class="headerlink" href="#imu" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="icm-20948">
+<h3>ICM-20948<a class="headerlink" href="#icm-20948" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.ICM_20948">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">ICM_20948</code><span class="sig-paren">(</span><em class="sig-param">bus</em>, <em class="sig-param">i2c_addr=105</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948" title="Permalink to this definition">¶</a></dt>
+<dd><p>Driver for icm 20948 imu</p>
+<dl class="method">
+<dt id="pidevices.ICM_20948.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">accel_gyro_flag=True</em>, <em class="sig-param">magne_flag=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read measurments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_flag</strong> – </p></li>
+<li><p><strong>magne_flag</strong> – </p></li>
+<li><p><strong>gyro_flag</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.bank">
+<code class="sig-name descname">bank</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.bank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch register self.bank.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.mag_write">
+<code class="sig-name descname">mag_write</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.mag_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a byte to the slave magnetometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.mag_read">
+<code class="sig-name descname">mag_read</code><span class="sig-paren">(</span><em class="sig-param">reg</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.mag_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a byte from the slave magnetometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.mag_read_bytes">
+<code class="sig-name descname">mag_read_bytes</code><span class="sig-paren">(</span><em class="sig-param">reg</em>, <em class="sig-param">length=1</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.mag_read_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read up to 24 bytes from the slave magnetometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.magnetometer_ready">
+<code class="sig-name descname">magnetometer_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.magnetometer_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the magnetometer status self._ready bit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.convert_to_degrees">
+<code class="sig-name descname">convert_to_degrees</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.convert_to_degrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert magnetometer readings to degrees</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – Readings from magnetometer from the x axis.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – Readings from magnetometer from the y axis.</p></li>
+<li><p><strong>z</strong> (<em>float</em>) – Readings from magnetometer from the z axis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicating the degrees of rotation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_accelerometer_sample_rate">
+<code class="sig-name descname">set_accelerometer_sample_rate</code><span class="sig-paren">(</span><em class="sig-param">rate=125</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_accelerometer_sample_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the accelerometer sample rate in Hz.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_accelerometer_full_scale">
+<code class="sig-name descname">set_accelerometer_full_scale</code><span class="sig-paren">(</span><em class="sig-param">scale=16</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_accelerometer_full_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the accelerometer fulls cale range to +- the supplied value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_accelerometer_low_pass">
+<code class="sig-name descname">set_accelerometer_low_pass</code><span class="sig-paren">(</span><em class="sig-param">enabled=True</em>, <em class="sig-param">mode=5</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_accelerometer_low_pass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the accelerometer low pass filter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_gyro_sample_rate">
+<code class="sig-name descname">set_gyro_sample_rate</code><span class="sig-paren">(</span><em class="sig-param">rate=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_gyro_sample_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the gyro sample rate in Hz.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_gyro_full_scale">
+<code class="sig-name descname">set_gyro_full_scale</code><span class="sig-paren">(</span><em class="sig-param">scale=250</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_gyro_full_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the gyro full scale range to +- supplied value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.ICM_20948.set_gyro_low_pass">
+<code class="sig-name descname">set_gyro_low_pass</code><span class="sig-paren">(</span><em class="sig-param">enabled=True</em>, <em class="sig-param">mode=5</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.ICM_20948.set_gyro_low_pass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the gyro low pass filter.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="wheel-encoders">
+<h2>Wheel Encoders<a class="headerlink" href="#wheel-encoders" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.WheelEncoder">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">WheelEncoder</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.WheelEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class for a wheel encoders. Extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a></p>
+<dl class="method">
+<dt id="pidevices.WheelEncoder.res">
+<em class="property">property </em><code class="sig-name descname">res</code><a class="headerlink" href="#pidevices.WheelEncoder.res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolution of the encoder.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="df-robot-wheel-encoders">
+<h3>Df Robot Wheel Encoders<a class="headerlink" href="#df-robot-wheel-encoders" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.DfRobotWheelEncoder">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">DfRobotWheelEncoder</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing df robot wheel encoders. Extends <a class="reference internal" href="#pidevices.WheelEncoder" title="pidevices.WheelEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">WheelEncoder</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin_num</strong> – The pin number of encoder’s signal.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoder.pin_num">
+<em class="property">property </em><code class="sig-name descname">pin_num</code><a class="headerlink" href="#pidevices.DfRobotWheelEncoder.pin_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pin number of encoder’s signal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoder.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoder.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoder.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoder.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current state of encoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An integer representing the state of the encoder.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoder.read_rpm">
+<code class="sig-name descname">read_rpm</code><span class="sig-paren">(</span><em class="sig-param">save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoder.read_rpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get rpm value of wheel.</p>
+<p>Count until res/divisor pulses and then use the interval to compute
+the rounds per minute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>save</strong> – Flag for saving the measurment to device data deque.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A number indicating the rpm value of the wheel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoder.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoder.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.DfRobotWheelEncoderRpiGPIO">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">DfRobotWheelEncoderRpiGPIO</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoderRpiGPIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing df robot wheel encoders using rpigpio library.
+Extends <a class="reference internal" href="#pidevices.DfRobotWheelEncoder" title="pidevices.DfRobotWheelEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DfRobotWheelEncoder</span></code></a></p>
+<p><strong>UNTESTED</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin_num</strong> (<em>int</em>) – The pin number of encoder’s signal.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoderRpiGPIO.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoderRpiGPIO.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pidevices.DfRobotWheelEncoderMcp23017">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">DfRobotWheelEncoderMcp23017</code><span class="sig-paren">(</span><em class="sig-param">pin</em>, <em class="sig-param">bus=1</em>, <em class="sig-param">address=32</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoderMcp23017" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class implementing df robot wheel encoders using mcp23017 gpio extender.
+Extends <a class="reference internal" href="#pidevices.DfRobotWheelEncoder" title="pidevices.DfRobotWheelEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DfRobotWheelEncoder</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pin_num</strong> – The pin number of encoder’s signal.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.DfRobotWheelEncoderMcp23017.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.DfRobotWheelEncoderMcp23017.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="microphone">
+<h2>Microphone<a class="headerlink" href="#microphone" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.Microphone">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Microphone</code><span class="sig-paren">(</span><em class="sig-param">dev_name='mic'</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing a usb microphone. Extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a>.</p>
+<p>It uses pyalsaaudio library.
+It captures from the microphone and saves the record to a file. Currently
+supports only wav files.
+For consistent naming a udev rule has been written for identifing the device
+and an example asoundrc file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dev_name</strong> – Alsa name of the device.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Microphone.dev_name">
+<em class="property">property </em><code class="sig-name descname">dev_name</code><a class="headerlink" href="#pidevices.Microphone.dev_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The alsa name of the device.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Microphone.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Microphone.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">secs</em>, <em class="sig-param">file_path=None</em>, <em class="sig-param">volume=100</em>, <em class="sig-param">file_flag=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from microphone</p>
+<p>Also set self.recording for use in a threaded environment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>secs</strong> – The time in seconds of the capture.</p></li>
+<li><p><strong>file_path</strong> – The file path of the file to be played. Currently it
+supports only wav file format.</p></li>
+<li><p><strong>volume</strong> – Volume percenatage</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Return the path or the data in base64 format.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If already recording</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Microphone.async_read">
+<code class="sig-name descname">async_read</code><span class="sig-paren">(</span><em class="sig-param">secs</em>, <em class="sig-param">file_path=None</em>, <em class="sig-param">volume=100</em>, <em class="sig-param">file_flag=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone.async_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Async read data from microphone</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>secs</strong> – The time in seconds of the capture.</p></li>
+<li><p><strong>file_path</strong> – The file path of the file to be played. Currently it
+supports only wav file format.</p></li>
+<li><p><strong>volume</strong> – Volume percenatage</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>It doesn’t return a value but it saves the recording to a file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Microphone.pause">
+<code class="sig-name descname">pause</code><span class="sig-paren">(</span><em class="sig-param">enabled=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone.pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pause or resume the playback.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Microphone.cancel">
+<code class="sig-name descname">cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone.cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel recording</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Microphone.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Microphone.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean hardware and os reources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="camera">
+<h2>Camera<a class="headerlink" href="#camera" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pidevices.Camera">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Camera</code><span class="sig-paren">(</span><em class="sig-param">framerate=30</em>, <em class="sig-param">resolution=Dims(width=640</em>, <em class="sig-param">height=480)</em>, <em class="sig-param">name=''</em>, <em class="sig-param">max_data_length=20</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Camera driver it uses picamera library and extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framerate</strong> – The camera’s framerate defaults to 30.</p></li>
+<li><p><strong>resolution</strong> – Tuple that has (width, height)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Camera.resolution">
+<em class="property">property </em><code class="sig-name descname">resolution</code><a class="headerlink" href="#pidevices.Camera.resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Camera’s resolution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.framerate">
+<em class="property">property </em><code class="sig-name descname">framerate</code><a class="headerlink" href="#pidevices.Camera.framerate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Camera’s framerate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.camera">
+<em class="property">property </em><code class="sig-name descname">camera</code><a class="headerlink" href="#pidevices.Camera.camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Picamera object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">batch=1</em>, <em class="sig-param">image_dims=None</em>, <em class="sig-param">image_format='rgb'</em>, <em class="sig-param">save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a batch of frames from camera.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – The number of frames to capture</p></li>
+<li><p><strong>image_dims</strong> – a dims tuple or a simple tuple with width, height
+values</p></li>
+<li><p><strong>image_format</strong> – the image image_format</p></li>
+<li><p><strong>save</strong> – flag for appending the stream to the data deque</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A deque with CameraData objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.read_continuous">
+<code class="sig-name descname">read_continuous</code><span class="sig-paren">(</span><em class="sig-param">batch=1</em>, <em class="sig-param">image_dims=None</em>, <em class="sig-param">image_format='rgb'</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera.read_continuous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the thread for reading continuous</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.stop_continuous">
+<code class="sig-name descname">stop_continuous</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera.stop_continuous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the running thread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Camera.get_frame">
+<code class="sig-name descname">get_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Camera.get_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the last frame captured</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="adc">
+<h2>ADC<a class="headerlink" href="#adc" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mcp-3002">
+<h3>MCP-3002<a class="headerlink" href="#mcp-3002" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pidevices.Mcp3002">
+<em class="property">class </em><code class="sig-prename descclassname">pidevices.</code><code class="sig-name descname">Mcp3002</code><span class="sig-paren">(</span><em class="sig-param">port=0</em>, <em class="sig-param">device=1</em>, <em class="sig-param">v_ref=3.3</em>, <em class="sig-param">max_data_length=100</em>, <em class="sig-param">name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp3002" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mcp3002 adc implementation extends <a class="reference internal" href="devices_api.html#pidevices.Sensor" title="pidevices.Sensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sensor</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>port</strong> – spi port.</p></li>
+<li><p><strong>device</strong> – spi device.</p></li>
+<li><p><strong>v_ref</strong> – The reference voltage. Defaults to 3.3V.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pidevices.Mcp3002.port">
+<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#pidevices.Mcp3002.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spi chip</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp3002.device">
+<em class="property">property </em><code class="sig-name descname">device</code><a class="headerlink" href="#pidevices.Mcp3002.device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spi device</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp3002.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp3002.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp3002.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp3002.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Free hardware and os resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pidevices.Mcp3002.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">SAVE=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pidevices.Mcp3002.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read adc value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> – The adc channel. Valid values 0 and 1.</p></li>
+<li><p><strong>SAVE</strong> – Flag for saving to data list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The digital value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="actuators.html" class="btn btn-neutral float-right" title="Actuators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hardware_interfaces_implementations.html" class="btn btn-neutral float-left" title="Hardware Interfaces Implementations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Iasonas Paraskevopoulos
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
