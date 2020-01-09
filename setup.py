@@ -4,8 +4,10 @@ REQUIRES = []
 NAME = "pidevices"
 VERSION = "0.0.1"
 
-DEPENDENCIES = ['pyalsaaudio', 'scipy', 'numpy', 'picamera', 'rpi_ws281x',
-                'pygame', 'evdev', 'omxplayer-wrapper']
+DEPENDENCIES = ['pyalsaaudio==0.8.4', 'picamera==1.13', 
+                'rpi-ws281x==4.2.2', 'pygame==1.9.6', 
+                'evdev==1.2.0', 'omxplayer-wrapper==0.3.2',
+                'RPi.GPIO==0.7.0', 'smbus2==0.2.3']
 
 vl53l1x_path = 'pidevices/sensors/vl53l1x/'
 extension = Extension(
