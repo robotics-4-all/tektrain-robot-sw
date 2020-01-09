@@ -1,2 +1,0 @@
-SUBSYSTEM=="sound", ATTRS{manufacturer}=="Generic", ATTR{id}="Speaker"
-SUBSYSTEM=="sound", ATTRS{manufacturer}=="C-Media Electronics Inc.*", ATTR{id}="Mic"
