@@ -85,6 +85,9 @@ For the currently implemented devices the following two extra steps need to be p
   ```bash
   cp conf_files/98-alsa.rules /etc/udev/rules.d/
   ```
+  
+ Also a folder wav_sounds should be created inside the project.
+ 
 **Attension** This udev rule work only for [this](https://gr.mouser.com/ProductDetail/Adafruit/3367?qs=%2Fha2pyFadugRA3aNmodCvBjn4f6vAekNsFsMZrN8apA6SGrKPmkiozE4dX7pFIV0) microphone and [this](https://www.digikey.com/products/en?keywords=Mini%20External%20USB%20Stereo%20Speaker) speaker. The library doesn't support other devices for now.
 
 #### Touch Screen
