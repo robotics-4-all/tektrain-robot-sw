@@ -92,6 +92,7 @@ Example:
 ```python
 from pidevices import ButtonRPiGPIO
 ```
+Example use cases of almost any driver can be found in [tests](tests) folder.
 
 ## Docs
 The pidevices api documentation can be found [here](https://robotics-4-all.github.io/tektrain-robot-sw/).
