@@ -2,7 +2,7 @@
 
 ## Overview
 
-Pidevices is a python library whose main goal is the easy deployment of peripheral devices for the raspberry pi. A peripheral device could be anything that get’s connected to the pi. Pidevices organize the devices in two categories; sensors, which are devices that acquire information from the environment and actuators that affect the environment.
+Pidevices is a python3 library whose main goal is the easy deployment of peripheral devices for the raspberry pi. A peripheral device could be anything that get’s connected to the pi. Pidevices organize the devices in two categories; sensors, which are devices that acquire information from the environment and actuators that affect the environment.
 
 To make things easier for the maker/developer, pidevices use a common interface consisting of three functions `start()`, `stop()` and `restart()`. The differentiation between sensors and actuators is a `read()` function that belongs to sensors and a `write()` function that belongs only to actuatos.
 
