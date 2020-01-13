@@ -34,8 +34,8 @@ For example there is an implementation for a single button using `RPi.GPIO` libr
 First type
 
 ```bash
-sudo apt install numpy
-sudo apt install scipy
+sudo apt install python3-numpy
+sudo apt install python3-scipy
 ```
 
 then install pygame module which is a prerequisite for the touch screen driver
