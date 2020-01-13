@@ -38,6 +38,12 @@ sudo apt install numpy
 sudo apt install scipy
 ```
 
+then install pygame module which is a prerequisite for the touch screen driver
+
+```bash
+pip install pygame
+```
+
 and then from the project's top level directory type 
 
 ```bash
