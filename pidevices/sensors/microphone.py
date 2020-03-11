@@ -1,7 +1,7 @@
 """microphone.py"""
 
-import wave
 import time
+import wave
 import os
 import sys
 import threading
@@ -55,7 +55,9 @@ class Microphone(Sensor):
 
         # Initializa alsa device
         self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
+                                     mode=alsaaudio.PCM_NONBLOCK,
                                      device=self._dev_name)
+        self._device.setchannels(self._channels)
 
         # Find proper mixer using the card name.
         card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
@@ -99,33 +101,16 @@ class Microphone(Sensor):
 
         self._record = None
 
-        # Set attributes
-        channels = self._channels
-        sample_width = 2
-
         # Set Device attributes for playback
-        self._device.setchannels(channels)
         self._device.setrate(framerate)
+        self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+        self._device.setperiodsize(self._periodsize)
+        sample_width = 2
 
         # Set volume for channels
         if self._mixer:
             self._mixer.setvolume(volume) 
 
-        # 8bit is unsigned in wav files
-        if sample_width == 1:
-            self._device.setformat(alsaaudio.PCM_FORMAT_U8)
-        # Otherwise we assume signed data, little endian
-        elif sample_width == 2:
-            self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-        elif sample_width == 3:
-            self._device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
-        elif sample_width == 4:
-            self._device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
-        else:
-            raise ValueError('Unsupported format')
-
-        self._device.setperiodsize(self._periodsize)
-        
         self.recording = True
 
         # Start recording
@@ -144,13 +129,13 @@ class Microphone(Sensor):
             f = wave.open(self._fix_path(file_path), 'wb')
 
             # Set file attributes
-            f.setnchannels(channels)
+            f.setnchannels(self._channels)
             f.setframerate(framerate)
             f.setsampwidth(sample_width)
             f.setnframes(self._periodsize)
 
-            for sample in audio:
-                f.writeframes(sample)
+            #for sample in audio:
+            f.writeframes(audio)
 
             f.close()
             ret = self._fix_path(file_path)
