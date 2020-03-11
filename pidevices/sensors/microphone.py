@@ -161,7 +161,8 @@ class Microphone(Sensor):
 
         return self._fix_path(file_path)
 
-    def async_read(self, secs, file_path=None, volume=100, file_flag=False):
+    def async_read(self, secs, framerate, 
+                   file_path=None, volume=100, file_flag=False):
         """Async read data from microphone
         
         Args:
@@ -175,7 +176,8 @@ class Microphone(Sensor):
         """
        
         thread = threading.Thread(target=self.read, 
-                                  args=(secs, file_path, volume, file_flag,),
+                                  args=(secs, framerate,
+                                        file_path, volume, file_flag,),
                                   daemon=True)
         thread.start()
 
