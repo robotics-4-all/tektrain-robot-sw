@@ -5,40 +5,32 @@ import time
 import os
 import sys
 import threading
-#import base64
 import warnings
 from ..devices import Sensor
 import alsaaudio
 
 
 class Microphone(Sensor):
-    """Class representing a usb microphone. Extends :class:`Sensor`. 
+    """Class representing a microphone. Extends :class:`Sensor`. 
     
     It uses pyalsaaudio library.
     It captures from the microphone and saves the record to a file. Currently
     supports only wav files.
-    For consistent naming a udev rule has been written for identifing the device
-    and an example asoundrc file.
 
     Args:
-        dev_name: Alsa name of the device.
+        dev_name (str): Alsa name of the device.
+        channels (int): The number of channels of the device.
     """
 
-    def __init__(self, dev_name='mic', name="", max_data_length=0):
+    def __init__(self, dev_name, channels, periodsize,
+                 name="", max_data_length=0):
         """Constructor"""
 
         super(Microphone, self).__init__(name, max_data_length)
-        self.dev_name = dev_name
-        self.start()
-
-    @property
-    def dev_name(self):
-        """The alsa name of the device."""
-        return self._dev_name
-
-    @dev_name.setter
-    def dev_name(self, dev_name):
         self._dev_name = dev_name
+        self._channels = channels
+        self._periodsize = periodsize
+        self.start()
 
     @property
     def recording_mutex(self):
@@ -61,26 +53,41 @@ class Microphone(Sensor):
     def start(self):
         """Initialize hardware and os resources."""
 
+        # Initializa alsa device
         self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
-                                     device=self.dev_name)
-        self._mixer = alsaaudio.Mixer(control='Mic', device=self.dev_name)
+                                     device=self._dev_name)
+
+        # Find proper mixer using the card name.
+        card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
+        card_index = alsaaudio.cards().index(card_name)
+        mixers = alsaaudio.mixers(cardindex=card_index)
+        if "Mic" in mixers:
+            self._mixer = alsaaudio.Mixer(control='Mic', cardindex=card_index)
+        else:
+            self._mixer = None
+
         self._recording = False
         self._cancelled = False
         self._record = None
 
-    def read(self, secs, file_path=None, volume=100, file_flag=False):
+    def read(self, secs, framerate=44100, 
+             file_path=None, volume=100, file_flag=False):
         """Read data from microphone
         
         Also set self.recording for use in a threaded environment
 
         Args:
-            secs: The time in seconds of the capture.
-            file_path: The file path of the file to be played. Currently it
-                     supports only wav file format.
-            volume: Volume percenatage
+            secs (float): The time in seconds of the capture.
+            framerate (int): The framerate of the recording.
+            file_path (str): The file path of the file to be played. Currently 
+                it supports only wav file format.
+            volume (int): Volume percenatage if the sound card support setting
+                the volume.
+            file_flag (bool): Boolean indicating if the recording will be saved
+                to a file.
 
         Returns:
-            Return the path or the data in base64 format.
+            (bytearray): The data in raw bytes.
 
         Raises:
             RuntimeError: If already recording
@@ -93,17 +100,16 @@ class Microphone(Sensor):
         self._record = None
 
         # Set attributes
-        channels = 1
-        framerate = 44100 
+        channels = self._channels
         sample_width = 2
-        periodsize = 256
 
         # Set Device attributes for playback
         self._device.setchannels(channels)
         self._device.setrate(framerate)
 
         # Set volume for channels
-        self._mixer.setvolume(volume) 
+        if self._mixer:
+            self._mixer.setvolume(volume) 
 
         # 8bit is unsigned in wav files
         if sample_width == 1:
@@ -118,7 +124,7 @@ class Microphone(Sensor):
         else:
             raise ValueError('Unsupported format')
 
-        self._device.setperiodsize(periodsize)
+        self._device.setperiodsize(self._periodsize)
         
         self.recording = True
 
@@ -141,7 +147,7 @@ class Microphone(Sensor):
             f.setnchannels(channels)
             f.setframerate(framerate)
             f.setsampwidth(sample_width)
-            f.setnframes(periodsize)
+            f.setnframes(self._periodsize)
 
             for sample in audio:
                 f.writeframes(sample)

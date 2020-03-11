@@ -6,8 +6,10 @@ from pidevices.sensors.microphone import Microphone
 class TestMicrophone(unittest.TestCase):
 
     def test_one(self):
-        mic = Microphone()
-        audio = mic.read(secs=5, volume=100, file_path="test.wav", file_flag=True)
+        mic = Microphone(dev_name="dsnoop:CARD=Mic,DEV=0", channels=1,
+                         periodsize=256)
+        audio = mic.read(secs=5, volume=100, 
+                         file_path="test.wav", file_flag=True)
 
     def test_multi(self):
         mic = Microphone()
