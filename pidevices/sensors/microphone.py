@@ -21,15 +21,16 @@ class Microphone(Sensor):
         dev_name (str): Alsa name of the device.
         channels (int): The number of channels of the device.
     """
+    
+    PERIODSIZE = 256
 
-    def __init__(self, dev_name, channels, periodsize,
+    def __init__(self, dev_name, channels, 
                  name="", max_data_length=0):
         """Constructor"""
 
         super(Microphone, self).__init__(name, max_data_length)
         self._dev_name = dev_name
         self._channels = channels
-        self._periodsize = periodsize
         self.start()
 
     @property
@@ -55,7 +56,6 @@ class Microphone(Sensor):
 
         # Initializa alsa device
         self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
-                                     mode=alsaaudio.PCM_NONBLOCK,
                                      device=self._dev_name)
         self._device.setchannels(self._channels)
 
@@ -104,7 +104,7 @@ class Microphone(Sensor):
         # Set Device attributes for playback
         self._device.setrate(framerate)
         self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-        self._device.setperiodsize(self._periodsize)
+        self._device.setperiodsize(self.PERIODSIZE)
         sample_width = 2
 
         # Set volume for channels
@@ -125,20 +125,7 @@ class Microphone(Sensor):
 
         # Save to file
         if file_flag:
-            # Open the wav file
-            f = wave.open(self._fix_path(file_path), 'wb')
-
-            # Set file attributes
-            f.setnchannels(self._channels)
-            f.setframerate(framerate)
-            f.setsampwidth(sample_width)
-            f.setnframes(self._periodsize)
-
-            #for sample in audio:
-            f.writeframes(audio)
-
-            f.close()
-            ret = self._fix_path(file_path)
+            ret = self._save_to_file(file_path, framerate, sample_width, audio)
         else:
             # Encode to base64
             ret = audio
@@ -149,6 +136,31 @@ class Microphone(Sensor):
 
         return ret
     
+    def _save_to_file(self, file_path, framerate, sample_width, audio):
+        """Save raw bytes to wav file.
+        
+        Args:
+            file_path (str): The file path of the file to be played. Currently 
+                it supports only wav file format.
+            framerate (int): The framerate of the recording.
+            audio (bytesarray): Raw recording.
+        """
+        # Open the wav file
+        f = wave.open(self._fix_path(file_path), 'wb')
+
+        # Set file attributes
+        f.setnchannels(self._channels)
+        f.setframerate(framerate)
+        f.setsampwidth(sample_width)
+        f.setnframes(self.PERIODSIZE)
+
+        #for sample in audio:
+        f.writeframes(audio)
+
+        f.close()
+
+        return self._fix_path(file_path)
+
     def async_read(self, secs, file_path=None, volume=100, file_flag=False):
         """Async read data from microphone
         
@@ -190,4 +202,5 @@ class Microphone(Sensor):
         """Clean hardware and os reources."""
 
         self._device.close()
-        self._mixer.close()
+        if self._mixer:
+            self._mixer.close()
