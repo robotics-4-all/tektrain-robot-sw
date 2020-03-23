@@ -1,7 +1,6 @@
 """touch_screen.py"""
 
 import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import sys
 import time
@@ -11,6 +10,7 @@ import threading
 # from subprocess import *
 from ..devices import Actuator
 from omxplayer.player import OMXPlayer
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 
 #class TouchScreen(Composite):
@@ -36,21 +36,6 @@ class TouchScreen(Actuator):
         #pygame.init()
         pygame.font.init()
         pygame.display.init()
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-
-        self.background = pygame.Surface(self.screen.get_size())
-        self.background = self.background.convert()
-
-        # Makes the cursor invisible
-        pygame.mouse.set_cursor((8, 8), 
-                                (0, 0), 
-                                (0, 0, 0, 0, 0, 0, 0, 0),
-                                (0, 0, 0, 0, 0, 0, 0, 0))
-
-        os.environ["SDL_FBDEV"] = "/dev/fb1"
-        os.environ["SDL_MOUSEDRV"] = "TSLIB"
-        os.environ["SDL_MOUSEDEV"] = self.eventX
-        self.backupEvent = self.eventX
 
         #self.turnScreenOff()
 
@@ -89,6 +74,23 @@ class TouchScreen(Actuator):
             Exception: 
         """
 
+        # Init screen
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+        self.background = pygame.Surface(self.screen.get_size())
+        self.background = self.background.convert()
+
+        # Makes the cursor invisible
+        pygame.mouse.set_cursor((8, 8), 
+                                (0, 0), 
+                                (0, 0, 0, 0, 0, 0, 0, 0),
+                                (0, 0, 0, 0, 0, 0, 0, 0))
+
+        os.environ["SDL_FBDEV"] = "/dev/fb1"
+        os.environ["SDL_MOUSEDRV"] = "TSLIB"
+        os.environ["SDL_MOUSEDEV"] = self.eventX
+        self.backupEvent = self.eventX
+
         # Clears the events buffer
         #self.turnScreenOn()
         ret = None
@@ -119,6 +121,10 @@ class TouchScreen(Actuator):
             ret = self._show_options(options, time_enabled, multiple_options)		
 
         #self.turnScreenOff()
+
+        # Deactivate screen
+        pygame.display.quit()
+
         return ret
 
     def _show_image(self, image_uri, time_enabled, touch_enabled, text):
