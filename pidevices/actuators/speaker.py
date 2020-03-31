@@ -100,7 +100,7 @@ class Speaker(Actuator):
             # Close file 
             f.close()
         else:
-            channels = 1
+            channels = 2
             framerate = 44100 
             sample_width = 2
 
