@@ -14,14 +14,20 @@ class Speaker(Actuator):
 
     Args:
         dev_name (str): The alsa name of the device.
+        channels (int): The number of channels from the custom recordings.
     """
 
-    def __init__(self, dev_name='speaker', name="", max_data_length=0):
+    def __init__(self, dev_name='dmix:CARD=Speaker,DEV=0', volume=50,
+                 channels=1, name="", max_data_length=0):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)
         self.dev_name = dev_name
+        self.channels = channels
         self.start()
+
+        # Set volume
+        self.volume = volume
 
     @property
     def dev_name(self):
@@ -37,11 +43,24 @@ class Speaker(Actuator):
         """Flag indicating if the speaker is playing a sound"""
         return self._playing
 
+    @property
+    def volume(self):
+        """The volume of the mixer if it exists."""
+        vol = None
+        if self._mixer:
+            vol = self._mixer.getvolume()
+        return vol
+
+    @volume.setter
+    def volume(self, value):
+        if self._mixer:
+            volume = min(max(0, value), 100)
+            self._mixer.setvolume(volume)
+
     def start(self):
         """Initialize hardware and os resources."""
-        
+
         # It uses the default card for speaker with the ~/.asoundrc config
-        #self._device = alsaaudio.PCM(dev_name=self.dev_name)
         self._device = alsaaudio.PCM(device=self.dev_name)
 
         # Find proper mixer using the card name.
@@ -58,20 +77,20 @@ class Speaker(Actuator):
             self._mixer.setmute(0)
 
         self._playing = False
-    
-    def write(self, source, volume=50, times=1, file_flag=False):
+
+    def write(self, source, times=1, file_flag=False):
         if self._playing:
             warnings.warn("Already playing", RuntimeWarning)
             return None
 
         # Set playing flag
-        self._playing = True      
+        self._playing = True
 
-        self._write(source, volume, times, file_flag)
+        self._write(source, times, file_flag)
 
-    def _write(self, source, volume=50, times=1, file_flag=False):
+    def _write(self, source, times=1, file_flag=False):
         """Write data to the speaker. Actually it just plays a playback.
-        
+
         Args:
             source: The file path of the file to be played. Currently it
                 supports only wav file format. Or base64 ascii encoded string
@@ -97,11 +116,11 @@ class Speaker(Actuator):
                 data.append(sample)
                 sample = f.readframes(periodsize)
 
-            # Close file 
+            # Close file
             f.close()
         else:
-            channels = 2
-            framerate = 44100 
+            channels = self.channels
+            framerate = 44100
             sample_width = 2
 
             # Read data from encoded string
@@ -112,9 +131,6 @@ class Speaker(Actuator):
         # Set Device attributes for playback
         self._device.setchannels(channels)
         self._device.setrate(framerate)
-
-        # Set volume for channels
-        self._mixer.setvolume(volume) 
 
         # 8bit is unsigned in wav files
         if sample_width == 1:
@@ -147,19 +163,18 @@ class Speaker(Actuator):
 
         # Clear the playing flag
         self._playing = False
-    
-    def async_write(self, source, volume=50, times=1, file_flag=False):
+
+    def async_write(self, source, times=1, file_flag=False):
         """Async write data to the speaker. Actually it just plays a playback.
-        
+
         Args:
             file_path: The file path of the file to be played. Currently it
                 supports only wav file format.
-            volume: Volume percenatage
             times: How many time to play the same file.
         """
 
-        thread = threading.Thread(target=self._write, 
-                                  args=(source, volume, times, file_flag,),
+        thread = threading.Thread(target=self._write,
+                                  args=(source, times, file_flag,),
                                   daemon=True)
 
         # Check if another thread is running
@@ -168,7 +183,7 @@ class Speaker(Actuator):
             return None
 
         # Set playing flag
-        self._playing = True      
+        self._playing = True
 
         thread.start()
 
