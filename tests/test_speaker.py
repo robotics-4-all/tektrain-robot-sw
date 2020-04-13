@@ -16,6 +16,7 @@ class TestSpeaker(unittest.TestCase):
         time.sleep(1)
 
         speaker.volume = 30
+        self.assertEqual(speaker.volume[0], 30, "Must be 30")
         speaker.write(cmd_par, times=1, file_flag=True)
         time.sleep(1)
 
