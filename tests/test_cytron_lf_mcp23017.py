@@ -6,8 +6,8 @@ from pidevices import CytronLfLSS05Mcp23017
 class TestCytronLf(unittest.TestCase):
 
     def test_start(self):
-        lf = CytronLfLSS05Mcp23017('B_0', 'B_1', 'B_2', 'B_3', 'B_4', cal='B_5',
-                                   bus=4, address=0x20)
+        lf = CytronLfLSS05Mcp23017('A_2', 'A_3', 'A_4', 'A_5', 'A_6', cal='A_7',
+                                   bus=1, address=0x22)
 
         number = 'B_0'
         self.assertEqual(lf.so_1, number, "Should be {}".format(number))
@@ -25,8 +25,8 @@ class TestCytronLf(unittest.TestCase):
         lf.stop()
 
     def test_mode(self):
-        lf = CytronLfLSS05Mcp23017('B_0', 'B_1', 'B_2', 'B_3', 'B_4', cal='B_5',
-                                   bus=4, address=0x20)
+        lf = CytronLfLSS05Mcp23017('A_2', 'A_3', 'A_4', 'A_5', 'A_6', cal='A_7',
+                                   bus=1, address=0x22)
         print("Bright mode")
         lf.mode = 'bright'
         time.sleep(5)
@@ -35,14 +35,14 @@ class TestCytronLf(unittest.TestCase):
         lf.stop()
 
     def test_calibrate(self):
-        lf = CytronLfLSS05Mcp23017('B_0', 'B_1', 'B_2', 'B_3', 'B_4', cal='B_5',
-                                   bus=4, address=0x20)
+        lf = CytronLfLSS05Mcp23017('A_2', 'A_3', 'A_4', 'A_5', 'A_6', cal='A_7',
+                                   bus=1, address=0x22)
 
         lf.calibrate()
 
     def test_read(self):
-        lf = CytronLfLSS05Mcp23017('B_0', 'B_1', 'B_2', 'B_3', 'B_4', cal='B_5',
-                                   bus=4, address=0x20)
+        lf = CytronLfLSS05Mcp23017('A_2', 'A_3', 'A_4', 'A_5', 'A_6', cal='A_7',
+                                   bus=1, address=0x22)
 
         for i in range(20):
             print(lf.read())

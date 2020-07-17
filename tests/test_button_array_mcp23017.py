@@ -4,10 +4,10 @@ from pidevices.sensors.button_array import ButtonArrayMcp23017
 
 
 class TestButtonArrayMcp23017(unittest.TestCase):
-
+    
     def test_read(self):
         array = ButtonArrayMcp23017(["B_0", "B_1", "B_2", "B_3", "B_4", "B_5",
-                                     "B_6", "B_7", "A_0", "A_1", "A_2", "A_3"],
+                                     "A_1", "A_6", "A_5", "A_2", "A_3", "A_4"],
                                     direction="down", bounce=200)
 
         pin = 0
@@ -93,10 +93,10 @@ class TestButtonArrayMcp23017(unittest.TestCase):
         while time.time() - t_s < 5:
             print(array.read(pin))
             time.sleep(0.5)
-
+    
     def test_wait(self):
         array = ButtonArrayMcp23017(["B_0", "B_1", "B_2", "B_3", "B_4", "B_5",
-                                     "B_6", "B_7", "A_0", "A_1", "A_2", "A_3"],
+                                     "A_1", "A_6", "A_5", "A_2", "A_3", "A_4"],
                                     direction="down", bounce=200)
         button = 0
         array.wait_for_press(button)
@@ -145,11 +145,11 @@ class TestButtonArrayMcp23017(unittest.TestCase):
         button = 11
         array.wait_for_press(button)
         print("Pressed {}".format(button))
-
+    
     def test_when_pressed(self):
         array = ButtonArrayMcp23017(["B_0", "B_1", "B_2", "B_3", "B_4", "B_5",
-                                     "B_6", "B_7", "A_0", "A_1", "A_2", "A_3"],
-                                    direction="down", bounce=300)
+                                     "A_1", "A_6", "A_5", "A_2", "A_3", "A_4"],
+                                    direction="down", bounce=200)
 
         def f_0(pin):
             print("{} Interrupt on button {}".format(f_0.c, pin))
@@ -228,12 +228,12 @@ class TestButtonArrayMcp23017(unittest.TestCase):
         pin = 10
         array.when_pressed(pin, f_10, pin)
 
-        #def f_11(pin):
-        #    print("{} Interrupt on button {}".format(f_11.c, pin))
-        #    f_11.c += 1
-        #f_11.c = 0
-        #pin = 11
-        #array.when_pressed(pin, f_11, pin)
+        def f_11(pin):
+            print("{} Interrupt on button {}".format(f_11.c, pin))
+            f_11.c += 1
+        f_11.c = 0
+        pin = 11
+        array.when_pressed(pin, f_11, pin)
         
         buttons = [i for i in range(12)]
         array.enable_pressed(buttons)
