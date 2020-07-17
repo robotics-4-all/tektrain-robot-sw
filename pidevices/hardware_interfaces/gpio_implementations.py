@@ -2,7 +2,9 @@
 
 from .hardware_interfaces import GPIO, GPIOPin
 from ..exceptions import NotInputPin, NotOutputPin, NotPwmPin
-from threading import Thread
+import threading 
+import time
+from collections import namedtuple
 
 try:
     import RPi.GPIO as RPIGPIO
@@ -215,6 +217,9 @@ class RPiGPIO(GPIO):
         self.remove_pins(*self.pins.keys())
 
 
+Timers = namedtuple("Timers", ["t_on", "t_off"])
+
+
 class Mcp23x17GPIO(GPIO):
     """GPIO class implementation using mcp23x17 family chips. Extends :class:`GPIO`
     
@@ -289,6 +294,7 @@ class Mcp23x17GPIO(GPIO):
         14: 'B_6', 
         15: 'B_7', 
     }
+    
 
     def __init__(self, **kwargs):
         """Contructor"""
@@ -296,6 +302,10 @@ class Mcp23x17GPIO(GPIO):
         self._pins = {}
         self._int_pins = []
         self.add_pins(**kwargs)
+
+        # Pwm timers
+        self._pwm_timers = {}
+        self._spwm_mutex = threading.Lock()
 
         self.initialize()
 
@@ -339,8 +349,13 @@ class Mcp23x17GPIO(GPIO):
 
         # Check if it is pwm or simple output
         if pin.function is 'output':
-            value = int(round(value))
-            self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], value)
+            if pin.pwm:
+                self._pwm_timers[pin.pin_num][0] = value * 1/pin.frequency
+                self._pwm_timers[pin.pin_num][1] = (1 - value)* 1/pin.frequency
+                pin.duty_cycle = value
+            else:
+                value = int(round(value))
+                self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], value)
         else:
             raise NotOutputPin("Can't write to a non output pin.")
 
@@ -368,6 +383,52 @@ class Mcp23x17GPIO(GPIO):
             pin.pull = pull
         else:
             raise NotInputPin("Can't set pull up resistor to a non input pin.")
+
+    def set_pin_pwm(self, pin, pwm):
+        if not isinstance(pwm, bool):
+            raise TypeError("Invalid pwm type, should be boolean.")
+
+        pin_name = pin
+        pin = self.pins[pin]
+        if pin.function is not 'output':
+            raise NotOutputPin("Can't set pwm to a non output pin.")
+        
+        prev_pwm = pin.pwm
+        pin.pwm = pwm
+        if not prev_pwm and pwm:
+            # The pwm is deactivated and it will be activated.
+            pin.frequency = 1
+            pin.duty_cycle = 0
+            # Start thread
+            self._pwm_timers[pin.pin_num] = [0, 1/pin.frequency]
+            thread = threading.Thread(target=self._spwm, args=(pin,), daemon=True)
+            thread.start()
+        elif prev_pwm and not pwm:
+            # The pwm is activated and will be deactivated.
+            pin.frequency = None
+            pin.duty_cycle = None
+
+    def set_pin_frequency(self, pin, frequency):
+        pin_name = pin
+        pin = self.pins[pin]
+        if pin.pwm:
+            pin.frequency = frequency
+        else:
+            raise NotPwmPin("Can't set frequency to a non pwm pin.")
+ 
+    def _spwm(self, pin):
+        """Gen spwm."""
+        print(f"Start thread pin{pin.pin_num}")
+        while pin.pwm:
+            with self._spwm_mutex:
+                self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], 1)
+            time.sleep(self._pwm_timers[pin.pin_num][0])
+            with self._spwm_mutex:
+                self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], 0)
+            time.sleep(self._pwm_timers[pin.pin_num][1])
+
+        del self._pwm_timers[pin.pin_num]
+        print(f"Stop thread pin{pin.pin_num}")
 
     def set_pin_edge(self, pin, edge):
         pin = self.pins[pin]
