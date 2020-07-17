@@ -418,7 +418,6 @@ class Mcp23x17GPIO(GPIO):
  
     def _spwm(self, pin):
         """Gen spwm."""
-        print(f"Start thread pin{pin.pin_num}")
         while pin.pwm:
             with self._spwm_mutex:
                 self._device.write(self.PIN_NUMBER_MAP[pin.pin_num], 1)
@@ -428,7 +427,6 @@ class Mcp23x17GPIO(GPIO):
             time.sleep(self._pwm_timers[pin.pin_num][1])
 
         del self._pwm_timers[pin.pin_num]
-        print(f"Stop thread pin{pin.pin_num}")
 
     def set_pin_edge(self, pin, edge):
         pin = self.pins[pin]
