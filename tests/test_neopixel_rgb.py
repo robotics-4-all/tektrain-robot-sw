@@ -7,7 +7,7 @@ class TestLedController(unittest.TestCase):
 
     def test_write(self):
         led_count = 19
-        led_controller = LedController(led_count, 13, 700000, 255, led_channel=1)
+        led_controller = LedController(led_count, 19, 700000, 255, led_channel=1)
 
         print("Color wipe red")
         led_controller.write([[255, 0, 0, 150]], wipe=True)
@@ -27,7 +27,7 @@ class TestLedController(unittest.TestCase):
         b_index = 2
 
         data = [white for i in range(led_count)] 
-        for j in range(4):
+        for j in range(19):
             data[r_index] = r
             data[g_index] = g
             data[b_index] = b

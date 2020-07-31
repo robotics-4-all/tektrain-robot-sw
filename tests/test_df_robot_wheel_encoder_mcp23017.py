@@ -6,7 +6,7 @@ from pidevices import DfRobotWheelEncoderMcp23017
 class TestDfRobotWheelEncoderMcp23017(unittest.TestCase):
 
     def test_read(self):
-        encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=3, address=0x22)
+        encoder = DfRobotWheelEncoderMcp23017(pin='B_5', bus=1, address=0x22)
 
         counter = 0
         print("Five measurments with positive edge")
@@ -35,7 +35,7 @@ class TestDfRobotWheelEncoderMcp23017(unittest.TestCase):
         encoder.stop()
 
     def test_counter(self):
-        encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=3, address=0x22)
+        encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=1, address=0x22)
         
         value = 0
         limit = 10
@@ -50,7 +50,7 @@ class TestDfRobotWheelEncoderMcp23017(unittest.TestCase):
         encoder.stop()
 
     def test_rpm(self):
-        encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=3, address=0x22)
+        encoder = DfRobotWheelEncoderMcp23017(pin='B_6', bus=1, address=0x22)
 
         t_s = time.time()
         while time.time() - t_s < 60:

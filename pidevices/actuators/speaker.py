@@ -60,6 +60,8 @@ class Speaker(Actuator):
     def start(self):
         """Initialize hardware and os resources."""
 
+        print("Device name is:", self.dev_name)
+        self.dev_name ="hw:CARD=Speaker,DEV=0" # here
         # It uses the default card for speaker with the ~/.asoundrc config
         self._device = alsaaudio.PCM(device=self.dev_name)
 
