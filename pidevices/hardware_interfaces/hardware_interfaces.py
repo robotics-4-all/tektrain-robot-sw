@@ -637,3 +637,57 @@ class I2C(HardwareInterface):
     bus = property(lambda self: self._get_bus(),
                    lambda self, value: self._set_bus(value),
                    doc="""Hardware bus of the i2c interface.""")
+
+
+class UART(HardwareInterface):
+    """Abstract base class representing uart hardware inteface."""
+
+    def _get_devpath(self):
+        pass
+
+    def _set_devpath(self, devpath):
+        pass
+
+    devpath = property(lambda self: self._get_devpath(),
+                       lambda self, value: self._set_devpath(value),
+                       doc="""Device for the serial communication.""")
+
+    def _get_baudrate(self):
+        pass
+
+    def _set_baudrate(self, baudrate):
+        pass
+
+    baudrate = property(lambda self: self._get_baudrate(),
+                       lambda self, value: self._set_baudrate(value),
+                       doc="""Baudrate of the serial communication.""")
+
+    def _get_parity(self):
+        pass
+
+    def _set_parity(self, parity):
+        pass
+
+    parity = property(lambda self: self._get_parity(),
+                       lambda self, value: self._set_parity(value),
+                       doc="""Flag for parity check.""")
+
+    def _get_stopbits(self):
+        pass
+
+    def _set_stopbits(self, stopbits):
+        pass
+
+    stopbits = property(lambda self: self._get_stopbits(),
+                       lambda self, value: self._set_stopbits(value),
+                       doc="""Pattern indicating the stopbits.""")
+
+    def _get_bytesize(self):
+        pass
+
+    def _set_bytesize(self, bytesize):
+        pass
+
+    bytesize = property(lambda self: self._get_bytesize(),
+                       lambda self, value: self._set_bytesize(value),
+                       doc="""The number of data bits.""")
