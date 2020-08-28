@@ -18,17 +18,18 @@ motor.set_pin_frequency('E1', 200)
 
 
 motor.write("M1",1)
-motor.write('E1', 0.3)
-motor.write('E2', 0.3)
-sleep(1)
+motor.write('E1', 0.01)
+motor.write('E2', 0.01)
+sleep(10)
 
-motor.write("M1",0)
-motor.write('E1', 0.5)
-motor.write('E2', 0.5)
-sleep(2)
+#motor.write("M1",0)
+#motor.write('E1', 0.1)
+#motor.write('E2', 0.2)
+#sleep(2)
 
 
-
+motor.write("E1", 0)
+motor.write("E2", 0)
 
 
 motor.set_pin_pwm('E2', False)

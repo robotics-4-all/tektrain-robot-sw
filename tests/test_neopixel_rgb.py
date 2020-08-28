@@ -7,11 +7,11 @@ class TestLedController(unittest.TestCase):
 
     def test_write(self):
         led_count = 19
-        led_controller = LedController(led_count, 19, 700000, 255, led_channel=1)
+        led_controller = LedController(led_count, 18, 700000, 255, led_channel=0)
 
         print("Color wipe red")
         led_controller.write([[255, 0, 0, 150]], wipe=True)
-        
+ 
         time.sleep(5)
         led_controller.write([[0, 0, 0, 150]], wipe=True)
 

@@ -1,7 +1,7 @@
 import unittest
 import time
 from pidevices.sensors.icm_20948_imu import ICM_20948
-
+ 
 
 class TestICM_20948(unittest.TestCase):
 
