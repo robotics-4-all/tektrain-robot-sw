@@ -105,7 +105,8 @@ class Speaker(Actuator):
 
         if file_flag:
             # Open the wav file
-            f = wave.open(self._fix_path(source), 'rb')
+            #f = wave.open(self._fix_path(source), 'rb')
+            f = wave.open(source, 'rb')
 
             channels = f.getnchannels()
             framerate = f.getframerate()
@@ -133,7 +134,7 @@ class Speaker(Actuator):
         # Set Device attributes for playback
         self._device.setchannels(channels)
         self._device.setrate(framerate)
-
+        
         # 8bit is unsigned in wav files
         if sample_width == 1:
             self._device.setformat(alsaaudio.PCM_FORMAT_U8)

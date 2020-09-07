@@ -16,6 +16,165 @@ try:
 except ImportError:
     MCP23017 = None
 
+try:
+    import pigpio as PIGPIO
+except ImportError:
+    PIGPIO = None
+
+
+
+class PiGPIO(GPIO):
+    PIGPIO_FUNCTIONS = {
+        'input': PIGPIO.INPUT,
+        'output': PIGPIO.OUTPUT,
+        'alt_0': PIGPIO.ALT0,
+        'alt_1': PIGPIO.ALT1,
+        'alt_2': PIGPIO.ALT2,
+        'alt_3': PIGPIO.ALT3,
+        'alt_4': PIGPIO.ALT4,
+        'alt_5': PIGPIO.ALT5
+    }
+
+    PIGPIO_PULLS = {
+        'up': PIGPIO.PUD_UP,
+        'dowm': PIGPIO.PUD_DOWN,
+        'floating': RPIGPIO.PUD_OFF
+    }
+
+
+    PWM_FREQUENCY = 20000
+    PWM_RANGE = 1000
+
+    def __init__(self, **kwargs):
+        """Contstructor"""
+        if PIGPIO is None:
+            raise ImportError("pigpio not found.")
+
+        super(PiGPIO, self).__init__(**kwargs)
+        self.initialize()
+
+    def initialize(self):
+        self.gpio = PIGPIO.pi()
+        if not self.gpio.connected:
+            raise ImportError("pigpio not found.")
+        
+    def set_pin_function(self, pin, function):
+        if function not in self.PIGPIO_FUNCTIONS:
+            raise TypeError("Invalid function name should be input or output or alt_func.")
+
+        pin = self.pins[pin]    #get pins object thorw its name
+        self.gpio.set_mode(pin.pin_num, self.PIGPIO_FUNCTIONS[function])
+        pin.function = function
+
+
+    def set_pin_pull(self, pin, pull):
+        if pull not in self.PIGPIO_PULLS:
+            raise TypeError("Invalid pull name, should be up, dowm or floating.")
+
+        pin = self.pins[pin]
+        if pin.function is 'input':
+            self.gpio.set_pull_up_down(pin.pin_num, self.PIGPIO_PULLS[pull])
+            pin.pull = pull
+        else:
+            raise NotInputPin("Can't set pull up resistor to a non input pin.")
+
+    def read(self, pin):
+        pin = self.pins[pin]
+        if pin.function is not "input":
+            raise NotInputPin("Can't read from non input pin.")
+
+        return self.gpio.read(pin.pin_num)
+
+    def write(self, pin, value):
+        if isinstance(value, int):
+            value = float(value)
+
+        if not isinstance(value, float):
+            raise TypeError("Invalid value type, should be float or int.")
+
+        if value < 0:
+            raise TypeError("The value should be positive.")
+
+        if value > 1:
+            raise TypeError("The value should be less or equal than 1.")
+
+        # get pin object throw its name
+        pin_name = pin
+        pin = self.pins[pin]
+
+        # Check if it is pwm or simple output
+        if pin.function is 'output':
+            if pin.pwm:
+                pin.duty_cycle = value
+                range_value = pin.duty_cycle * self.PWM_RANGE
+                self.gpio.set_PWM_dutycycle(pin.pin_num, range_value)
+            else:
+                value = int(round(value))
+                self.gpio.write(pin.pin_num, value)
+        else:
+            raise NotOutputPin("Can't write to a non output pin.")
+
+
+    def set_pin_pwm(self, pin, pwm):
+        if not isinstance(pwm, bool):
+            raise TypeError("Invalid pwm type, should be boolean.")
+
+        # get pin object throw its name
+        pin_name = pin
+        pin = self.pins[pin]
+        
+        # throw error if it is not of type output
+        if pin.function is not 'output':
+            raise NotOutputPin("Can't set pwm to a non output pin.")
+
+        if not pin.pwm and pwm:
+            # if it is not already a pwm, initialize it as one
+            pin.frequency = self.PWM_FREQUENCY
+            pin.duty_cycle = 0
+
+            self.gpio.set_PWM_frequency(pin.pin_num, pin.frequency)
+            self.gpio.set_PWM_range(pin.pin_num, self.PWM_RANGE)
+            self.gpio.set_PWM_dutycycle(pin.pin_num, 0)
+
+        elif pin.pwm and not pwm:
+            # The pwm is activated and will be deactivated.
+            pin.frequency = None
+            pin.duty_cycle = None
+            
+            # write 0 to the pin to deactivate the PWM functionality
+            self.gpio.write(pin.pin_num, 0)
+
+        pin.pwm = pwm
+
+    def set_pin_frequency(self, pin, frequency):
+        # get pin object throw its name
+        pin_name = pin
+        pin = self.pins[pin]
+
+        if pin.pwm:
+            pin.frequency = frequency
+            self.gpio.set_PWM_frequency(pin.pin_num, pin.frequency)
+        else:
+            raise NotPwmPin("Can't set frequency to a non pwm pin.")
+
+
+    def remove_pins(self, *args):
+        for pin in args:
+            if self.pins[pin].pwm:
+                self.set_pin_pwm(pin, False)
+            
+            del self.pins[pin]
+
+    def close(self):
+        """Close interface.input"""
+
+        self.remove_pins(*self.pins.keys())
+        self.gpio.stop()
+
+
+    
+
+
 
 class RPiGPIO(GPIO):
     """GPIO hardware interface implementation using RPi.GPIO library extends
