@@ -16,6 +16,7 @@ if "PCM" in mixers:
     mixer.setvolume(30)
 
 source = '/home/pi/tektrain-robot-sw/wav_sounds/file_example_WAV_1MG.wav'
+#source = '/home/pi/start.wav'
 f = wave.open(source, 'rb')
 
 channels = f.getnchannels()
@@ -33,9 +34,6 @@ while sample:
 # Close file
 f.close()
 
-framerate = 1
-periodsize = 1
-channels = 1
 
 device.setchannels(channels)
 device.setrate(framerate)

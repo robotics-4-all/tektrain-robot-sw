@@ -130,6 +130,28 @@ class DfrobotMotorControllerPiGPIO(MotorController):
             self._gpio.write('E1', -angular_speed)
             self._gpio.write('E2', -angular_speed)
 
+
+    def move_linear_side(self, linear_speed, side):
+        if side:
+            if 0 <= linear_speed and linear_speed < self._range:
+                linear_speed = self._map(linear_speed, 0.0, 1.0, 0.5, 1.0)
+                self._gpio.write('M1', 1)
+                self._gpio.write('E1', linear_speed)
+            elif 0 > linear_speed and linear_speed > -self._range:
+                linear_speed = self._map(linear_speed, 0.0, -1.0, -0.5, -1.0)
+                self._gpio.write('M1', 0)
+                self._gpio.write('E1', -linear_speed)
+        else:
+            if 0 <= linear_speed and linear_speed < self._range:
+                linear_speed = self._map(linear_speed, 0.0, 1.0, 0.5, 1.0)
+                self._gpio.write('M2', 0)
+                self._gpio.write('E2', linear_speed)
+            elif 0 > linear_speed and linear_speed > -self._range:
+                linear_speed = self._map(linear_speed, 0.0, -1.0, -0.5, -1.0)
+                self._gpio.write('M2', 1)
+                self._gpio.write('E2', -linear_speed)
+
+
     def stop(self):
         self._gpio.write('E1', 0.0)
         self._gpio.write('E2', 0.0)

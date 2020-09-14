@@ -9,17 +9,17 @@ class TestCytronLf(unittest.TestCase):
         lf = CytronLfLSS05Mcp23017('A_2', 'A_3', 'A_4', 'A_5', 'A_6', cal='A_7',
                                    bus=1, address=0x22)
 
-        number = 'B_0'
+        number = 'A_2'
         self.assertEqual(lf.so_1, number, "Should be {}".format(number))
-        number = 'B_1'
+        number = 'A_3'
         self.assertEqual(lf.so_2, number, "Should be {}".format(number))
-        number = 'B_2'
+        number = 'A_4'
         self.assertEqual(lf.so_3, number, "Should be {}".format(number))
-        number = 'B_3'
+        number = 'A_5'
         self.assertEqual(lf.so_4, number, "Should be {}".format(number))
-        number = 'B_4'
+        number = 'A_6'
         self.assertEqual(lf.so_5, number, "Should be {}".format(number))
-        number = 'B_5'
+        number = 'A_7'
         self.assertEqual(lf.cal, number, "Should be {}".format(number))
 
         lf.stop()
@@ -29,7 +29,7 @@ class TestCytronLf(unittest.TestCase):
                                    bus=1, address=0x22)
         print("Bright mode")
         lf.mode = 'bright'
-        time.sleep(5)
+        time.sleep(10)
         print("Dark mode")
         lf.mode = 'dark'
         lf.stop()
