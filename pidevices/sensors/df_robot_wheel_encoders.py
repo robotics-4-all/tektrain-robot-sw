@@ -18,8 +18,8 @@ class DfRobotWheelEncoder(WheelEncoder):
 
     def __init__(self, pin, name='', max_data_length=0):
         """Constructor."""
-
         atexit.register(self.stop)
+
         super(DfRobotWheelEncoder, self).__init__(name, max_data_length)
         self._pin_num = pin
         self._counter = 0  # Counter that counts the edge signals
@@ -146,6 +146,7 @@ class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
         self._bus = bus
         self._address = address
 
+        print(f"starting with bus {bus} and address {address}")
         super(DfRobotWheelEncoderMcp23017, self).__init__(pin, 
                                                           name,
                                                           max_data_length)

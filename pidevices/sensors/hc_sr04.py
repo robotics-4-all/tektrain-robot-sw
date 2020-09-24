@@ -3,7 +3,7 @@
 import time
 from .distance_sensor import DistanceSensor
 from ..exceptions import OutOfRange
-
+from math import sqrt
 
 class HcSr04(DistanceSensor):
     """HcSr04 class extends :class:`DistanceSensor`
@@ -39,8 +39,10 @@ class HcSr04(DistanceSensor):
         self._trigger_pin = trigger_pin
         self._echo_pin = echo_pin
 
+        self._temp = 20
         # Initialize hardware resources
-        self.start()
+        
+        #self.start()
 
     @property
     def trigger_pin(self):
@@ -65,6 +67,9 @@ class HcSr04(DistanceSensor):
     def start(self):
         """Initialize hardware and os resources."""
         pass
+
+    def set_temperature(self, new_temp):
+        self._temp = new_temp
 
     def stop(self):
         """Free hardware and os resources."""
@@ -105,7 +110,8 @@ class HcSr04(DistanceSensor):
 
         # Distance is the time that the pulse travelled
         # multiplied by the speed of sound
-        distance_of_pulse = self.duration * self._SPEED_OF_SOUND
+        sound_speed = self._SPEED_OF_SOUND * sqrt(1 + self._temp / 27315)
+        distance_of_pulse = self.duration * sound_speed
 
         # Half the distance
         distance = round(distance_of_pulse / 2., ndigits=4)
@@ -122,11 +128,11 @@ class HcSr04(DistanceSensor):
         With rising signal start measure time and with falling signal stop
         save signal duration.
         """
-
+        
         if self.hardware_interfaces[self._gpio].read('echo'):
             self.t_start = time.time()
         else:
-            self.duration = time.time() - self.t_start
+            self.duration = (time.time() - self.t_start)
             self.out = True
 
 
@@ -159,7 +165,7 @@ class HcSr04RPiGPIO(HcSr04):
 
     def start(self):
         """Initialize hardware and os resources."""
-
+        #print("there")
         self._gpio = self.init_interface('gpio',
                                          impl=self._impl,
                                          trigger=self.trigger_pin,
@@ -167,7 +173,7 @@ class HcSr04RPiGPIO(HcSr04):
         self.hardware_interfaces[self._gpio].set_pin_function('echo', 'input')
         self.hardware_interfaces[self._gpio].set_pin_edge('echo', 'both')
         self.hardware_interfaces[self._gpio].set_pin_event('echo',
-                                                           self._async_measure)
+                                                          self._async_measure)
         self.hardware_interfaces[self._gpio].set_pin_function('trigger', 'output')
 
         # Allow module to settle
@@ -215,10 +221,10 @@ class HcSr04Mcp23017(HcSr04):
                                          trigger=self.trigger_pin,
                                          echo=self.echo_pin)
         self.hardware_interfaces[self._gpio].set_pin_function('echo', 'input')
-#        self.hardware_interfaces[self._gpio].set_pin_edge('echo', 'both')
-#        self.hardware_interfaces[self._gpio].set_pin_event('echo',
-#                                                           self._async_measure)
-#        self.hardware_interfaces[self._gpio].start_polling('echo')
+        self.hardware_interfaces[self._gpio].set_pin_edge('echo', 'both')
+        self.hardware_interfaces[self._gpio].set_pin_event('echo',
+                                                          self._async_measure)
+        self.hardware_interfaces[self._gpio].start_polling('echo')
 
         self.hardware_interfaces[self._gpio].set_pin_function('trigger', 'output')
 

@@ -41,6 +41,13 @@ class GP2Y0AxxxK0F(DistanceSensor):
         """Set adc"""
         self._adc = value
 
+    def set_channel(self, channel):
+        """Set the adc channel"""
+        if 0 <= channel and channel < 4:
+            self._channel = channel
+        else:
+            self._channel = 0
+
     def _interpol(self, data):
         self._f_int = interpolate.interp1d(data[:, 0],
                                            data[:, 1])
@@ -66,11 +73,7 @@ class GP2Y0AxxxK0F(DistanceSensor):
             OutOfRange: If the measurment is out of min or max distance.
         """
 
-        adc_val = 0
-        for _ in range(n):
-            adc_val += self.adc.read(channel=self._channel)
-            time.sleep(self._interval)
-        adc_val /= n
+        adc_val = self.adc.read(channel=self._channel)
 
         # Check thresholds
         if adc_val < self._min_volt:
@@ -148,6 +151,6 @@ class GP2Y0A41SK0F(GP2Y0AxxxK0F):
     def __init__(self, adc, name='', max_data_length=0):
         """Constructor."""
 
-        super(GP2Y0A21YK0F, self).__init__(self.INTER_DATA, adc,
+        super(GP2Y0A41SK0F, self).__init__(self.INTER_DATA, adc,
                                            self._INTERVAL, name,
                                            max_data_length)

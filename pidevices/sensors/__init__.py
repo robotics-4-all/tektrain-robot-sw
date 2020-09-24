@@ -1,5 +1,6 @@
 """Import all sensors here."""
 
+from .ads1x15 import *
 from .bme680 import *
 from .button import *
 from .button_array import *

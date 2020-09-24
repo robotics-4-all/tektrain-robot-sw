@@ -12,7 +12,7 @@ class Mcp3002(Sensor):
         device: spi device.
         v_ref: The reference voltage. Defaults to 3.3V.
     """
-
+    
     _AVERAGES = 100
     _VALUE_REF = 1024
 

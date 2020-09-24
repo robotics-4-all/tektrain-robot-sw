@@ -62,6 +62,8 @@ class Microphone(Sensor):
         # Find proper mixer using the card name.
         card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
         card_index = alsaaudio.cards().index(card_name)
+        print(card_index)
+        card_index = 1 #??
         mixers = alsaaudio.mixers(cardindex=card_index)
         if "Mic" in mixers:
             self._mixer = alsaaudio.Mixer(control='Mic', cardindex=card_index)
