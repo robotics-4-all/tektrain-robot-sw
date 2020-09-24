@@ -38,15 +38,20 @@ class TestPCA9685(unittest.TestCase):
         self.assertEqual(off_re_l, off_l, "Should be {}".format(off_l))
         self.assertEqual(off_re_h, off_h, "Should be {}".format(off_h))
 
+        controller.stop()
+
+
     def test_angle(self):
         kit = PCA9685(1, 50)
 
         angle = 90
         self.assertEqual(kit._angle_to_dc(angle), 0.075, "Should be 0.075")
+        kit.stop()
+
 
     def test_write(self):
         channels = 2
-        kit = PCA9685(5, 50)
+        kit = PCA9685(1, 50)
         print("0 degrees to 180")
 
         for i in range(channels):
@@ -109,6 +114,7 @@ class TestPCA9685(unittest.TestCase):
         print("Drive two channels with same value")
         kit.write([0, 1], 100, degrees=True)
 
+        kit.stop()
 
 if __name__ == "__main__":
     unittest.main()

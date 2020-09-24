@@ -1,7 +1,7 @@
 import unittest
 import time
 from pidevices.sensors.icm_20948_imu import ICM_20948
-
+ 
 
 class TestICM_20948(unittest.TestCase):
 
@@ -9,7 +9,7 @@ class TestICM_20948(unittest.TestCase):
         imu = ICM_20948(0)
 
     def test_read(self):
-        imu = ICM_20948(3)
+        imu = ICM_20948(1)
         timeout = 10
         
         t_s = time.time()

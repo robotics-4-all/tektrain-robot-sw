@@ -1,12 +1,14 @@
 import unittest
 import time
-from pidevices.sensors.hc_sr04 import HcSr04
+from pidevices.sensors.hc_sr04 import HcSr04RPiGPIO
 
 
 class TestHcSr04(unittest.TestCase):
 
     def test_read(self):
-        sonar = HcSr04(echo_pin=23, trigger_pin=24)
+        sonar = HcSr04RPiGPIO(echo_pin=24, trigger_pin=23)
+        sonar.start()
+        
 
         while True:
             t_s = time.time()
