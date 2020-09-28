@@ -17,5 +17,6 @@ from .pressure_sensor import *
 from .temperature_sensor import *
 from .df_robot_wheel_encoders import DfRobotWheelEncoderRpiGPIO
 from .df_robot_wheel_encoders import DfRobotWheelEncoderMcp23017
-from .vl53l1x import VL53L1X
+#from .vl53l1x import VL53L1X
 from .icm_20948_imu import ICM_20948
+from .tfmini_impl import TfMini

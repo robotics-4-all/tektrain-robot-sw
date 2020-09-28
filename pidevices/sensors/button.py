@@ -7,7 +7,7 @@ class Button(Sensor):
     """A single button extends :class:`Sensor`.
     
     Args:
-        pin_num (int): BCM number of the pin.
+        button (int): BCM number of the pin.
         direction (str): Indicating the it will use pull up or pull down resistor
             . Could be :data:`up` or :data:`down`.
         edge (str): At which edge signal it will call the function. It could
@@ -15,13 +15,13 @@ class Button(Sensor):
         bounce (int): The bounce time of the button. Defaults to 200ms
     """
 
-    def __init__(self, pin_num,
-                 direction, edge="rising", bounce=200,
+    def __init__(self, button,
+                 direction="down", edge="rising", bounce=200,
                  name='', max_data_length=0):
         """Constructor"""
 
         super(Button, self).__init__(name, max_data_length)
-        self._pin_num = pin_num
+        self._button = button
         self._dir = direction
         self._bounce = bounce
         self._edge = edge
@@ -29,13 +29,13 @@ class Button(Sensor):
         self.start()
 
     @property
-    def pin_num(self):
+    def button(self):
         """The bcm pin number."""
-        return self._pin_num
+        return self._button
 
-    @pin_num.setter
-    def pin_num(self, value):
-        self._pin_num = value
+    @button.setter
+    def button(self, value):
+        self._button = value
 
     @property
     def dir(self):
@@ -90,7 +90,7 @@ class ButtonRPiGPIO(Button):
     """A single button with rpigpio implementation extends :class:`Button`.
     
     Args:
-        pin_num (int): BCM number of the pin.
+        button (int): BCM number of the pin.
         direction (str): Indicating the it will use pull up or pull down resistor
             . Could be :data:`up` or data:`down`.
         edge (str): At which edge signal it will call the function. It could
@@ -98,12 +98,12 @@ class ButtonRPiGPIO(Button):
         bounce (int): The bounce time of the button. Defaults to 200ms
     """
     
-    def __init__(self, pin_num,
-                 direction, edge="rising", bounce=200,
+    def __init__(self, button,
+                 direction="down", edge="rising", bounce=200,
                  name='', max_data_length=0):
         """Constructor"""
 
-        super(ButtonRPiGPIO, self).__init__(pin_num, direction, edge, bounce, 
+        super(ButtonRPiGPIO, self).__init__(button, direction, edge, bounce, 
                                             name, max_data_length)
 
     def start(self):
@@ -111,7 +111,7 @@ class ButtonRPiGPIO(Button):
 
         self._gpio = self.init_interface('gpio',
                                          impl="RPiGPIO",
-                                         button=self.pin_num)
+                                         button=self.button)
 
         self.hardware_interfaces[self._gpio].init_input('button', self._dir)
 
@@ -124,13 +124,13 @@ class ButtonMcp23017(Button):
     """A single button with mcp23017 implementation extends :class:`Button`.
     
     Args:
-        pin_num (int): The module's pin number.
+        button (int): The module's pin number.
         direction (str): Indicating the it will use pull up or pull down resistor
             . Could be :data:`up` or data:`down`.
         bounce (int): The bounce time of the button. Defaults to 200ms
     """
     
-    def __init__(self, pin_num,
+    def __init__(self, button,
                  direction, 
                  edge="rising", bounce=200,
                  bus=1, address=0x20,
@@ -139,7 +139,7 @@ class ButtonMcp23017(Button):
 
         self._bus = bus
         self._address = address
-        super(ButtonMcp23017, self).__init__(pin_num, direction, edge, bounce,
+        super(ButtonMcp23017, self).__init__(button, direction, edge, bounce,
                                              name, max_data_length)
 
     def start(self):
@@ -149,7 +149,7 @@ class ButtonMcp23017(Button):
                                          impl="Mcp23017GPIO",
                                          bus=self._bus,
                                          address=self._address,
-                                         button=self.pin_num)
+                                         button=self.button)
 
         self.hardware_interfaces[self._gpio].init_input('button', self._dir)
 

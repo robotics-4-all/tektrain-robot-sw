@@ -31,6 +31,7 @@ class DfrobotMotorController(MotorController):
                  name="", max_data_length=0):
         super(DfrobotMotorController, self).__init__(name, max_data_length)
 
+        self._impl = "RPiGPIO"
         # Motor objects
         self._motor_1 = motor_1
         self._motor_2 = motor_2
@@ -115,7 +116,8 @@ class DfrobotMotorController(MotorController):
     def start(self):
         """Initialize hardware and os resources."""
 
-        self._gpio = self.init_interface("gpio", M1=self.M1, M2=self.M2)
+        self._gpio = self.init_interface("gpio", impl=self._impl, 
+                                         M1=self.M1, M2=self.M2)
         self._pwm_1 = self.init_interface("hpwm", pin=self.E1)
         self._pwm_2 = self.init_interface("hpwm", pin=self.E2)
 

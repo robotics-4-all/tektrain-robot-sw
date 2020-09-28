@@ -25,8 +25,8 @@ class HcSr04(DistanceSensor):
     """
     _SPEED_OF_SOUND = 33100
 
-    def __init__(self, trigger_pin,
-                 echo_pin, name="",
+    def __init__(self, trigger,
+                 echo, name="",
                  max_data_length=100):
         "Constructor"
 
@@ -36,8 +36,8 @@ class HcSr04(DistanceSensor):
         self.min_distance = 0.02
 
         # Set the pins names
-        self._trigger_pin = trigger_pin
-        self._echo_pin = echo_pin
+        self._trigger_pin = trigger
+        self._echo_pin = echo
 
         # Initialize hardware resources
         self.start()
@@ -148,13 +148,13 @@ class HcSr04RPiGPIO(HcSr04):
         name (str): The optional name of the device.
         max_data_length (int): The max data of the data list.
     """
-    def __init__(self, trigger_pin,
-                 echo_pin, name="",
+    def __init__(self, trigger,
+                 echo, name="",
                  max_data_length=100):
         "Constructor"
 
         self._impl = "RPiGPIO"
-        super(HcSr04RPiGPIO, self).__init__(trigger_pin, echo_pin,
+        super(HcSr04RPiGPIO, self).__init__(trigger, echo,
                                             name, max_data_length)
 
     def start(self):

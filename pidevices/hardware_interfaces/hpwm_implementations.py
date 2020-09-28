@@ -1,5 +1,6 @@
 from .hardware_interfaces import HPWM
 from ..exceptions import InvalidHPWMPin
+from time import sleep
 
 try:
     from periphery import PWM
