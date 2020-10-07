@@ -1,15 +1,15 @@
 import time
-from pidevices.sensors import DfRobotWheelEncoderMcp23017
+from pidevices.sensors import DfRobotWheelEncoderRpiGPIO
 
-ENC = "B_5"
 
-encoder = DfRobotWheelEncoderMcp23017(pin=ENC, bus=1, address=0x22)
+encoder = DfRobotWheelEncoderRpiGPIO(pin=23, name="ENC_LEFT")
+encoder.stop()
 encoder.start()
 
-for i in range(0,1000):
-    time.sleep(0.01)
-    val = encoder.read()
-   
-    print(val, encoder._counter)
+for i in range(0,100):
+    
+    rpm = encoder.read_rpm()
+    time.sleep(0.1)
+    print("Rpm is:", rpm)
 
 encoder.stop()

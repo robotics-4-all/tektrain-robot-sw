@@ -222,7 +222,8 @@ class VL53L1X(DistanceSensor):
 
     def read(self):
         """Get distance from VL53L1X ToF Sensor"""
-        return _TOF_LIBRARY.getDistance(self._dev)/10
+        raw_distance = _TOF_LIBRARY.getDistance(self._dev) / 10
+        return raw_distance / self._units
 
     # This function included to show how to access the ST library directly
     # from python instead of through the simplified interface

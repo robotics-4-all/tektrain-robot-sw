@@ -9,7 +9,14 @@ class TestVL53L1X(unittest.TestCase):
         sensor = VL53L1X(bus=1)
         for i in range(10):
             print(sensor.read())
-            time.sleep(1)
+            time.sleep(0.5)
+
+        print("Setting units to cm")
+        sensor.set_units("cm")
+
+        for i in range(10):
+            print(sensor.read())
+            time.sleep(0.5)
 
 
 if __name__ == "__main__":

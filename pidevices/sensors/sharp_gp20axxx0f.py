@@ -77,14 +77,17 @@ class GP2Y0AxxxK0F(DistanceSensor):
 
         # Check thresholds
         if adc_val < self._min_volt:
-            raise OutOfRange("Out of max distance.")
+            adc_val = self._min_volt
         if adc_val > self._max_volt:
-            raise OutOfRange("Out of min distance.")
+            adc_val = self._max_volt
 
         adc_val = max(adc_val, self._min_volt)
         adc_val = min(adc_val, self._max_volt)
 
-        return round(self._f_int(adc_val).item(0), 4)
+        raw_distance = round(self._f_int(adc_val).item(0), 4)
+        distance = raw_distance / self._units
+
+        return distance
 
     def stop(self):
         """Free hardware and os resources."""

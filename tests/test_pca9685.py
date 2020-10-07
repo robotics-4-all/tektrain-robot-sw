@@ -57,14 +57,14 @@ class TestPCA9685(unittest.TestCase):
         for i in range(channels):
             channel = i
 
-            kit.write(channel, 0, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 0, degrees=True)
+            # time.sleep(1)
 
-            kit.write(channel, 10, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 10, degrees=True)
+            # time.sleep(1)
 
-            kit.write(channel, 30, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 30, degrees=True)
+            # time.sleep(1)
 
             kit.write(channel, 40, degrees=True)
             time.sleep(1)
@@ -99,17 +99,17 @@ class TestPCA9685(unittest.TestCase):
             kit.write(channel, 140, degrees=True)
             time.sleep(1)
 
-            kit.write(channel, 150, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 150, degrees=True)
+            # time.sleep(1)
 
-            kit.write(channel, 160, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 160, degrees=True)
+            # time.sleep(1)
 
-            kit.write(channel, 170, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 170, degrees=True)
+            # time.sleep(1)
 
-            kit.write(channel, 180, degrees=True)
-            time.sleep(1)
+            # kit.write(channel, 180, degrees=True)
+            # time.sleep(1)
 
         print("Drive two channels with same value")
         kit.write([0, 1], 100, degrees=True)

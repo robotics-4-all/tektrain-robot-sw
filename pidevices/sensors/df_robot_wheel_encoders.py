@@ -16,6 +16,7 @@ class DfRobotWheelEncoder(WheelEncoder):
     DIVISOR = 1         # Divisor of the resolution for faster measurment.
     SLEEP_TIME = 0.001  # The sleep time in s
 
+
     def __init__(self, pin, name='', max_data_length=0):
         """Constructor."""
         atexit.register(self.stop)
@@ -35,6 +36,9 @@ class DfRobotWheelEncoder(WheelEncoder):
     @pin_num.setter
     def pin_num(self, value):
         self._pin_num = pin_num
+
+    def set_sample_period(self, period):
+        self.sample_period = period
 
     def start(self):
         """Initialize hardware and os resources."""
@@ -65,34 +69,21 @@ class DfRobotWheelEncoder(WheelEncoder):
         Returns:
             A number indicating the rpm value of the wheel.
         """
-
-        # Initial value of counter
         init_count = self._counter
-        count = 0
-        it = 0
+        curr_count = 0
 
-        # Measure time after limit pulses
-        rpm = -1
-        limit = self.res / self.DIVISOR
-        t_s = time.time()
-        while count < limit:
-            count = self._counter - init_count
-
-            # Use it to break in case of too slow speed value
-            it += 1
-            if(it > 100) and not count:
-                rpm = 0
-                break
+        now = time.time()
+        while((time.time() - now) <= (self.sample_period - self.SLEEP_TIME)):
             time.sleep(self.SLEEP_TIME)
 
-        if rpm is -1:
-            interval = time.time() - t_s
-            rpm = (60 / (interval*self.DIVISOR))
+        curr_count = self._counter - init_count
+        rpm = (60 * curr_count) / (self.sample_period * self.RESOLUTION)       # 2 factor is because we trigger at both edges
         
         if save:
             self.update_data(rpm)
 
-        return rpm
+        return rpm        
+        
 
     def stop(self):
         """Free hardware and os resources."""
@@ -126,8 +117,8 @@ class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
 
         # Init pin
         self.hardware_interfaces[self._gpio].set_pin_function('signal', 'input')
-        self.hardware_interfaces[self._gpio].init_input('signal', 'down')
-        self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'rising')
+        self.hardware_interfaces[self._gpio].init_input('signal', 'up')
+        self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'both')
         self.hardware_interfaces[self._gpio].set_pin_event('signal', 
                                                            self._int_handler)
 

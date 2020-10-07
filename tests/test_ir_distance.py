@@ -6,6 +6,14 @@ adc = ADS1X15()
         
 sensor = GP2Y0A41SK0F(adc)
 sensor._channel = 0
-while True:
+
+for i in range(100):
     print("Distance {} cm".format(sensor.read()))
-    time.sleep(0.1)
+    time.sleep(0.2)
+
+print("setting units to cm")
+sensor.set_units("cm")
+
+for i in range(100):
+    print("Distance {} cm".format(sensor.read()))
+    time.sleep(0.2)

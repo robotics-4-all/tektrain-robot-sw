@@ -8,7 +8,7 @@
 import time
 from rpi_ws281x import *
 import argparse
- 
+from time import sleep 
 # LED strip configuration:
 LED_COUNT      = 19      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
@@ -89,7 +89,8 @@ if __name__ == '__main__':
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     # Intialize the library (must be called once before other functions).
     strip.begin()
- 
+    colorWipe(strip, Color(0,0,0), 10)
+    sleep(2)
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')

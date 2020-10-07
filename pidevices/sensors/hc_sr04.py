@@ -114,7 +114,8 @@ class HcSr04(DistanceSensor):
         distance_of_pulse = self.duration * sound_speed
 
         # Half the distance
-        distance = round(distance_of_pulse / 2., ndigits=4)
+        raw_distance = round(distance_of_pulse / 2., ndigits=4)
+        distance = raw_distance / self._units
 
         # Add measurment to data deque
         if SAVE:
@@ -268,7 +269,8 @@ class HcSr04Mcp23017(HcSr04):
         distance_of_pulse = self.duration * self._SPEED_OF_SOUND
 
         # Half the distance
-        distance = round(distance_of_pulse / 2., ndigits=4)
+        raw_distance = round(distance_of_pulse / 2., ndigits=4)
+        distance = raw_distance / self._units
 
         # Add measurment to data deque
         if SAVE:

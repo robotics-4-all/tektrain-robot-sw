@@ -10,7 +10,6 @@ class Side(Enum):
     NONE = 3
 
 
-
 class DfrobotMotorControllerPiGPIO(MotorController):
     """Dfrobot motor controller implementation using hwpm pins. Extends
     :class:`MotorController`.
