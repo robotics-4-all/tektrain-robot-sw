@@ -1,15 +1,14 @@
 from .motor_controller import MotorController
 from pidevices.hardware_interfaces.gpio_implementations import PiGPIO
+from collections import namedtuple
 from enum import Enum
 
+Channel = namedtuple('Channel',['E', 'M'])  
+Pin = namedtuple('Pin', ['name', 'number'])
 
-class Side(Enum):
+class ChannelPos(Enum):
     LEFT = 0
     RIGHT = 1
-    BOTH = 2
-    NONE = 3
-
-
 
 class DfrobotMotorControllerPiGPIO(MotorController):
     """Dfrobot motor controller implementation using hwpm pins. Extends
@@ -22,21 +21,37 @@ class DfrobotMotorControllerPiGPIO(MotorController):
         M2 (int): Pin number of second direction pin.
     """
 
+    MotionDir = {
+        'BACKWARD': 0,
+        'FORWARD': 1
+    }
+
     def __init__(self,
                  E1, M1,
                  E2, M2,
-                 range,
+                 range = None,
+                 frequency = None,
                  name="", max_data_length=0):
         super(DfrobotMotorControllerPiGPIO, self).__init__(name, max_data_length)
 
-        self._E1 = E1
-        self._M1 = M1
-        self._E2 = E2
-        self._M2 = M2
+        e1_pin = Pin('E1', E1)
+        m1_pin = Pin('M1', M1)
+        e2_pin = Pin('E2', E2)
+        m2_pin = Pin('M2', M2)
 
-        self._range = range
+        self._channel_left = Channel(e1_pin, m1_pin)
+        self._channel_right = Channel(e2_pin, m2_pin)
+        
+        self._range = 1000 if range == None else range
+        self._freq = 10000 if frequency == None else frequency
 
         self._gpio = PiGPIO()
+
+        self._gpio.add_pins(E1=E1)
+        self._gpio.add_pins(M1=M1)
+        self._gpio.add_pins(E2=E2)
+        self._gpio.add_pins(M2=M2)
+
         self._is_init = False
 
     @property
@@ -75,106 +90,68 @@ class DfrobotMotorControllerPiGPIO(MotorController):
     def M2(self, M2):
         self._M2 = M2
 
-    def _map(self, value, leftMin, leftMax, rightMin, rightMax):
-        # Figure out how 'wide' each range is
-        leftSpan = leftMax - leftMin
-        rightSpan = rightMax - rightMin
-
-        # Convert the left range into a 0-1 range (float)
-        valueScaled = float(value - leftMin) / float(leftSpan)
-
-        # Convert the 0-1 range into a value in the right range.
-        return rightMin + (valueScaled * rightSpan)
-
     def start(self):
         if not self._is_init:
             self._is_init = True
-            self._gpio.add_pins(E1=self._E1)
-            self._gpio.add_pins(E2=self._E2)
-            self._gpio.add_pins(M1=self._M1)
-            self._gpio.add_pins(M2=self._M2)
 
-            self._gpio.set_pin_function('E1', 'output')
-            self._gpio.set_pin_function('E2', 'output')
-            self._gpio.set_pin_function('M1', 'output')
-            self._gpio.set_pin_function('M2', 'output')
+            self._init_channel(self._channel_left)
+            self._init_channel(self._channel_right)
 
-            self._gpio.set_pin_pwm('E1', True)
-            self._gpio.set_pin_pwm('E2', True)
+    def _init_channel(self, channel):
+        self._gpio.set_pin_function(channel.E.name, 'output')
+        self._gpio.set_pin_function(channel.M.name, 'output')
 
-    def move_linear(self, linear_speed):
+        self._gpio.set_pin_pwm(channel.E.name, True)
+        self._gpio.set_pin_range(channel.E.name, self._range)
+        self._gpio.set_pin_frequency(channel.E.name, self._freq)
+
+    def write(self, pwm_left, pwm_right):
         if not self._is_init:
             return
 
-        if 0 <= linear_speed and linear_speed < self._range:
-            linear_speed = self._map(linear_speed, 0.0, 1.0, 0.5, 1.0)
-            self._gpio.write('M1', 1)
-            self._gpio.write('M2', 0)
-            self._gpio.write('E1', linear_speed)
-            self._gpio.write('E2', linear_speed)
-        elif 0 > linear_speed and linear_speed > -self._range:
-            linear_speed = self._map(linear_speed, 0.0, -1.0, -0.5, -1.0)
-            self._gpio.write('M1', 0)
-            self._gpio.write('M2', 1)
-            self._gpio.write('E1', -linear_speed)
-            self._gpio.write('E2', -linear_speed)
-
-    def move_angular(self, angular_speed):
-        if not self._is_init:
-            return
-
-        if 0 <= angular_speed and angular_speed < self._range:
-            angular_speed = self._map(angular_speed, 0.0, 1.0, 0.5, 1.0)
-            self._gpio.write('M1', 0)
-            self._gpio.write('M2', 0)
-            self._gpio.write('E1', angular_speed)
-            self._gpio.write('E2', angular_speed)
-
-        elif 0 > angular_speed and angular_speed > -self._range:
-            angular_speed = self._map(angular_speed, 0.0, -1.0, -0.5, -1.0)
-            self._gpio.write('M1', 1)
-            self._gpio.write('M2', 1)
-            self._gpio.write('E1', -angular_speed)
-            self._gpio.write('E2', -angular_speed)
-
-
-    def move_linear_side(self, linear_speed, side):
-        if not self._is_init:
-            return
-
-        if side:
-            if 0 <= linear_speed and linear_speed < self._range:
-                linear_speed = self._map(linear_speed, 0.0, 1.0, 0.5, 1.0)
-                self._gpio.write('M1', 1)
-                self._gpio.write('E1', linear_speed)
-            elif 0 > linear_speed and linear_speed > -self._range:
-                linear_speed = self._map(linear_speed, 0.0, -1.0, -0.5, -1.0)
-                self._gpio.write('M1', 0)
-                self._gpio.write('E1', -linear_speed)
+        if pwm_left == 0.0 and pwm_right == 0.0:
+            self._write_channel(self._channel_left, 0.0, self.MotionDir['FORWARD'])
+            self._write_channel(self._channel_right, 0.0, self.MotionDir['BACKWARD'])
         else:
-            if 0 <= linear_speed and linear_speed < self._range:
-                linear_speed = self._map(linear_speed, 0.0, 1.0, 0.5, 1.0)
-                self._gpio.write('M2', 0)
-                self._gpio.write('E2', linear_speed)
-            elif 0 > linear_speed and linear_speed > -self._range:
-                linear_speed = self._map(linear_speed, 0.0, -1.0, -0.5, -1.0)
-                self._gpio.write('M2', 1)
-                self._gpio.write('E2', -linear_speed)
+            # keep the sign
+            sign_left = self.MotionDir['FORWARD'] if pwm_left >= 0 else self.MotionDir['BACKWARD']
+            sign_right = self.MotionDir['BACKWARD'] if pwm_right >= 0 else self.MotionDir['FORWARD']
 
+            pwm_left = abs(pwm_left)
+            pwm_right = abs(pwm_right)
 
+            # normalize if needed
+            max_pwm = max(pwm_left, pwm_right)
+
+            if max_pwm <= self._range:
+                self._write_channel(self._channel_left, pwm_left, sign_left)
+                self._write_channel(self._channel_right, pwm_right, sign_right)
+            else:
+                n = 1 / max_pwm
+
+                pwm_left = n * pwm_left
+                pwm_right = n * pwm_right
+
+                self._write_channel(self._channel_left, pwm_left, sign_left)
+                self._write_channel(self._channel_right, pwm_right, sign_right)
+
+    def _write_channel(self, channel, pwm, sign):
+        self._gpio.write(channel.M.name, sign)
+        self._gpio.write(channel.E.name, pwm)
+    
     def stop(self):
-        self._gpio.write('E1', 0.0)
-        self._gpio.write('E2', 0.0)
-        self._gpio.write('M1', 0)
-        self._gpio.write('M2', 0)
-
+        if self._is_init:
+            self._write_channel(self._channel_left, 0.0, self.MotionDir['FORWARD'])
+            self._write_channel(self._channel_right, 0.0, self.MotionDir['BACKWARD'])
 
     def terminate(self):
         if self._is_init:
+            self._is_init = False
+            
             self.stop()
 
-            self._gpio.set_pin_pwm('E1', False)
-            self._gpio.set_pin_pwm('E2', False)
+            self._gpio.set_pin_pwm(self._channel_left.E.name, False)
+            self._gpio.set_pin_pwm(self._channel_right.E.name, False)
 
             self._gpio.close()
 

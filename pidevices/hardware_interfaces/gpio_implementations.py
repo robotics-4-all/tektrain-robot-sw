@@ -38,11 +38,16 @@ class PiGPIO(GPIO):
     PIGPIO_PULLS = {
         'up': PIGPIO.PUD_UP,
         'dowm': PIGPIO.PUD_DOWN,
-        'floating': RPIGPIO.PUD_OFF
+        'floating': PIGPIO.PUD_OFF
     }
 
+    PIGPIO_EDGES = {
+        'rising': PIGPIO.RISING_EDGE,
+        'falling': PIGPIO.FALLING_EDGE,
+        'both': PIGPIO.EITHER_EDGE
+    }
 
-    PWM_FREQUENCY = 20000
+    PWM_FREQUENCY = 10000
     PWM_RANGE = 1000
 
     def __init__(self, **kwargs):
@@ -92,14 +97,7 @@ class PiGPIO(GPIO):
         if not isinstance(value, float):
             raise TypeError("Invalid value type, should be float or int.")
 
-        if value < 0:
-            raise TypeError("The value should be positive.")
-
-        if value > 1:
-            raise TypeError("The value should be less or equal than 1.")
-
         # get pin object throw its name
-        pin_name = pin
         pin = self.pins[pin]
 
         # Check if it is pwm or simple output
@@ -107,8 +105,18 @@ class PiGPIO(GPIO):
             if pin.pwm:
                 pin.duty_cycle = value
                 range_value = pin.duty_cycle * self.PWM_RANGE
+
+                if value < 0:
+                    raise TypeError("The value should be positive.")
+
+                if value > range_value:
+                    raise TypeError("The value should be less or equal than 1.")
+                
                 self.gpio.set_PWM_dutycycle(pin.pin_num, range_value)
             else:
+                if value !=0 and value != 1:
+                    raise TypeError("The value should be equal to 0 or 1.")
+
                 value = int(round(value))
                 self.gpio.write(pin.pin_num, value)
         else:
@@ -120,7 +128,6 @@ class PiGPIO(GPIO):
             raise TypeError("Invalid pwm type, should be boolean.")
 
         # get pin object throw its name
-        pin_name = pin
         pin = self.pins[pin]
         
         # throw error if it is not of type output
@@ -148,7 +155,6 @@ class PiGPIO(GPIO):
 
     def set_pin_frequency(self, pin, frequency):
         # get pin object throw its name
-        pin_name = pin
         pin = self.pins[pin]
 
         if pin.pwm:
@@ -157,6 +163,57 @@ class PiGPIO(GPIO):
         else:
             raise NotPwmPin("Can't set frequency to a non pwm pin.")
 
+    def set_pin_range(self, pin, range):
+        pin = self.pins[pin]
+        
+        if pin.pwm:
+            self.gpio.set_PWM_range(pin.pin_num, self.PWM_RANGE)
+        else:
+            raise NotPwmPin("Can't set range to a non pwm pin.")
+
+    def get_pin_range(self, pin):
+        pin = self.pins[pin]
+
+        if pin.pwm:
+            return self.gpio.get_PWM_range(pin.pin_num)
+        else:
+            raise NotPwmPin("Can't set range to a non pwm pin.")
+
+    def set_pin_edge(self, pin, edge):
+        pin = self.pins[pin]
+        if edge not in self.PIGPIO_EDGES:
+            raise TypeError("Wrong edge name, should be rising, falling or both")
+        if pin.function is 'input':
+            pin.edge = self.PIGPIO_EDGES[edge]
+        else:
+            raise NotInputPin("Can't set edge to a non input pin.")
+
+    def set_pin_bounce(self, pin, bounce):
+        self.pins[pin].bounce = bounce
+    
+    def set_pin_event(self, pin, event, *args):
+        # The function which needs the arguments
+        pin = self.pins[pin]
+
+        def callback(gpio, level, tick):
+            global callback_timer
+            if pin.bounce is None:
+                event(gpio, level, tick, *args)
+            else:
+                print(pin.bounce)
+                if (tick - callback_timer) >= pin.bounce * 1000:
+                    callback_timer = tick
+                    event(gpio, level, tick, *args)
+        
+        global callback_timer
+        callback_timer = 0
+
+        if pin.function is 'input':
+            self.gpio.callback(pin.pin_num, pin.edge, callback)
+            pin.event = event
+        else:
+            # Raise exception output pin
+            raise NotInputPin("Can's set event to a non input pin.")
 
     def remove_pins(self, *args):
         for pin in args:
