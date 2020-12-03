@@ -8,7 +8,8 @@ class WheelEncoder(Sensor):
 
     def _set_res(self, value):
         """Resolution of the encoder."""
-        self._res = value
+        if value > 0:
+            self._res = value
 
     def _get_res(self):
         return self._res

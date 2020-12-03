@@ -2,6 +2,7 @@
 
 import atexit
 import time
+import math
 from .wheel_encoders import WheelEncoder
 
 
@@ -12,18 +13,23 @@ class DfRobotWheelEncoder(WheelEncoder):
         pin_num: The pin number of encoder's signal.
     """
 
-    RESOLUTION = 20     # PPR value.
-    DIVISOR = 1         # Divisor of the resolution for faster measurment.
-    SLEEP_TIME = 0.001  # The sleep time in s
+    # RESOLUTION = 20     # PPR value.
+    # DIVISOR = 1         # Divisor of the resolution for faster measurment.
+    # SLEEP_TIME = 0.001  # The sleep time in s
 
     def __init__(self, pin, name='', max_data_length=0):
         """Constructor."""
         atexit.register(self.stop)
 
         super(DfRobotWheelEncoder, self).__init__(name, max_data_length)
+
         self._pin_num = pin
-        self._counter = 0  # Counter that counts the edge signals
-        self.res = self.RESOLUTION
+        self._counter = 0
+        self._gpio = -1
+
+        self._res = 10
+        self._timer = 0
+        self._dt = 0
 
         self.start()
 
@@ -34,17 +40,20 @@ class DfRobotWheelEncoder(WheelEncoder):
 
     @pin_num.setter
     def pin_num(self, value):
-        self._pin_num = pin_num
+        self._pin_num = value
 
     def start(self):
         """Initialize hardware and os resources."""
         pass
 
-    def _int_handler(self):
+    def _handler(self, gpio, level, tick, *args):
         """Function for handling edge signals."""
         self._counter += 1
 
-    def read(self):
+        self._dt = time.time() - self._timer
+        self._timer = time.time()
+    
+    def read_state(self):
         """Get current state of encoder.
         
         Returns:
@@ -53,51 +62,45 @@ class DfRobotWheelEncoder(WheelEncoder):
 
         return self.hardware_interfaces[self._gpio].read('signal')
 
-    def read_rpm(self, save=False):
-        """Get rpm value of wheel.
-        
-        Count until res/divisor pulses and then use the interval to compute
-        the rounds per minute.
+    def read_counts(self):
+        return self._counter
 
-        Args:
-            save: Flag for saving the measurment to device data deque.
+    def read(self):
+        now = time.time()
 
-        Returns:
-            A number indicating the rpm value of the wheel.
-        """
+        if (now - self._timer) > 0.5:
+            rps = 0.0
+        else:
+            rps = 2 * math.pi / (self._res * self._dt)
 
-        # Initial value of counter
-        init_count = self._counter
-        count = 0
-        it = 0
-
-        # Measure time after limit pulses
-        rpm = -1
-        limit = self.res / self.DIVISOR
-        t_s = time.time()
-        while count < limit:
-            count = self._counter - init_count
-
-            # Use it to break in case of too slow speed value
-            it += 1
-            if(it > 100) and not count:
-                rpm = 0
-                break
-            time.sleep(self.SLEEP_TIME)
-
-        if rpm is -1:
-            interval = time.time() - t_s
-            rpm = (60 / (interval*self.DIVISOR))
-        
-        if save:
-            self.update_data(rpm)
-
-        return rpm
+        return {"rps": rps, "rpm": rps * 9.5492}        
 
     def stop(self):
         """Free hardware and os resources."""
 
         self.hardware_interfaces[self._gpio].close()
+
+
+
+class DfRobotWheelEncoderPiGPIO(DfRobotWheelEncoder):
+    def __init__(self, pin, name='', max_data_length=0):
+
+        super(DfRobotWheelEncoderPiGPIO, self).__init__(pin, 
+                                                         name,
+                                                         max_data_length)
+
+    def start(self):
+        self._gpio = self.init_interface('gpio',
+                                         impl='PiGPIO',
+                                         signal=self._pin_num)
+
+        self.hardware_interfaces[self._gpio].set_pin_function('signal', 'input')
+        self.hardware_interfaces[self._gpio].set_pin_bounce('signal', 5)
+        self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'rising')
+        self.hardware_interfaces[self._gpio].set_pin_event('signal', self._handler)
+
+
+
 
 
 class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
@@ -116,7 +119,7 @@ class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
         super(DfRobotWheelEncoderRpiGPIO, self).__init__(pin, 
                                                          name,
                                                          max_data_length)
-
+    
     def start(self):
         """Initialize hardware and os resources."""
 
@@ -129,7 +132,7 @@ class DfRobotWheelEncoderRpiGPIO(DfRobotWheelEncoder):
         self.hardware_interfaces[self._gpio].init_input('signal', 'down')
         self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'rising')
         self.hardware_interfaces[self._gpio].set_pin_event('signal', 
-                                                           self._int_handler)
+                                                           self._handler)
 
 
 class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
@@ -165,6 +168,6 @@ class DfRobotWheelEncoderMcp23017(DfRobotWheelEncoder):
         self.hardware_interfaces[self._gpio].init_input('signal', 'down')
         self.hardware_interfaces[self._gpio].set_pin_edge('signal', 'both')
         self.hardware_interfaces[self._gpio].set_pin_event('signal', 
-                                                           self._int_handler)
+                                                           self._handler)
         self.hardware_interfaces[self._gpio].start_polling('signal')
 

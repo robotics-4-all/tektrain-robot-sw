@@ -200,7 +200,6 @@ class PiGPIO(GPIO):
             if pin.bounce is None:
                 event(gpio, level, tick, *args)
             else:
-                print(pin.bounce)
                 if (tick - callback_timer) >= pin.bounce * 1000:
                     callback_timer = tick
                     event(gpio, level, tick, *args)
