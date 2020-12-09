@@ -144,8 +144,8 @@ class ButtonArray(Sensor):
         self.hardware_interfaces[self._gpio].init_input(button, direction)
         self.hardware_interfaces[self._gpio].set_pin_bounce(button, bounce)
 
-        edge = "falling" if direction is 'up' else "rising"
-        self._hardware_interfaces[self._gpio].set_pin_edge(button, edge)
+        #edge = "falling" if direction is 'up' else "rising"
+        self._hardware_interfaces[self._gpio].set_pin_edge(button, "both")
 
     def remove_button(self, button):
         """Remove a button from the array.

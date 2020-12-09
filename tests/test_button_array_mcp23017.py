@@ -149,7 +149,7 @@ class TestButtonArrayMcp23017(unittest.TestCase):
     def test_when_pressed(self):
         array = ButtonArrayMcp23017(["B_0", "B_1", "B_2", "B_3", "B_4", "B_5",
                                      "A_1", "A_6", "A_5", "A_2", "A_3", "A_4"],
-                                    direction="down", bounce=200)
+                                    direction="down", bounce=50)
 
         # def f_0(pin):
         #     print("{} Interrupt on button {}".format(f_0.c, pin))
@@ -235,9 +235,10 @@ class TestButtonArrayMcp23017(unittest.TestCase):
         # pin = 11
         # array.when_pressed(pin, f_11, pin)
 
-        def f(pin):
-            print("{} Interrupt on button {}".format(counters[pin], pin))
-            counters[pin] += 1
+        def f(pin, level, *args):
+            #print("{} Interrupt on button {}".format(counters[pin], pin))
+            #counters[pin] += 1
+            print(pin, level)
         counters = [0] * 12
         
         for i in range(12):

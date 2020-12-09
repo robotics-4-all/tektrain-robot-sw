@@ -43,6 +43,7 @@ class GPIOPin(HardwareInterface):
         self._event = None
         self._edge = None
         self._bounce = None
+        self._tick = None
 
     def _set_pin_num(self, pin_num):
         self._pin_num = pin_num
@@ -142,6 +143,17 @@ class GPIOPin(HardwareInterface):
             Integer representing the time intervel in miliseconds after an 
             edge signal that the event function doesn't get called with the 
             occurence of a new edge signal.
+            """)
+
+    def _set_tick(self, tick):
+        self._tick = tick
+
+    def _get_tick(self):
+        return self._tick
+
+    tick = property(_get_tick, _set_tick, doc="""
+            Integer for keeping a time stamp used for pigpio library which
+            is not support bounce on its own
             """)
 
 

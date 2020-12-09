@@ -22,7 +22,6 @@ except ImportError:
     PIGPIO = None
 
 
-
 class PiGPIO(GPIO):
     PIGPIO_FUNCTIONS = {
         'input': PIGPIO.INPUT,
@@ -56,12 +55,15 @@ class PiGPIO(GPIO):
             raise ImportError("pigpio not found.")
 
         super(PiGPIO, self).__init__(**kwargs)
+        self.tick_dict = {}
         self.initialize()
 
     def initialize(self):
         self.gpio = PIGPIO.pi()
         if not self.gpio.connected:
             raise ImportError("pigpio not found.")
+
+        self._lock = threading.Lock()
         
     def set_pin_function(self, pin, function):
         if function not in self.PIGPIO_FUNCTIONS:
@@ -70,7 +72,6 @@ class PiGPIO(GPIO):
         pin = self.pins[pin]    #get pins object thorw its name
         self.gpio.set_mode(pin.pin_num, self.PIGPIO_FUNCTIONS[function])
         pin.function = function
-
 
     def set_pin_pull(self, pin, pull):
         if pull not in self.PIGPIO_PULLS:
@@ -190,25 +191,23 @@ class PiGPIO(GPIO):
 
     def set_pin_bounce(self, pin, bounce):
         self.pins[pin].bounce = bounce
-    
+
     def set_pin_event(self, pin, event, *args):
         # The function which needs the arguments
         pin = self.pins[pin]
-
-        def callback(gpio, level, tick):
-            global callback_timer
-            if pin.bounce is None:
-                event(gpio, level, tick, *args)
-            else:
-                if (tick - callback_timer) >= pin.bounce * 1000:
-                    callback_timer = tick
-                    event(gpio, level, tick, *args)
+        pin.tick = 0
         
-        global callback_timer
-        callback_timer = 0
-
+        def cbf(gpio, level, tick):
+            with self._lock:
+                if pin.bounce is None:
+                    event(gpio, level, tick, *args)
+                else:
+                    if (tick - pin.tick) >= pin.bounce * 1000:
+                        pin.tick = tick
+                        event(gpio, level, tick, *args)
+        
         if pin.function is 'input':
-            self.gpio.callback(pin.pin_num, pin.edge, callback)
+            self.gpio.callback(pin.pin_num, pin.edge, cbf)
             pin.event = event
         else:
             # Raise exception output pin
@@ -226,9 +225,6 @@ class PiGPIO(GPIO):
 
         self.remove_pins(*self.pins.keys())
         self.gpio.stop()
-
-
-    
 
 
 
@@ -649,10 +645,12 @@ class Mcp23x17GPIO(GPIO):
             raise TypeError("Wrong edge name, should be rising, falling or both")
         if pin.function is 'input':
             pin.edge = edge
-            self._device.set_pin_intcon(self.PIN_NUMBER_MAP[pin.pin_num],
-                                        self.MCP_EDGES[pin.edge].intcon)
-            self._device.set_pin_def_val(self.PIN_NUMBER_MAP[pin.pin_num],
-                                         self.MCP_EDGES[pin.edge].defval)
+            # self._device.set_pin_intcon(self.PIN_NUMBER_MAP[pin.pin_num],
+            #                             self.MCP_EDGES[pin.edge].intcon)
+            # self._device.set_pin_def_val(self.PIN_NUMBER_MAP[pin.pin_num],
+            #                              self.MCP_EDGES[pin.edge].defval)
+            self._device.set_pin_intcon(self.PIN_NUMBER_MAP[pin.pin_num], 0)
+            self._device.set_pin_def_val(self.PIN_NUMBER_MAP[pin.pin_num], 0)
         else:
             raise NotInputPin("Can't set edge to a non input pin.")
 
@@ -689,6 +687,23 @@ class Mcp23x17GPIO(GPIO):
         if pin.function is 'input':
             if pin.bounce is None:
                 self.set_pin_bounce(pin_name, 0)
+                
+
+            def callback(*args):
+                gpio_pin = self.PIN_NUMBER_MAP[pin.pin_num]
+                level = self._device.read(self.PIN_NUMBER_MAP[pin.pin_num])
+
+                #a = self._device.get_pin_intcon(self.PIN_NUMBER_MAP[pin.pin_num])
+                #b = self._device.get_pin_def_val(self.PIN_NUMBER_MAP[pin.pin_num])
+
+                if pin.edge == "both":
+                    event(gpio_pin, level, *args)
+                elif pin.edge == "rising":
+                    if level == 1:
+                        event(gpio_pin, level, *args)
+                elif pin.edge == "falling":
+                    if level == 0:
+                        event(gpio_pin, level, *args)
 
             # Enable interrupts on pin
             self._device.set_pin_int(self.PIN_NUMBER_MAP[pin.pin_num], 1)
@@ -697,7 +712,7 @@ class Mcp23x17GPIO(GPIO):
             # Set event
             pin.event = event
             self._device.set_int_handl_func(self.PIN_NUMBER_MAP[pin.pin_num],
-                                            event,
+                                            callback,
                                             *args)
         else:
             # Raise exception output pin

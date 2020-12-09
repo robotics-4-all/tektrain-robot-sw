@@ -1,45 +1,47 @@
-# from pidevices.hardware_interfaces.gpio_implementations import PiGPIO
-# import pigpio
-# import time
-
-# def cbf(gpio, level, tick, *args):
-#    print(gpio, level, tick)
-
-# gpio = PiGPIO()
-# gpio.add_pins(pin=24)
-# gpio.set_pin_function('pin', 'input')
-# gpio.set_pin_bounce('pin', 2000)
-# gpio.set_pin_edge('pin', 'rising')
-# gpio.set_pin_event('pin', cbf)
-
-# time.sleep(10)
-
+from pidevices.sensors.df_robot_wheel_encoders import DfRobotWheelEncoderPiGPIO
 from pidevices import DfrobotMotorControllerPiGPIO
-from pidevices.sensors import DfRobotWheelEncoderPiGPIO
+import threading
+import unittest
 import time
 
-motor_driver = DfrobotMotorControllerPiGPIO(E1=20, E2=21, M1=19, M2=26, range=1000, frequency=200)
-encoder_l = DfRobotWheelEncoderPiGPIO(pin=23)
-encoder_r = DfRobotWheelEncoderPiGPIO(pin=24)
+is_alive = True
 
-motor_driver.start()
-encoder_l.start()
-encoder_r.start()
+def threadCall(enc):
+   global is_alive
+   enc.start()
 
-motor_driver.write(0.3, 0.3)
+   while is_alive:
+      val = enc.read()["rps"]
+      print(f"Thread {threading.get_ident()} record: {val}")
+      time.sleep(0.1)
 
-sum = 0
+   print(f"Thread {threading.get_ident()} Terminated")
 
-for i in range(50):
-   val_l = encoder_l.read()["rps"]
-   val_r = encoder_r.read()["rps"]
-   sum = sum + (val_l + val_r)/2 * 0.1
+class TestDfRobotEncodersPigpio(unittest.TestCase):
+   def test_encoders(self):
+      global is_alive
 
-   print(val_l, val_r)
+      motor_driver = DfrobotMotorControllerPiGPIO(E1=20, E2=21, M1=19, M2=26, range=1000, frequency=200)
+      motor_driver.start()
 
-   time.sleep(0.1)
+      enc1 = DfRobotWheelEncoderPiGPIO(pin=23, resolution=10)
+      enc2 = DfRobotWheelEncoderPiGPIO(pin=24, resolution=10)
 
-print("total_distance: ", sum * 0.0325)
+      t1 = threading.Thread(target=threadCall, args=(enc1,), daemon=True)
+      t2 = threading.Thread(target=threadCall, args=(enc2,), daemon=True)
 
+      motor_driver.write(0.3, 0.3)
 
-motor_driver.terminate()
+      t1.start()
+      t2.start()
+
+      time.sleep(5)
+
+      is_alive = False
+      
+      time.sleep(0.5)
+
+      motor_driver.terminate()
+
+if __name__ == "__main__":
+   unittest.main()
