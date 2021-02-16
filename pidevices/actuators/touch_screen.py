@@ -21,8 +21,8 @@ class TouchScreen(Actuator):
         """Constructor"""
 
         super(TouchScreen, self).__init__(name, max_data_length)
-        self.screen_w = 800
-        self.screen_h = 480
+        self.screen_w = 480
+        self.screen_h = 800
         self.start()
 
     def start(self):
@@ -131,29 +131,30 @@ class TouchScreen(Actuator):
         try:
             img = pygame.image.load(image_uri)
         except Exception as e:
-            #raise Exception("Loading image failed with error: " + str(e))
+            raise Exception("Loading image failed with error: " + str(e))
             
             # Load image from string
-            img = pygame.image.fromstring(*image_uri)
+            # img = pygame.image.fromstring(image_uri, (640, 480), "JPG")
+        
+        img_s = img.get_rect()
+        
+        temp = (self.screen_w - img_s.width) * (self.screen_h - img_s.height)
+        if temp < 0:
+            img = pygame.transform.rotate(img, -90)
 
-        img_s = img.get_size()
-        wr = self.screen_w * 1.0 / img_s[0]
-        hr = self.screen_h * 1.0 / img_s[1]
-        rate = wr
-        if wr >= hr:
-            rate = hr
+        img_s = img.get_rect()
+        
+        w_rate = self.screen_w * (1.0 / img_s.width)
+        h_rate = self.screen_h * (1.0 / img_s.height)
 
-        img = pygame.transform.scale(img,
-                                     (int(img_s[0]*rate), int(img_s[1]*rate)))
+        rate = w_rate if w_rate < h_rate else h_rate
+        offset_x = (self.screen_w - rate * img_s.width) / 2
+        offset_y = (self.screen_h - rate * img_s.height) / 2
 
-        padding_w = 0
-        padding_h = 0
-        if wr >= hr:
-            padding_w = (self.screen_w - int(img_s[0] * rate)) / 2
-        else:
-            padding_h = (self.screen_h - int(img_s[1] * rate)) / 2
+        scaled_image = pygame.transform.scale(img, (int(img_s.width * rate), int(img_s.height * rate)))
 
-        self.screen.blit(img, (padding_w, padding_h))
+        self.screen.blit(scaled_image, (offset_x, offset_y))
+        
         pygame.display.flip()
         t_start = time.time()
         running = True

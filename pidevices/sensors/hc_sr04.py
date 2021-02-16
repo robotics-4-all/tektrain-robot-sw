@@ -40,6 +40,8 @@ class HcSr04(DistanceSensor):
         self._echo_pin = echo_pin
 
         self._temp = 20
+
+        self._gpio = None
         # Initialize hardware resources
         
         #self.start()
@@ -121,20 +123,9 @@ class HcSr04(DistanceSensor):
             self.update_data(distance)
 
         return distance
-
+    
     def _async_measure(self):
-        """Function to be called with edge signals.
-        
-        With rising signal start measure time and with falling signal stop
-        save signal duration.
-        """
-        
-        if self.hardware_interfaces[self._gpio].read('echo'):
-            self.t_start = time.time()
-        else:
-            self.duration = (time.time() - self.t_start)
-            self.out = True
-
+        pass
 
 class HcSr04RPiGPIO(HcSr04):
     """HcSr04 class extends :class:`DistanceSensor`
@@ -251,18 +242,18 @@ class HcSr04Mcp23017(HcSr04):
 
         self.out = False
         # If wait time is more than max echo signal = 0.024s
-        count = 0
-        while not self.hardware_interfaces[self._gpio].read('echo'):
-            if count == 100:
-                return -1
-                #raise OutOfRange("Out of range.")
-            time.sleep(0.003)
-            count += 1
+        t_start = 0
 
-        t_s = time.time()
+        while not self.hardware_interfaces[self._gpio].read('echo'):
+            t_start = time.time()
+            time.sleep(0.0003)
+
+        t_stop = 0
         while self.hardware_interfaces[self._gpio].read('echo'):
-            pass
-        self.duration = time.time() - t_s
+            t_stop = time.time()
+            time.sleep(0.0003)
+
+        self.duration = t_stop - t_start
         # Distance is the time that the pulse travelled
         # multiplied by the speed of sound
         distance_of_pulse = self.duration * self._SPEED_OF_SOUND
@@ -275,3 +266,17 @@ class HcSr04Mcp23017(HcSr04):
             self.update_data(distance)
 
         return distance
+
+    
+    def _async_measure(self, gpio_pin, level):
+        """Function to be called with edge signals.
+        
+        With rising signal start measure time and with falling signal stop
+        save signal duration.
+        """
+        
+        if level == 1:
+            self.t_start = time.time()
+        else:
+            self.duration = (time.time() - self.t_start)
+            self.out = True

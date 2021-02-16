@@ -83,12 +83,15 @@ class DfRobotWheelEncoder(WheelEncoder):
             A dictionary with the rps and rps of the wheel attached to the encoder.
         """
 
-        if self._dt is not 0:
+        if self._dt > 0:
             rps = 2 * math.pi / (self._res * self._dt)
         else:
             rps = 0.0
 
         return {"rps": rps, "rpm": self._rpsToRpm(rps)}     
+    
+    def reset(self):
+        self._dt = 0.0
 
     def _rpsToRpm(self, rps):
         """ Convert rps to rpm."""
@@ -127,8 +130,6 @@ class DfRobotWheelEncoderPiGPIO(DfRobotWheelEncoder):
             return
         else:
             self._started = True
-
-        print("Starting")
 
         self._gpio = self.init_interface('gpio',
                                          impl='PiGPIO',

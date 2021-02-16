@@ -693,9 +693,6 @@ class Mcp23x17GPIO(GPIO):
                 gpio_pin = self.PIN_NUMBER_MAP[pin.pin_num]
                 level = self._device.read(self.PIN_NUMBER_MAP[pin.pin_num])
 
-                #a = self._device.get_pin_intcon(self.PIN_NUMBER_MAP[pin.pin_num])
-                #b = self._device.get_pin_def_val(self.PIN_NUMBER_MAP[pin.pin_num])
-
                 if pin.edge == "both":
                     event(gpio_pin, level, *args)
                 elif pin.edge == "rising":

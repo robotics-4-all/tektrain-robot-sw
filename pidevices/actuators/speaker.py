@@ -19,7 +19,7 @@ class Speaker(Actuator):
     """
 
     def __init__(self, dev_name='default', volume=50,
-                 channels=1, card_index=1, name="", max_data_length=0):
+                 channels=1, card_index=2, name="", max_data_length=0):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)

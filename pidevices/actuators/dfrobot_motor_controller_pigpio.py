@@ -26,10 +26,14 @@ class DfrobotMotorControllerPiGPIO(MotorController):
         'FORWARD': 1
     }
 
+    RESOLUTION = 1000
+    FREQUENCY = 250
+    MAX_PWM = 1.0
+
     def __init__(self,
                  E1, M1,
                  E2, M2,
-                 range = None,
+                 resolution = None,
                  frequency = None,
                  name="", max_data_length=0):
         super(DfrobotMotorControllerPiGPIO, self).__init__(name, max_data_length)
@@ -42,8 +46,8 @@ class DfrobotMotorControllerPiGPIO(MotorController):
         self._channel_left = Channel(e1_pin, m1_pin)
         self._channel_right = Channel(e2_pin, m2_pin)
         
-        self._range = 1000 if range == None else range
-        self._freq = 10000 if frequency == None else frequency
+        self._res = DfrobotMotorControllerPiGPIO.RESOLUTION if resolution == None else resolution
+        self._freq = DfrobotMotorControllerPiGPIO.FREQUENCY if frequency == None else frequency
 
         self._gpio = PiGPIO()
 
@@ -102,7 +106,7 @@ class DfrobotMotorControllerPiGPIO(MotorController):
         self._gpio.set_pin_function(channel.M.name, 'output')
 
         self._gpio.set_pin_pwm(channel.E.name, True)
-        self._gpio.set_pin_range(channel.E.name, self._range)
+        self._gpio.set_pin_range(channel.E.name, self._res)
         self._gpio.set_pin_frequency(channel.E.name, self._freq)
 
     def write(self, pwm_left, pwm_right):
@@ -123,7 +127,7 @@ class DfrobotMotorControllerPiGPIO(MotorController):
             # normalize if needed
             max_pwm = max(pwm_left, pwm_right)
 
-            if max_pwm <= self._range:
+            if max_pwm <= DfrobotMotorControllerPiGPIO.MAX_PWM:
                 self._write_channel(self._channel_left, pwm_left, sign_left)
                 self._write_channel(self._channel_right, pwm_right, sign_right)
             else:
@@ -141,18 +145,14 @@ class DfrobotMotorControllerPiGPIO(MotorController):
     
     def stop(self):
         if self._is_init:
-            self._write_channel(self._channel_left, 0.0, self.MotionDir['FORWARD'])
-            self._write_channel(self._channel_right, 0.0, self.MotionDir['BACKWARD'])
-
-    def terminate(self):
-        if self._is_init:
             self._is_init = False
             
-            self.stop()
+            self.write(0.0, 0.0)
 
             self._gpio.set_pin_pwm(self._channel_left.E.name, False)
             self._gpio.set_pin_pwm(self._channel_right.E.name, False)
 
             self._gpio.close()
+        
 
 

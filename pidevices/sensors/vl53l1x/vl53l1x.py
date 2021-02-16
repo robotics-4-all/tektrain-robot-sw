@@ -59,6 +59,8 @@ except AttributeError:
 #dir_path = os.path.dirname(os.path.realpath(__file__))
 #_TOF_LIBRARY = CDLL(dir_path + '/test.so')
 
+# print("LOcations: ",_POSSIBLE_LIBRARY_LOCATIONS)
+
 for lib_location in _POSSIBLE_LIBRARY_LOCATIONS:
     files = glob.glob(lib_location + "/vl53l1x_python*.so")
     if len(files) > 0:

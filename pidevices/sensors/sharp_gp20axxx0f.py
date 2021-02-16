@@ -77,9 +77,10 @@ class GP2Y0AxxxK0F(DistanceSensor):
 
         # Check thresholds
         if adc_val < self._min_volt:
-            raise OutOfRange("Out of max distance.")
+            adc_val = self._min_volt
         if adc_val > self._max_volt:
-            raise OutOfRange("Out of min distance.")
+            adc_val = self._max_volt
+            #raise OutOfRange("Out of min distance.")
 
         adc_val = max(adc_val, self._min_volt)
         adc_val = min(adc_val, self._max_volt)
