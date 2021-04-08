@@ -7,9 +7,10 @@ import base64
 import warnings
 from ..devices import Actuator
 import alsaaudio
-
+import time
 
 class Speaker(Actuator):
+    SAMPLE_WIDTH = 2
     """Class representing a usb speaker extends :class:`Actuator`
 
     Args:
@@ -18,12 +19,13 @@ class Speaker(Actuator):
     """
 
     def __init__(self, dev_name='dmix:CARD=Speaker,DEV=0', volume=50,
-                 channels=1, name="", max_data_length=0):
+                 channels=1, framerate = 44100, name="", max_data_length=0):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)
         self.dev_name = dev_name
         self.channels = channels
+        self.framerate = framerate
         self.start()
 
         # Set volume
@@ -61,7 +63,13 @@ class Speaker(Actuator):
         """Initialize hardware and os resources."""
 
         # It uses the default card for speaker with the ~/.asoundrc config
-        self._device = alsaaudio.PCM(device=self.dev_name)
+        try: 
+            self._device = alsaaudio.PCM(device=self.dev_name)
+        except Exception as e:
+            self._mixer = None
+            print("Failled.....")
+            raise Exception("Failed again")
+            return
 
         # Find proper mixer using the card name.
         card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
@@ -120,8 +128,8 @@ class Speaker(Actuator):
             f.close()
         else:
             channels = self.channels
-            framerate = 44100
-            sample_width = 2
+            framerate = self.framerate
+            sample_width = self.SAMPLE_WIDTH
 
             # Read data from encoded string
             n = len(source)
@@ -131,7 +139,7 @@ class Speaker(Actuator):
         # Set Device attributes for playback
         self._device.setchannels(channels)
         self._device.setrate(framerate)
-
+        
         # 8bit is unsigned in wav files
         if sample_width == 1:
             self._device.setformat(alsaaudio.PCM_FORMAT_U8)
@@ -147,20 +155,27 @@ class Speaker(Actuator):
 
         self._device.setperiodsize(periodsize)
 
+        
         # Play the file
-        for i in range(times):
-            # Break the loop if another call is done
-            if not self._playing:
-                break
-
-            for d in data:
-                self._device.write(d)
-
+        try:
+            for i in range(times):
+                # Break the loop if another call is done
                 if not self._playing:
                     break
 
-        self.restart()
+                for d in data:
+                    self._device.write(d)
 
+                    if not self._playing:
+                        break
+        except:
+            print("Caught exception")
+            time.sleep(1)
+            print("Leaving bey...")
+            raise Exception("hahhaha")
+            return
+
+        self.restart()
         # Clear the playing flag
         self._playing = False
 
