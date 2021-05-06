@@ -144,6 +144,9 @@ class Speaker(Actuator):
         if self._device is None or self._mixer is None:
             raise SpeakerError
 
+        self._duration = None
+        self._paused = False
+
         try:
             periodsize = Speaker.PERIOD_SIZE
 
@@ -224,6 +227,9 @@ class Speaker(Actuator):
                 else:
                     break
 
+                while self._paused:
+                    time.sleep(0.1)
+
         self.restart()
         # Clear the playing flag
         self._playing = False
@@ -264,8 +270,11 @@ class Speaker(Actuator):
             enabled (boolean): If it :data:`True` pauses the playback else
                 it resumes it.
         """
+        if self._dev_name is None:
+            raise SpeakerError
 
-        self._device.pause(enabled)
+        #self._device.pause(enabled) that statement throws an exception
+        self._paused = enabled
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""

@@ -94,10 +94,12 @@ class SpeakerConsumer(Speaker):
             while self._is_alive:
                 if self._data:
                     self.write(source=self._data[0], 
-                               times=self._data[1], 
-                               file_flag=self._data[2])
-                    msg = Msg(msg_type=MsgType.Ok, msg_id=self._data[3])
-                    parent_queue.put(msg, block=True)
+                                    times=self._data[1], 
+                                    file_flag=self._data[2])
+
+                    if len(self._data) == 4:
+                        msg = Msg(msg_type=MsgType.Ok, msg_id=self._data[3])
+                        parent_queue.put(msg, block=True)
 
                     self._data = []
                 
@@ -120,18 +122,16 @@ class SpeakerConsumer(Speaker):
                     print("write")
                     self._data = msg.data
                     self._data.append(msg.id)
-                    #msg.type = MsgType.Ok
-                    #parent_queue.put(msg, block=True)
 
                 elif msg.type == MsgType.WriteAsync:
                     print("Playing Async")
-                    # self.write(source=msg.data[0], times=msg.data[1], flie_flag=msg.data[2])
+                    self._data = msg.data
                     msg.type = MsgType.Ok
                     parent_queue.put(msg, block=True)
 
                 elif msg.type == MsgType.Pause:
                     print("Pause")
-                    self.pause(enable=msg.data[0])
+                    self.pause(enabled=msg.data[0])
                     msg.type = MsgType.Ok
                     parent_queue.put(msg, block=True)
                     
@@ -213,26 +213,82 @@ class SafeSpeaker:
 
     def write(self, source, times=1, file_flag=False):
         if self._is_init:
+            self._check_asyn_error()
+
             msg = Msg(msg_type=MsgType.Write, msg_data=[source, times, file_flag])
             self._child_queue.put(msg, block=True)
+            
+            ret = self._parent_queue.get(block=True)
 
+            while not ret.is_reply_of(msg): # or timeout
+                print("Resending")
+                self._parent_queue.put(ret, block=True)
+                time.sleep(0.1)
+                ret = self._parent_queue.get(block=True)
+
+            if ret.type == MsgType.Ok:
+                print("All good 2")
+            else:
+                print("Restarting")
+                self.restart()
+           
+
+
+    def async_write(self, source, times=1, file_flag=False):
+        if self._is_init:
+            self._check_asyn_error()
+
+            msg = Msg(msg_type=MsgType.WriteAsync, msg_data=[source, times, file_flag])
+            self._child_queue.put(msg, block=True)
             
             ret = self._parent_queue.get(block=True)
             if ret.is_reply_of(msg):
                 if ret.type == MsgType.Ok:
                     print("All good 2")
                 else:
-                    print("Error occured 2")
+                    self.restart()
+
+    def _check_asyn_error(self):
+        if self._is_init:
+            try:
+                ret = self._parent_queue.get(block=False)
+            except queue.Empty as e:
+                return
+            else:
+                if ret.type == MsgType.Error:
+                    print("Caugh async error ahaha ")
+                    self.restart()
+                else:
+                    self._parent_queue.put(ret, block=True)
 
 
-    def async_write(self, source, times=1, file_flag=False):
-        pass
+    def pause(self, enabled=True):
+        if self._is_init:
+            self._check_asyn_error()
 
-    def pause(self, enable=True):
-        pass
+            msg = Msg(msg_type=MsgType.Pause, msg_data=[enabled])
+            self._child_queue.put(msg, block=True)
+
+            ret = self._parent_queue.get(block=True)
+            if ret.is_reply_of(msg):
+                if ret.type == MsgType.Ok:
+                    print("All good 2 pause")
+                else:
+                    self.restart()
     
     def cancel(self):
-        pass
+        if self._is_init:
+            self._check_asyn_error()
+
+            msg = Msg(msg_type=MsgType.Cancel)
+            self._child_queue.put(msg, block=True)
+
+            ret = self._parent_queue.get(block=True)
+            if ret.is_reply_of(msg):
+                if ret.type == MsgType.Ok:
+                    print("All good 2 cancel")
+                else:
+                    self.restart()
 
     def stop(self):
         if self._is_init:
@@ -244,6 +300,8 @@ class SafeSpeaker:
 
             del self._parent_queue
             del self._child_queue
+
+            self._is_init = False
 
     def restart(self):
         self.stop()
