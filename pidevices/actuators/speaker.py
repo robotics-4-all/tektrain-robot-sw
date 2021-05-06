@@ -9,8 +9,18 @@ from ..devices import Actuator
 import alsaaudio
 import time
 
+
+# to add cases etc ...
+class SpeakerError(Exception):
+    """ Speaker custom exception class """
+    pass
+
+
 class Speaker(Actuator):
+    RETRY = 5
     SAMPLE_WIDTH = 2
+    PERIOD_SIZE = 256
+    FRAMERATES = [8000, 16000, 44100, 48000, 96000]
     """Class representing a usb speaker extends :class:`Actuator`
 
     Args:
@@ -26,6 +36,10 @@ class Speaker(Actuator):
         self.dev_name = dev_name
         self.channels = channels
         self.framerate = framerate
+
+        self._device = None
+        self._mixer = None
+
         self.start()
 
         # Set volume
@@ -59,32 +73,52 @@ class Speaker(Actuator):
             volume = min(max(0, value), 100)
             self._mixer.setvolume(volume)
 
+    @property
+    def framerate(self):
+        return self._framerate
+
+    @framerate.setter
+    def framerate(self, value):
+        if value in Speaker.FRAMERATES:
+            self._framerate = value
+        else:
+            self._framerate = Speaker.FRAMERATES[2]
+
     def start(self):
         """Initialize hardware and os resources."""
-
-        # It uses the default card for speaker with the ~/.asoundrc config
-        try: 
+        try:
+            print("Initializing driver")
             self._device = alsaaudio.PCM(device=self.dev_name)
+
+            # Find proper mixer using the card name.
+            card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
+            card_index = alsaaudio.cards().index(card_name)
+            mixers = alsaaudio.mixers(cardindex=card_index)
+            if "PCM" in mixers:
+                self._mixer = alsaaudio.Mixer(control='PCM', cardindex=card_index)
+            else:
+                self._mixer = None
+
+            # Unmute if it is muted at first
+            if self._mixer.getmute():
+                self._mixer.setmute(0)
+
+            self._playing = False
+        except alsaaudio.ALSAAudioError as e:
+            print(f"{type(e).__name__} occured!")
+            print(f"With message: {e.args}... Failed to initialize speaker!")
+
+            self._device = None
+            self._mixer = None
+
+            raise SpeakerError
         except Exception as e:
-            self._mixer = None
-            print("Failled.....")
-            raise Exception("Failed again")
-            return
+            print(f"Something unexpected happend! {e}")
 
-        # Find proper mixer using the card name.
-        card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
-        card_index = alsaaudio.cards().index(card_name)
-        mixers = alsaaudio.mixers(cardindex=card_index)
-        if "PCM" in mixers:
-            self._mixer = alsaaudio.Mixer(control='PCM', cardindex=card_index)
-        else:
+            self._device = None
             self._mixer = None
 
-        # Unmute if it is muted at first
-        if self._mixer.getmute():
-            self._mixer.setmute(0)
-
-        self._playing = False
+            raise SpeakerError
 
     def write(self, source, times=1, file_flag=False):
         if self._playing:
@@ -106,74 +140,89 @@ class Speaker(Actuator):
             times: How many time to play the same file.
             file_flag: Flag indicating if read from file or from raw data.
         """
+        # if the device isnt initialized properly
+        if self._device is None or self._mixer is None:
+            raise SpeakerError
 
-        periodsize = 256
-
-        if file_flag:
-            # Open the wav file
-            f = wave.open(self._fix_path(source), 'rb')
-
-            channels = f.getnchannels()
-            framerate = f.getframerate()
-            sample_width = f.getsampwidth()
-
-            # Read data from file
-            data = []
-            sample = f.readframes(periodsize)
-            while sample:
-                data.append(sample)
-                sample = f.readframes(periodsize)
-
-            # Close file
-            f.close()
-        else:
-            channels = self.channels
-            framerate = self.framerate
-            sample_width = self.SAMPLE_WIDTH
-
-            # Read data from encoded string
-            n = len(source)
-            step = sample_width * periodsize
-            data = [source[i:i+step] for i in range(0, n, step)]
-
-        # Set Device attributes for playback
-        self._device.setchannels(channels)
-        self._device.setrate(framerate)
-        
-        # 8bit is unsigned in wav files
-        if sample_width == 1:
-            self._device.setformat(alsaaudio.PCM_FORMAT_U8)
-        # Otherwise we assume signed data, little endian
-        elif sample_width == 2:
-            self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-        elif sample_width == 3:
-            self._device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
-        elif sample_width == 4:
-            self._device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
-        else:
-            raise ValueError('Unsupported format')
-
-        self._device.setperiodsize(periodsize)
-
-        
-        # Play the file
         try:
-            for i in range(times):
-                # Break the loop if another call is done
-                if not self._playing:
-                    break
+            periodsize = Speaker.PERIOD_SIZE
 
-                for d in data:
+            if file_flag:
+                # Open the wav file
+                f = wave.open(self._fix_path(source), 'rb')             # add error checking here
+
+                channels = f.getnchannels()
+                framerate = f.getframerate()
+                sample_width = f.getsampwidth()
+
+                # Read data from file
+                data = []
+                sample = f.readframes(periodsize)
+                while sample:
+                    data.append(sample)
+                    sample = f.readframes(periodsize)
+
+                # Close file
+                f.close()
+            else:
+                channels = self.channels
+                framerate = self.framerate
+                sample_width = self.SAMPLE_WIDTH
+
+                # Read data from encoded string
+                n = len(source)
+                step = sample_width * periodsize
+                data = [source[i:i+step] for i in range(0, n, step)]     # add error checking here
+
+            # calculate the duration of the track
+            packets = len(data)
+            packet_duration = periodsize / self.framerate
+            self._duration = round(packets * packet_duration)
+
+            # Set Device attributes for playback
+            self._device.setchannels(channels)                           # add error checking here
+            self._device.setrate(framerate)
+            self._device.setperiodsize(periodsize)
+            
+            # 8bit is unsigned in wav files
+            if sample_width == 1:
+                self._device.setformat(alsaaudio.PCM_FORMAT_U8)
+            # Otherwise we assume signed data, little endian
+            elif sample_width == 2:
+                self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+            elif sample_width == 3:
+                self._device.setformat(alsaaudio.PCM_FORMAT_S24_3LE)
+            elif sample_width == 4:
+                self._device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
+            else:
+                raise ValueError('Unsupported format')
+
+            # Play n times the data
+            
+            self._play(data, times)                                      # add error checking here
+        except alsaaudio.ALSAAudioError as e:
+            print(f"Caugh is write: {e}")
+            raise SpeakerError
+
+        except Exception as e:
+            print(f"Caugh is write: {e}")
+            raise SpeakerError
+
+        
+    def _play(self, data, times):
+        """Plays the data n times, by invoking the speaker pyalsapy library.
+           It also checks if we have a preemption request during the playback.
+
+        Args:
+            data: The sound data to be played
+            times: The amound of times to repeat the track
+        """
+        for i in range(times):
+            for d in data:
+                if self._playing:
                     self._device.write(d)
-
-                    if not self._playing:
-                        break
-        except:
-            print("Caught exception")
-            time.sleep(1)
-            print("Leaving bey...")
-            raise Exception("hahhaha")
-            return
+                else:
+                    break
 
         self.restart()
         # Clear the playing flag
@@ -186,11 +235,13 @@ class Speaker(Actuator):
             file_path: The file path of the file to be played. Currently it
                 supports only wav file format.
             times: How many time to play the same file.
+        
+        Returns:
+            duration: The total duration of the track which will be played asyc.
         """
-
-        thread = threading.Thread(target=self._write,
-                                  args=(source, times, file_flag,),
-                                  daemon=True)
+        self.thread = threading.Thread(target=self._write,
+                                        args=(source, times, file_flag,),
+                                        daemon=True)
 
         # Check if another thread is running
         if self._playing:
@@ -200,7 +251,7 @@ class Speaker(Actuator):
         # Set playing flag
         self._playing = True
 
-        thread.start()
+        self.thread.start()
 
     def cancel(self):
         """Cancel playaback"""
@@ -227,6 +278,8 @@ class Speaker(Actuator):
 
     def stop(self):
         """Clean hardware and os reources."""
-
-        self._device.close()
-        self._mixer.close()
+        if self._device is not None:
+            self._device.close()
+        
+        if self._mixer is not None:
+            self._mixer.close()

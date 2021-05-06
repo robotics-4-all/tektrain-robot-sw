@@ -8,3 +8,4 @@ from .pca9685 import *
 from .servo_driver import *
 from .speaker import *
 from .touch_screen import *
+from .safe_speaker import *
