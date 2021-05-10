@@ -13,11 +13,15 @@ class MsgType(IntEnum):
     Error = -1
     Ok = 0
     Write = 1
-    WriteAsync = 2
+    AsyncWrite = 2
     Pause = 3
     Cancel = 4
     Stop = 5
 
+class ResponeType(IntEnum):
+    Error = -2
+    Timeout = -1
+    Ok = 0
 
 class Msg:
     MIN_ID = 0
@@ -32,8 +36,7 @@ class Msg:
             self._id = random.randint(Msg.MIN_ID, Msg.MAX_ID)
         else: 
             self._id = msg_id
-       
-
+    
     @property
     def id(self):
         return self._id
@@ -60,8 +63,6 @@ class Msg:
                 return True
         
         return False
-
-
 
 
 class SpeakerConsumer(Speaker):
@@ -94,21 +95,22 @@ class SpeakerConsumer(Speaker):
             while self._is_alive:
                 if self._data:
                     self.write(source=self._data[0], 
-                                    times=self._data[1], 
-                                    file_flag=self._data[2])
+                                times=self._data[1], 
+                                file_flag=self._data[2],
+                                rs_times=self._data[3],
+                                rs_step=self._data[4])
 
-                    if len(self._data) == 4:
-                        msg = Msg(msg_type=MsgType.Ok, msg_id=self._data[3])
-                        parent_queue.put(msg, block=True)
+                    
+                    msg = Msg(msg_type=MsgType.Ok, msg_id=self._data[5])
+                    parent_queue.put(msg, block=True)
 
                     self._data = []
                 
                 time.sleep(0.1)
                 
         except SpeakerError as e:
-            msg = Msg(msg_type=MsgType.Error, msg_data=e)
+            msg = Msg(msg_type=MsgType.Error, msg_data=[self._curr_times, self._curr_step], msg_id=0)
             parent_queue.put(msg, block=True)
-
 
     def _read_msg(self, parent_queue, child_queue):
         is_alive = True
@@ -123,10 +125,14 @@ class SpeakerConsumer(Speaker):
                     self._data = msg.data
                     self._data.append(msg.id)
 
-                elif msg.type == MsgType.WriteAsync:
+                elif msg.type == MsgType.AsyncWrite:
                     print("Playing Async")
                     self._data = msg.data
+                    self._data.append(msg.id)
+                    while self._duration is None:
+                        time.sleep(0.1)
                     msg.type = MsgType.Ok
+                    msg.data = self._duration
                     parent_queue.put(msg, block=True)
 
                 elif msg.type == MsgType.Pause:
@@ -151,13 +157,14 @@ class SpeakerConsumer(Speaker):
                     self._is_alive = False
 
         except SpeakerError as e:
-            msg = Msg(msg_type=MsgType.Error, msg_data=e)
+            msg = Msg(msg_type=MsgType.Error, msg_data=e, msg_id=0)
             parent_queue.put(msg, block=True)
-
 
 
 # wrapper class that exposes the same API
 class SafeSpeaker:
+    MAX_RESTORE_DEPTH = 3
+
     def __init__(self, dev_name, channels, framerate, name, volume, max_data_length):
         # store initial setup values
         self._s_dev_name = dev_name
@@ -173,6 +180,12 @@ class SafeSpeaker:
 
         # internal state parameters
         self._is_init = False
+        self._is_playing = False
+        self._is_restarting = False
+
+        self._restored_step = 0
+        self._restored_times = 0
+        self._restore_depth = 0
 
     def _run_process(self, dev_name, channels, framerate, name, volume, max_data_length,
             parent_queue, child_queue):
@@ -181,6 +194,7 @@ class SafeSpeaker:
     
     def start(self):
         while not self._is_init:
+            self._last_async_msg = Msg(msg_type=MsgType.Ok, msg_data=None, msg_id=0)
             self._parent_queue = multiprocessing.Queue()
             self._child_queue = multiprocessing.Queue()
             self.process = multiprocessing.Process(target=self._run_process, 
@@ -197,6 +211,10 @@ class SafeSpeaker:
             else:
                 if msg.type == MsgType.Ok:
                     print("All good")
+                    self._restore_depth = 0
+                    self._restored_step = 0
+                    self._restored_times = 0
+                    self._is_playing = False
                     self._is_init = True
                     continue
                 else:
@@ -211,89 +229,193 @@ class SafeSpeaker:
             time.sleep(3)
             print("Retrying...")
 
-    def write(self, source, times=1, file_flag=False):
+    def write(self, source, times=1, file_flag=False, restore=False):
         if self._is_init:
-            self._check_asyn_error()
-
-            msg = Msg(msg_type=MsgType.Write, msg_data=[source, times, file_flag])
-            self._child_queue.put(msg, block=True)
-            
-            ret = self._parent_queue.get(block=True)
-
-            while not ret.is_reply_of(msg): # or timeout
-                print("Resending")
-                self._parent_queue.put(ret, block=True)
-                time.sleep(0.1)
-                ret = self._parent_queue.get(block=True)
-
-            if ret.type == MsgType.Ok:
-                print("All good 2")
-            else:
-                print("Restarting")
+            resp = self._wait_for_response(msg_req=self._last_async_msg)
+            if resp["status"] == ResponeType.Error:
+                print("Caught async error")
                 self.restart()
-           
+            elif resp["status"] == ResponeType.Ok:
+                self._is_playing = False
 
+            if self._is_playing:
+                return
+            
+            self._is_playing = True
 
-    def async_write(self, source, times=1, file_flag=False):
-        if self._is_init:
-            self._check_asyn_error()
+            msg_data = [source, times, file_flag]
 
-            msg = Msg(msg_type=MsgType.WriteAsync, msg_data=[source, times, file_flag])
+            if restore == True:
+                if self._restored_times != 0 or self._restored_step != 0:
+                    msg_data.append(self._restored_times)
+                    msg_data.append(self._restored_step)
+            else:
+                msg_data.append(0)
+                msg_data.append(0)
+                
+            print(f"msg data: {msg_data}")
+            msg = Msg(msg_type=MsgType.Write, msg_data=msg_data)
             self._child_queue.put(msg, block=True)
             
-            ret = self._parent_queue.get(block=True)
-            if ret.is_reply_of(msg):
-                if ret.type == MsgType.Ok:
-                    print("All good 2")
-                else:
-                    self.restart()
+            resp = self._wait_for_response(msg_req=msg,
+                                            block=True,
+                                            timeout=60)
 
-    def _check_asyn_error(self):
+            if not resp["status"] == ResponeType.Ok:
+                self.restart()
+
+                if restore == True and self._restore_depth < SafeSpeaker.MAX_RESTORE_DEPTH:
+                    self._restore_depth += 1
+                    self._restored_times = resp["data"][0]      # more safe check size etc
+                    self._restored_step = resp["data"][1]
+                    print(f"Restoring {self._restored_times}/{self._restored_step}")
+                    self.write(source, times, file_flag, True)
+                    
+            
+            # reset these after a successful write
+            self._restored_step = 0
+            self._restored_times = 0
+            self._restore_depth = 0
+            self._is_playing = False
+    
+    def async_write(self, source, times=1, file_flag=False):        
         if self._is_init:
-            try:
-                ret = self._parent_queue.get(block=False)
-            except queue.Empty as e:
+            resp = self._wait_for_response(msg_req=self._last_async_msg)
+            if resp["status"] == ResponeType.Error:
+                print("Caught async error")
+                self.restart()
+            elif resp["status"] == ResponeType.Ok:
+                self._is_playing = False
+            
+            if self._is_playing:
                 return
+
+            self._is_playing = True
+
+            msg_data = [source, times, file_flag, 0, 0]
+            msg = Msg(msg_type=MsgType.AsyncWrite, msg_data=msg_data)
+            self._child_queue.put(msg, block=True)
+            self._last_async_msg = msg
+            
+            resp = self._wait_for_response(msg_req=msg,
+                                            block=True,
+                                            timeout=0.6)
+
+            if not resp["status"] == ResponeType.Ok:
+                self.restart()
+
+            return resp
+    
+    """
+    Waits for a response to a msg of type "type", It also re-sends 
+    not owned msgs to queue after a short random period of time
+    
+    Args:
+        msg (Msg): msg request to which we wait a response
+        type (MsgType): Type of response
+        block (Boolean): Wait infinitely of not
+        timeout (int): Time to wait for a response
+
+    Returns:
+        True if there is a valid response 
+        False in case of error response of timeout (no response)
+    """
+    def _wait_for_response(self, msg_req, block=False, timeout=0.05):
+        response = {
+            "status": ResponeType.Timeout, 
+            "data": None
+        }
+
+        now = time.time()
+        while (time.time() - now) < timeout:
+            try:
+                ret = self._parent_queue.get(block=block, timeout=0.05)
+            except queue.Empty as e:
+                print("Time-out in response!")
+                pass
             else:
-                if ret.type == MsgType.Error:
-                    print("Caugh async error ahaha ")
-                    self.restart()
+                if ret.is_reply_of(msg_req):
+                    if ret.type == MsgType.Ok:
+                        print(f"All good {msg_req.type}")
+                        response["status"] = ResponeType.Ok
+                        response["data"] = ret.data
+                        return response
+                    else:
+                        print(f"Caught error")
+                        response["status"] = ResponeType.Error
+                        response["data"] = ret.data
+                        return response
+                elif ret.id == 0 and ret.type == MsgType.Error:
+                    response["status"] = ResponeType.Error
+                    response["data"] = ret.data
+                    return response
                 else:
+                    print("Got wrong msg, requeuing")
                     self._parent_queue.put(ret, block=True)
+            
+            time.sleep(random.uniform(0, 0.1))
 
+        return response
+        
 
+    """
+    Checks for an async error, then sends a pause msg to the speaker process
+
+    Args:
+        enabled (Boolean): True if we want to pause, False to unpause
+    
+    Restarts the process in case of an error or a delayed answer
+    """
     def pause(self, enabled=True):
         if self._is_init:
-            self._check_asyn_error()
+            resp = self._wait_for_response(msg_req=self._last_async_msg)
+            if resp["status"] == ResponeType.Error:
+                print("Caught async error")
+                self.restart()
+                return
 
             msg = Msg(msg_type=MsgType.Pause, msg_data=[enabled])
             self._child_queue.put(msg, block=True)
+            
+            resp = self._wait_for_response(msg_req=msg,
+                                            block=True,
+                                            timeout=0.6)
 
-            ret = self._parent_queue.get(block=True)
-            if ret.is_reply_of(msg):
-                if ret.type == MsgType.Ok:
-                    print("All good 2 pause")
-                else:
-                    self.restart()
+            if not resp["status"] == ResponeType.Ok:
+                self.restart()
+
+    """
+    Checks for an async error, then sends a cancel msg to the speaker process
     
+    Restarts the process in case of an error or a delayed answer
+    """
     def cancel(self):
         if self._is_init:
-            self._check_asyn_error()
+            resp = self._wait_for_response(msg_req=self._last_async_msg)
+            if resp["status"] == ResponeType.Error:
+                print("Caught async error")
+                self.restart()
+                return
 
             msg = Msg(msg_type=MsgType.Cancel)
             self._child_queue.put(msg, block=True)
+            
+            resp = self._wait_for_response(msg_req=msg,
+                                            block=True,
+                                            timeout=0.6)
+                                            
+            if not resp["status"] == ResponeType.Ok:
+                self.restart()
 
-            ret = self._parent_queue.get(block=True)
-            if ret.is_reply_of(msg):
-                if ret.type == MsgType.Ok:
-                    print("All good 2 cancel")
-                else:
-                    self.restart()
+    """
+    Stops the speaker process by sending a termination msg. If not responding,
+    it kills it violently. It also reset the msg queues.
 
+    """
     def stop(self):
         if self._is_init:
             # soft stop first (via msg)
-
+            
             # hard stop
             self.process.terminate()
             self.process.join()
@@ -303,6 +425,21 @@ class SafeSpeaker:
 
             self._is_init = False
 
+    """
+    It restarts the speaker process by calling the "stop" and "start" methods.
+    It also uses a flag so as to avoid successive restarts in a multithreading env.
+
+    """
     def restart(self):
-        self.stop()
-        self.start()
+        if not self._is_restarting:
+            self._is_restarting = True
+            self.stop()
+            self.start()
+            self._is_restarting = False
+
+
+# add is playing flag  - 2 ack msgs in 
+# make code prettier
+# document
+# add volume control
+

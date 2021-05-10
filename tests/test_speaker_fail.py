@@ -17,8 +17,7 @@ if __name__ == "__main__":
                             max_data_length=0)
     
     speaker.start()
-
-    print("Started all good")
+    print("Speaker started successfully")
     
 
     if len(sys.argv) != 2:
@@ -33,22 +32,50 @@ if __name__ == "__main__":
         speaker.stop()
         sys.exit(-2)
 
-    
     time.sleep(2)
 
+    #speaker.write(source=path_to_file, times=2, file_flag=True, restore=True)
+
+    # def canceler(s, t):
+    #     time.sleep(t)
+    #     print("Pausing")
+    #     s.pause(enabled=True)
+
+    #     time.sleep(2)
+        
+    #     print("Unpasing")
+    #     s.pause(enabled=False)
+
+    #     time.sleep(1)
+
+    #     print("Canceling")
+    #     s.cancel()
+
+    # thread = threading.Thread(target=canceler, args=(speaker, 2), daemon=True)
+    # thread.start()
+    # speaker.write(path_to_file, file_flag=True)
+
+    # print("Testing async")
+    # resp = speaker.async_write(path_to_file, file_flag=True)
+    # print(f"Sleeping for {resp['data']}")
+    # time.sleep(resp["data"])
+
+
+    # speaker.write(path_to_file, file_flag=True)
+
+
+    # print("Stopping")
+    # speaker.stop()
+
+    resp = speaker.async_write(path_to_file, file_flag=True)
+    time.sleep(resp["data"] + 0.1)
+
     
-
-    def canceler(s):
-        time.sleep(2)
-        s.cancel()
-
-    thread = threading.Thread(target=canceler, args=(speaker,), daemon=True)
-    thread.start()
 
     speaker.write(path_to_file, file_flag=True)
 
 
-    speaker.stop()
+    print("Finished")
 
 
 

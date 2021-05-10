@@ -39,6 +39,11 @@ class Speaker(Actuator):
 
         self._device = None
         self._mixer = None
+        
+        # extra state variables
+        self._duration = None
+        self._curr_step = 0
+        self._curr_times = 0
 
         self.start()
 
@@ -120,7 +125,7 @@ class Speaker(Actuator):
 
             raise SpeakerError
 
-    def write(self, source, times=1, file_flag=False):
+    def write(self, source, times=1, file_flag=False, rs_times=None, rs_step=None):
         if self._playing:
             warnings.warn("Already playing", RuntimeWarning)
             return None
@@ -128,9 +133,9 @@ class Speaker(Actuator):
         # Set playing flag
         self._playing = True
 
-        self._write(source, times, file_flag)
+        self._write(source, times, file_flag, rs_times, rs_step)
 
-    def _write(self, source, times=1, file_flag=False):
+    def _write(self, source, times=1, file_flag=False, rs_times=None, rs_step=None):
         """Write data to the speaker. Actually it just plays a playback.
 
         Args:
@@ -202,7 +207,7 @@ class Speaker(Actuator):
 
             # Play n times the data
             
-            self._play(data, times)                                      # add error checking here
+            self._play(data, times, rs_times, rs_step)                                      # add error checking here
         except alsaaudio.ALSAAudioError as e:
             print(f"Caugh is write: {e}")
             raise SpeakerError
@@ -212,7 +217,7 @@ class Speaker(Actuator):
             raise SpeakerError
 
         
-    def _play(self, data, times):
+    def _play(self, data, times, rs_times=None, rs_step=None):
         """Plays the data n times, by invoking the speaker pyalsapy library.
            It also checks if we have a preemption request during the playback.
 
@@ -220,8 +225,21 @@ class Speaker(Actuator):
             data: The sound data to be played
             times: The amound of times to repeat the track
         """
-        for i in range(times):
+        if rs_times is None:
+            rs_times = 0
+        
+        if rs_step is None:
+            rs_step = 0
+
+        for i in range(rs_times, times, 1):
+            self._curr_times = i
+            self._curr_step = 0
             for d in data:
+                self._curr_step += 1
+
+                if self._curr_step < rs_step:
+                    continue
+
                 if self._playing:
                     self._device.write(d)
                 else:
@@ -229,6 +247,8 @@ class Speaker(Actuator):
 
                 while self._paused:
                     time.sleep(0.1)
+
+                rs_step = 0
 
         self.restart()
         # Clear the playing flag
