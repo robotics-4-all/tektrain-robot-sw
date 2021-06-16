@@ -1,5 +1,6 @@
 """speaker.py"""
 
+import time
 import wave
 import os
 import threading
@@ -7,14 +8,31 @@ import base64
 import warnings
 from ..devices import Actuator
 import alsaaudio
-import time
 
+from enum import Enum
+
+class SpeakerErrorTypes(Enum):
+    UNKNOWN = -1
+    ALSA_ERROR = 0
+    WAVE_ERROR = 1
+    BASE64_ERROR = 2
+    GENERIC_ERROR = 3
 
 # to add cases etc ...
 class SpeakerError(Exception):
     """ Speaker custom exception class """
-    pass
 
+    def __init__(self, exception_type, message="Exception in pidevices Speaker driver"):
+        if exception_type in SpeakerErrorTypes:
+            self.type = exception_type
+        else:
+            self.type = SpeakerErrorTypes.UNKNOWN
+
+        self.message = message
+        super().__init__(self.message)
+    
+    def __str__(self):
+        return f'Exception of type {self.type.name} in pidevices Speaker driver, with message {self.message}'
 
 class Speaker(Actuator):
     RETRY = 5
@@ -75,8 +93,8 @@ class Speaker(Actuator):
     @volume.setter
     def volume(self, value):
         if self._mixer:
-            volume = min(max(0, value), 100)
-            self._mixer.setvolume(volume)
+            value = min(max(0, value), 100)
+            self._mixer.setvolume(value)
 
     @property
     def framerate(self):
@@ -92,7 +110,7 @@ class Speaker(Actuator):
     def start(self):
         """Initialize hardware and os resources."""
         try:
-            print("Initializing driver")
+            # print("Initializing driver")
             self._device = alsaaudio.PCM(device=self.dev_name)
 
             # Find proper mixer using the card name.
@@ -116,14 +134,14 @@ class Speaker(Actuator):
             self._device = None
             self._mixer = None
 
-            raise SpeakerError
+            raise SpeakerError(exception_type=SpeakerErrorTypes.ALSA_ERROR, message=e)
         except Exception as e:
             print(f"Something unexpected happend! {e}")
 
             self._device = None
             self._mixer = None
 
-            raise SpeakerError
+            raise SpeakerError(exception_type=SpeakerErrorTypes.GENERIC_ERROR, message=e)
 
     def write(self, source, times=1, file_flag=False, rs_times=None, rs_step=None):
         if self._playing:
@@ -188,7 +206,7 @@ class Speaker(Actuator):
             self._duration = round(packets * packet_duration)
 
             # Set Device attributes for playback
-            self._device.setchannels(channels)                           # add error checking here
+            self._device.setchannels(channels)
             self._device.setrate(framerate)
             self._device.setperiodsize(periodsize)
             
@@ -206,15 +224,13 @@ class Speaker(Actuator):
                 raise ValueError('Unsupported format')
 
             # Play n times the data
-            
-            self._play(data, times, rs_times, rs_step)                                      # add error checking here
+            self._play(data, times, rs_times, rs_step)
         except alsaaudio.ALSAAudioError as e:
-            print(f"Caugh is write: {e}")
-            raise SpeakerError
-
+            raise SpeakerError(exception_type=SpeakerErrorTypes.ALSA_ERROR, message=e)
+        except wave.Error as e:
+            raise SpeakerError(exception_type=SpeakerErrorTypes.WAVE_ERROR, message=e)
         except Exception as e:
-            print(f"Caugh is write: {e}")
-            raise SpeakerError
+            raise SpeakerError(exception_type=SpeakerErrorTypes.GENERIC_ERROR, message=e)
 
         
     def _play(self, data, times, rs_times=None, rs_step=None):
@@ -243,9 +259,10 @@ class Speaker(Actuator):
                 if self._playing:
                     self._device.write(d)
                 else:
+                    times = -1
                     break
 
-                while self._paused:
+                while self._paused and self._playing:
                     time.sleep(0.1)
 
                 rs_step = 0
@@ -281,6 +298,7 @@ class Speaker(Actuator):
 
     def cancel(self):
         """Cancel playaback"""
+
         self._playing = False
 
     def pause(self, enabled=True):
@@ -290,10 +308,7 @@ class Speaker(Actuator):
             enabled (boolean): If it :data:`True` pauses the playback else
                 it resumes it.
         """
-        if self._dev_name is None:
-            raise SpeakerError
-
-        #self._device.pause(enabled) that statement throws an exception
+        
         self._paused = enabled
 
     def _fix_path(self, fil_path):

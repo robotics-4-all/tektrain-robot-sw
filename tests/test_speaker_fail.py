@@ -7,7 +7,6 @@ import os
 import threading
 
 
-
 if __name__ == "__main__":
     speaker = SafeSpeaker(dev_name = "Speaker",
                             channels = 1,
@@ -66,14 +65,15 @@ if __name__ == "__main__":
 
     # print("Stopping")
     # speaker.stop()
+    speaker.volume = 100
 
-    resp = speaker.async_write(path_to_file, file_flag=True)
-    time.sleep(resp["data"] + 0.1)
-
-    
-
+    duration = speaker.async_write(path_to_file, file_flag=True)
     speaker.write(path_to_file, file_flag=True)
 
+    print("duration: ", duration)
+
+    while speaker.playing:
+        time.sleep(0.1)
 
     print("Finished")
 
