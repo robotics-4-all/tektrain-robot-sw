@@ -26,18 +26,16 @@ if __name__ == "__main__":
 
     print("Recording async")
     
-    ret = microphone.async_read(secs=2, framerate=44100, file_path="giorgos.wav", file_flag=False, volume=100)
-
+    ret = microphone.async_read(secs=0.5, framerate=44100, file_path="giorgos.wav", file_flag=False, volume=100)
+    
     microphone.pause(enabled=True)
     time.sleep(4)
     microphone.pause(enabled=False)
 
-    microphone.cancel()
-
     while microphone.recording:
         time.sleep(0.1)
         
-    print("sizeof data: ", len(microphone.record))
+    print("sizeof data: ", microphone.record)
 
     microphone.stop()
 
