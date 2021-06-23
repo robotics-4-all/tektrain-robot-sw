@@ -21,7 +21,7 @@ class TestDfRobotEncodersPigpio(unittest.TestCase):
    def test_encoders(self):
       global is_alive
 
-      motor_driver = DfrobotMotorControllerPiGPIO(E1=20, E2=21, M1=19, M2=26, range=1000, frequency=200)
+      motor_driver = DfrobotMotorControllerPiGPIO(E1=20, E2=21, M1=19, M2=26, resolution=1000, frequency=200)
       motor_driver.start()
 
       enc1 = DfRobotWheelEncoderPiGPIO(pin=23, resolution=10)
@@ -41,7 +41,7 @@ class TestDfRobotEncodersPigpio(unittest.TestCase):
       
       time.sleep(0.5)
 
-      motor_driver.terminate()
+      motor_driver.stop()
 
 if __name__ == "__main__":
    unittest.main()
