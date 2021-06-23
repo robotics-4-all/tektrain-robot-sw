@@ -17,6 +17,7 @@ class MsgType(IntEnum):
     Pause = 3
     Cancel = 4
     Stop = 5
+    Volume = 6
 
 class ResponeType(IntEnum):
     Error = -2
@@ -156,6 +157,12 @@ class SpeakerConsumer(Speaker):
                     is_alive = False
                     self._is_alive = False
 
+                elif msg.type == MsgType.Volume:
+                    print("Volume")
+                    self.volume = msg.data[0]
+                    msg.type = MsgType.Ok
+                    parent_queue.put(msg, block=True)
+
         except SpeakerError as e:
             msg = Msg(msg_type=MsgType.Error, msg_data=e, msg_id=0)
             parent_queue.put(msg, block=True)
@@ -277,7 +284,43 @@ class SafeSpeaker:
             self._restored_times = 0
             self._restore_depth = 0
             self._is_playing = False
-    
+
+    @property
+    def playing(self):
+        """Flag indicating if the speaker is playing a sound"""
+        return self._is_playing
+
+    @property
+    def volume(self):
+        """The volume of the mixer if it exists."""
+        if self._is_init:
+            return self._s_volume
+        else:
+            return None
+
+    @volume.setter
+    def volume(self, value):
+        if self._is_init:
+            resp = self._wait_for_response(msg_req=self._last_async_msg)
+            if resp["status"] == ResponeType.Error:
+                print("Caught async error")
+                self.restart()
+                return
+
+            msg = Msg(msg_type=MsgType.Volume, msg_data=[value])
+            self._child_queue.put(msg, block=True)
+            
+            resp = self._wait_for_response(msg_req=msg,
+                                            block=True,
+                                            timeout=0.6)
+
+            if not resp["status"] == ResponeType.Ok:
+                self.restart()
+
+    @property
+    def framerate(self):
+        return self._s_framerate
+
     def async_write(self, source, times=1, file_flag=False):        
         if self._is_init:
             resp = self._wait_for_response(msg_req=self._last_async_msg)

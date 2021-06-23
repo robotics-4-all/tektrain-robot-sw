@@ -75,7 +75,7 @@ class Speaker(Actuator):
     @volume.setter
     def volume(self, value):
         if self._mixer:
-            volume = min(max(0, value), 100)
+            volume = int(min(max(0, 0.8 * value), 80))
             self._mixer.setvolume(volume)
 
     @property
@@ -151,6 +151,7 @@ class Speaker(Actuator):
 
         self._duration = None
         self._paused = False
+        self._canceled = False
 
         try:
             periodsize = Speaker.PERIOD_SIZE
@@ -271,7 +272,7 @@ class Speaker(Actuator):
                                         daemon=True)
 
         # Check if another thread is running
-        if self._playing or self._canceled:
+        if self._playing:
             warnings.warn("Already playing", RuntimeWarning)
             return None
 
