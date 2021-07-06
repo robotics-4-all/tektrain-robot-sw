@@ -186,7 +186,7 @@ class Speaker(Actuator):
             # calculate the duration of the track
             packets = len(data)
             packet_duration = periodsize / self.framerate
-            self._duration = round(packets * packet_duration)
+            self._duration = (packets * packet_duration)
 
             # Set Device attributes for playback
             self._device.setchannels(channels)                           # add error checking here
