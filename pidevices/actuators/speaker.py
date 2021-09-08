@@ -37,6 +37,7 @@ class Speaker(Actuator):
         self.channels = channels
         self.framerate = framerate
 
+        self._playing = False
         self._device = None
         self._mixer = None
         
@@ -98,6 +99,12 @@ class Speaker(Actuator):
             # Find proper mixer using the card name.
             card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
             card_index = alsaaudio.cards().index(card_name)
+        except alsaaudio.ALSAAudioError as e:
+            print(f"{type(e).__name__} occured!")
+            print(f"With message: {e.args}... Failed to initialize audio-output device!")
+            self._device = None
+
+        try:
             mixers = alsaaudio.mixers(cardindex=card_index)
             if "PCM" in mixers:
                 self._mixer = alsaaudio.Mixer(control='PCM', cardindex=card_index)
@@ -107,23 +114,13 @@ class Speaker(Actuator):
             # Unmute if it is muted at first
             if self._mixer.getmute():
                 self._mixer.setmute(0)
-
-            self._playing = False
         except alsaaudio.ALSAAudioError as e:
             print(f"{type(e).__name__} occured!")
-            print(f"With message: {e.args}... Failed to initialize speaker!")
-
-            self._device = None
+            print(f"With message: {e.args}... Failed to initialize Mixer!")
             self._mixer = None
-
-            raise SpeakerError
         except Exception as e:
             print(f"Something unexpected happend! {e}")
-
-            self._device = None
             self._mixer = None
-
-            raise SpeakerError
 
     def write(self, source, times=1, file_flag=False, rs_times=None, rs_step=None):
         if self._playing:
@@ -146,7 +143,7 @@ class Speaker(Actuator):
             file_flag: Flag indicating if read from file or from raw data.
         """
         # if the device isnt initialized properly
-        if self._device is None or self._mixer is None:
+        if self._device is None:
             raise SpeakerError
 
         self._duration = None
