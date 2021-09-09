@@ -37,7 +37,7 @@ class Speaker(Actuator):
         self.dev_name = dev_name
         self.mixer_ctrl = mixer_ctrl
         self.framerate = framerate
-        self._channels = channels
+        self.channels = channels
 
         self._playing = False
         self._device = None
@@ -109,8 +109,8 @@ class Speaker(Actuator):
             mixers = alsaaudio.mixers()
             print(f'Available PCMs: {pcms}')
             print(f'Available Mixers: {mixers}')
-            self._device = alsaaudio.PCM(device=self._dev_name)
-            self._mixer = alsaaudio.Mixer(device=self._dev_name, control=self._mixer_ctrl)
+            self._device = alsaaudio.PCM(device=self.dev_name)
+            self._mixer = alsaaudio.Mixer(device=self.dev_name, control=self.mixer_ctrl)
 
             # Unmute if it is muted at first
             if self._mixer.getmute():
