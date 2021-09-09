@@ -5,7 +5,7 @@ import os
 import threading
 import base64
 import warnings
-from ..devices import Actuator
+from pidevices.devices import Actuator
 import alsaaudio
 import time
 
@@ -28,14 +28,16 @@ class Speaker(Actuator):
         channels (int): The number of channels from the custom recordings.
     """
 
-    def __init__(self, dev_name='dmix:CARD=Speaker,DEV=0', volume=50,
-                 channels=1, framerate = 44100, name="", max_data_length=0):
+    def __init__(self, dev_name='pulse', volume=50,
+                 channels=1, framerate = 44100, name="", max_data_length=0,
+                 mixer_ctrl='Master'):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)
         self.dev_name = dev_name
-        self.channels = channels
+        self.mixer_ctrl = mixer_ctrl
         self.framerate = framerate
+        self._channels = channels
 
         self._playing = False
         self._device = None
@@ -59,6 +61,15 @@ class Speaker(Actuator):
     @dev_name.setter
     def dev_name(self, dev_name):
         self._dev_name = dev_name
+
+    @property
+    def mixer_ctrl(self):
+        """Mixer Control."""
+        return self._mixer_ctrl
+
+    @dev_name.setter
+    def mixer_ctrl(self, ctrl):
+        self._mixer_ctrl = ctrl
 
     @property
     def playing(self):
@@ -94,22 +105,12 @@ class Speaker(Actuator):
         """Initialize hardware and os resources."""
         try:
             print("Initializing driver")
-            self._device = alsaaudio.PCM(device=self.dev_name)
-
-            # Find proper mixer using the card name.
-            card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
-            card_index = alsaaudio.cards().index(card_name)
-        except alsaaudio.ALSAAudioError as e:
-            print(f"{type(e).__name__} occured!")
-            print(f"With message: {e.args}... Failed to initialize audio-output device!")
-            self._device = None
-
-        try:
-            mixers = alsaaudio.mixers(cardindex=card_index)
-            if "PCM" in mixers:
-                self._mixer = alsaaudio.Mixer(control='PCM', cardindex=card_index)
-            else:
-                self._mixer = None
+            pcms = alsaaudio.pcms()
+            mixers = alsaaudio.mixers()
+            print(f'Available PCMs: {pcms}')
+            print(f'Available Mixers: {mixers}')
+            self._device = alsaaudio.PCM(device=self._dev_name)
+            self._mixer = alsaaudio.Mixer(device=self._dev_name, control=self._mixer_ctrl)
 
             # Unmute if it is muted at first
             if self._mixer.getmute():
@@ -300,6 +301,7 @@ class Speaker(Actuator):
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
 
+        return fil_path
         wav_folder = '/wav_sounds/'
         ex_path = os.path.realpath(__file__)
         ex_path = '/'.join(ex_path.split('/')[:-3]) + wav_folder + fil_path
@@ -313,3 +315,15 @@ class Speaker(Actuator):
         
         if self._mixer is not None:
             self._mixer.close()
+
+
+if __name__ == '__main__':
+    import time
+    ctrl = Speaker(dev_name='default')
+    #ctrl.async_write('/home/pi/Wav_868kb.wav', file_flag=True)
+
+    #time.sleep(5)
+    #ctrl.cancel()
+    #time.sleep(1)
+    #ctrl.stop()
+    ctrl.write('/home/pi/Wav_868kb.wav', file_flag=True)
