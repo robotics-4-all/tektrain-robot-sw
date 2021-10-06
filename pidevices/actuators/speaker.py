@@ -172,7 +172,7 @@ class Speaker(Actuator):
                 # Close file
                 f.close()
             else:
-                channels = self.channels
+                channels = self._channels
                 framerate = self.framerate
                 sample_width = self.SAMPLE_WIDTH
 
