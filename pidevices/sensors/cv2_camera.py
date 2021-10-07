@@ -15,7 +15,7 @@ import numpy as np
 Dims = namedtuple('Dims', ['width', 'height'])
 
 # Camera data tuple
-CameraData = namedtuple('CameraData', ['frame', 'timestamp'])
+CameraData = namedtuple('CameraData', ['data', 'timestamp'])
 
 
 class VirtualCameraError(Exception):
@@ -37,6 +37,7 @@ class VirtualCameraConvertionError(VirtualCameraError):
     pass
 
 class VirtualCamera(Sensor):
+    FORMATS = ["jpg", "jpeg", "png", "bmp"]
     def __init__(self, 
                  vdevice = 1,
                  framerate = 30,
@@ -58,16 +59,32 @@ class VirtualCamera(Sensor):
 
         self.start()
 
+    @property
+    def resolution(self):
+        return self._resolution
+
+    @resolution.setter
+    def resolution(self, resolution):
+        self._resolution = resolution
+    
+    @property
+    def framerate(self):
+        return self._framerate
+
+    @framerate.setter
+    def framerate(self, framerate):
+        self._framerate = framerate
+
     def start(self):
         self._vcamera = cv2.VideoCapture(self._vdevice)
         self._vcamera.set(cv2.CAP_PROP_FPS, self._framerate)
-        print(self._vcamera.get(cv2.CAP_PROP_FPS))
+        # print(self._vcamera.get(cv2.CAP_PROP_FPS))
 
         if not self._vcamera.isOpened():
             raise VirtualCameraUnavailable(self._vdevice,
                 "Error opening virtual camera device!")
 
-    def read(self, image_dims = None, image_format = 'jpg', save = False):
+    def read(self, image_dims = None, image_format = 'bmp', save = False):
         retval, frame = self._vcamera.read()
 
         if not retval:
@@ -81,29 +98,24 @@ class VirtualCamera(Sensor):
             _height = image_dims.height
 
         # convert to appropriate resolution
-        frame = imutils.resize(frame, width = _width , height = _height)
+        frame = cv2.resize(src = frame, 
+                           dsize = (_width , _height), 
+                           interpolation = cv2.INTER_AREA)
 
-        self._shape = frame.shape
-
+        if not image_format in VirtualCamera.FORMATS:
+            image_format = "bmp"
+        
         # convert to appropriate format
         retval, image = cv2.imencode(f".{image_format}", frame)
         
-
         if not retval:
             raise VirtualCameraConvertionError(self._vdevice, 
                 f"Error converting frame array to image format {image_format}")
 
+        # convert to byte array
+        byte_image = frame.tobytes()
 
-        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-
-        # convert to bytes
-        self._shape = image.shape
-        image_bytes = image.tobytes()
-
-        image_array = np.frombuffer(image_bytes, dtype = image.dtype)
-        image_array.reshape(self._shape)
-
-        camera_data = CameraData(frame = image,
+        camera_data = CameraData(data = byte_image,
                                  timestamp = time.time())
         
         if save:
@@ -111,15 +123,14 @@ class VirtualCamera(Sensor):
 
         return camera_data
 
-    def _read_continuous_async(self, image_dims = None, image_format = "jpg"):
+    def _read_continuous_async(self, image_dims = None, image_format = "bmp"):
         while self._thread_event.is_set():
             try:
                 self.read(image_dims, image_format, True)
             except Exception as e:
-                # kill self
                 self._thread_event.clear()
             
-    def read_continuous(self, image_dims = None, image_format = "jpg"):
+    def read_continuous(self, image_dims = None, image_format = "bmp"):
         self._thread = Thread(target = self._read_continuous_async,
                               args = (image_dims, image_format))
 
