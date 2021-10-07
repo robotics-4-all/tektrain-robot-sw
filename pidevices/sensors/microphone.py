@@ -25,12 +25,13 @@ class Microphone(Sensor):
     PERIODSIZE = 256
 
     def __init__(self, dev_name, channels, 
-                 name="", max_data_length=0):
+                 name="", max_data_length=0, mixer_ctrl='Master'):
         """Constructor"""
 
         super(Microphone, self).__init__(name, max_data_length)
         self._dev_name = dev_name
         self._channels = channels
+        self._mixer_ctrl = mixer_ctrl
         self.start()
 
     @property
@@ -53,22 +54,14 @@ class Microphone(Sensor):
 
     def start(self):
         """Initialize hardware and os resources."""
-
-        # Initializa alsa device
+        pcms = alsaaudio.pcms()                                                                                                                                                                                  
+        mixers = alsaaudio.mixers()                                                                                                                                                                              
+        print(f'Available PCMs: {pcms}')                                                                                                                                                                         
+        print(f'Available Mixers: {mixers}')
         self._device = alsaaudio.PCM(type=alsaaudio.PCM_CAPTURE,
-                                     device=self._dev_name)
+                device=self._dev_name)
         self._device.setchannels(self._channels)
-
-        # Find proper mixer using the card name.
-        card_name = self._dev_name.split(":")[-1].split(",")[0].split("=")[-1]
-        card_index = alsaaudio.cards().index(card_name)
-        print(card_index)
-        card_index = 1 #??
-        mixers = alsaaudio.mixers(cardindex=card_index)
-        if "Mic" in mixers:
-            self._mixer = alsaaudio.Mixer(control='Mic', cardindex=card_index)
-        else:
-            self._mixer = None
+        self._mixer = alsaaudio.Mixer(device=self._dev_name, control=self._mixer_ctrl)
 
         self._recording = False
         self._cancelled = False

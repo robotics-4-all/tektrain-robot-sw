@@ -51,7 +51,7 @@ class Device(object):
 
         self._id = name
         self._max_data_length = max_data_length
-        self.data = deque()
+        self.data = deque(maxlen = max_data_length)
 
         # A list with the hardware interfaces objects.
         self._hardware_interfaces = []  
