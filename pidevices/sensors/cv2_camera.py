@@ -18,38 +18,41 @@ Dims = namedtuple('Dims', ['width', 'height'])
 CameraData = namedtuple('CameraData', ['data', 'timestamp'])
 
 
-class VirtualCameraError(Exception):
-    def __init__(self, vdevice, message="Error in virtual Camera"):
-        self._vdevice = vdevice
+class CameraError(Exception):
+    def __init__(self, device_id, message="Error in virtual Camera"):
+        self._device_id = device_id
         self._message = message
         super().__init__(self._message)
 
     def __str__(self):
-        return f'{self._vdevice} -> {self._message}'
+        return f'{self._device_id} -> {self._message}'
 
-class VirtualCameraUnavailable(VirtualCameraError):
+
+class CameraUnavailable(CameraError):
     pass
 
-class VirtualCameraReadError(VirtualCameraError):
+
+class CameraReadError(CameraError):
     pass
 
-class VirtualCameraConvertionError(VirtualCameraError):
+
+class CameraConvertionError(CameraError):
     pass
 
-class VirtualCamera(Sensor):
+
+class Camera(Sensor):
     FORMATS = ["jpg", "jpeg", "png", "bmp"]
     def __init__(self, 
-                 vdevice = 1,
-                 framerate = 30,
-                 resolution = Dims(width = 640, 
-                                   height = 480),
-                 name = "", 
-                 max_data_length = 10):
+                 device_id=1,
+                 framerate=30,
+                 resolution=Dims(width=640, height=480),
+                 name="", 
+                 max_data_length=10):
 
         atexit.register(self.stop)
-        super(VirtualCamera, self).__init__(name, max_data_length)
+        super(Camera, self).__init__(name, max_data_length)
 
-        self._vdevice = vdevice
+        self._device_id = device_id
         self._framerate = framerate
         self._resolution = resolution
 
@@ -76,19 +79,19 @@ class VirtualCamera(Sensor):
         self._framerate = framerate
 
     def start(self):
-        self._vcamera = cv2.VideoCapture(self._vdevice)
+        self._vcamera = cv2.VideoCapture(self._device_id)
         self._vcamera.set(cv2.CAP_PROP_FPS, self._framerate)
         # print(self._vcamera.get(cv2.CAP_PROP_FPS))
 
         if not self._vcamera.isOpened():
-            raise VirtualCameraUnavailable(self._vdevice,
+            raise CameraUnavailable(self._device_id,
                 "Error opening virtual camera device!")
 
     def read(self, image_dims = None, image_format = 'bmp', save = False):
         retval, frame = self._vcamera.read()
 
         if not retval:
-            raise VirtualCameraReadError(self._vdevice, 
+            raise CameraReadError(self._device_id, 
                 "Error reading from virtual camera device!")
 
         _width = self._resolution.width
@@ -102,14 +105,14 @@ class VirtualCamera(Sensor):
                            dsize = (_width , _height), 
                            interpolation = cv2.INTER_AREA)
 
-        if not image_format in VirtualCamera.FORMATS:
+        if not image_format in Camera.FORMATS:
             image_format = "bmp"
         
         # convert to appropriate format
         retval, image = cv2.imencode(f".{image_format}", frame)
         
         if not retval:
-            raise VirtualCameraConvertionError(self._vdevice, 
+            raise CameraConvertionError(self._device_id, 
                 f"Error converting frame array to image format {image_format}")
 
         # convert to byte array
