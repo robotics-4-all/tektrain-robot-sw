@@ -250,7 +250,7 @@ class Speaker(Actuator):
                 rs_step = 0
 
         # terminate and reset after finishes playing the track or canceling
-        self.restart()
+        # self.restart()
         # Clear the playing flag
         self._playing = False
 
