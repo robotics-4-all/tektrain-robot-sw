@@ -51,7 +51,7 @@ class Microphone(Sensor):
         while self._record is None:
             time.sleep(0.1)
         return self._record
-
+    
     def start(self):
         """Initialize hardware and os resources."""
         pcms = alsaaudio.pcms()                                                                                                                                                                                  

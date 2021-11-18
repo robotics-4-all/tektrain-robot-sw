@@ -20,3 +20,4 @@ from .df_robot_wheel_encoders import *
 from .vl53l1x import *
 from .icm_20948_imu import *
 from .cv2_camera import Camera as CV2Camera, CameraError, CameraReadError, CameraUnavailable, CameraConvertionError
+from .generic_microphone import *
