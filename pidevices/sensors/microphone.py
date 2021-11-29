@@ -95,39 +95,45 @@ class Microphone(Sensor):
             return None
 
         self._record = None
-
-        # Set Device attributes for playback
-        self._device.setrate(framerate)
-        self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-        self._device.setperiodsize(self.PERIODSIZE)
-        sample_width = 2
-
-        # Set volume for channels
-        if self._mixer:
-            self._mixer.setvolume(volume) 
-
-        self.recording = True
-
-        # Start recording
-        t_start = time.time()
-        audio = bytearray() 
-        while time.time() - t_start < secs and self.recording:
-            # Get data from device
-            l, data = self._device.read()
-            if l:
-                for d in data:
-                    audio.append(d)
-
-        # Save to file
-        if file_flag:
-            ret = self._save_to_file(file_path, framerate, sample_width, audio)
-        else:
-            # Encode to base64
-            ret = audio
-
-        self.restart()
         
-        self._record = ret
+        try:
+            # Set Device attributes for playback
+            self._device.setrate(framerate)
+            self._device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+            self._device.setperiodsize(self.PERIODSIZE)
+            sample_width = 2
+
+            # Set volume for channels
+            if self._mixer:
+                self._mixer.setvolume(volume) 
+
+            self._recording = True
+
+            # Start recording
+            t_start = time.time()
+            audio = bytearray() 
+            while time.time() - t_start < secs and self._recording:
+                # Get data from device
+                l, data = self._device.read()
+
+                if l:
+                    for d in data:
+                        audio.append(d)
+
+            # Save to file
+            if file_flag:
+                ret = self._save_to_file(file_path, framerate, sample_width, audio)
+            else:
+                # Encode to base64
+                ret = audio
+
+            self._recording = False
+
+            # self.restart()
+            
+            self._record = ret
+        except Exception as e:
+            print(e)
 
         return ret
     
@@ -169,13 +175,13 @@ class Microphone(Sensor):
         Returns:
             It doesn't return a value but it saves the recording to a file.
         """
-       
+
         thread = threading.Thread(target=self.read, 
                                   args=(secs, framerate,
                                         file_path, volume, file_flag,),
                                   daemon=True)
         thread.start()
-
+        
     def pause(self, enabled=True):
         """Pause or resume the playback."""
 
