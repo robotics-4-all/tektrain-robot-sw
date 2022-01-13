@@ -4,7 +4,7 @@ from pidevices.sensors.generic_microphone import PyAudioMic
 import time
 
 CHANNELS = 1
-FRAMERATE = 44100
+FRAMERATE = 16000
 
 
 from collections import deque, Counter
@@ -70,7 +70,7 @@ class VAD:
 
                     print("Energy threshold: ", self._energy_threshold)
         elif self._train_state == TrainState.SPEECH:
-            if (time.time() - self._train_speech_timer) < 10:
+            if (time.time() - self._train_speech_timer) < 9.5:
                 if energy_level > self._energy_threshold:
                     # process sound data
                     self._filter.append(1)
@@ -129,7 +129,7 @@ class VAD:
         energy_level = np.average(freq)
 
         if energy_level > self._energy_threshold:
-            important_indecies = (-freq).argsort()[:7]
+            important_indecies = (-freq).argsort()[:8]
 
             dom = np.argmax(freq)
 
@@ -137,12 +137,13 @@ class VAD:
 
             print(matched, dom)
 
-            if matched >= 3 and (dom > 5 and dom <= 38):
+            if matched >= 5 and (dom >= 6 and dom <= 38):
                 return True
 
         return False
 
     def update(self, data, timestamp):
+        # convert data
         freq = self._fft(data)
 
         if self._is_speaking(freq):
@@ -193,6 +194,21 @@ class VAD:
     def get(self):
         pass
 
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     mic = PyAudioMic(channels=CHANNELS,
@@ -200,21 +216,21 @@ if __name__ == "__main__":
                      name="mic",
                      max_data_length=1)
 
-    # vad = VAD()
+    vad = VAD()
 
-    # vad.train()
+    vad.train()
 
-    # recording = mic.async_read(duration=15, file_path="yolo.wav", stream_cb=vad.update_train)
+    recording = mic.async_read(secs=15, file_path="yolo.wav", stream_cb=vad.update_train)
 
-    # while mic.recording():
-    #     time.sleep(0.1)
+    while mic.recording():
+        time.sleep(0.1)
 
-    # time.sleep(1)
+    time.sleep(1)
 
-    # vad.reset()
+    vad.reset()
 
-    recording = mic.async_read(secs=3, file_path="yolo.wav")
-
+    recording = mic.async_read(secs=100, file_path="yolo2.wav", stream_cb=vad.update)
+    
     while mic.recording():
         time.sleep(0.1)
 

@@ -36,10 +36,10 @@ class GenericMicrophone(Sensor):
         self.start()
 
     def start(self):
-        self._start_device()
+        self._init_device()
 
     def stop(self):
-        self._stop_device()
+        self._de_init_device()
 
     def recording(self):
         return self._recording.locked()
@@ -49,6 +49,7 @@ class GenericMicrophone(Sensor):
         return self._record
 
     def read(self, secs=3, file_path=None, stream_cb=None):
+        self._start_device()
         self._recording.acquire()
 
         # reset cancel & pause flag
@@ -84,6 +85,7 @@ class GenericMicrophone(Sensor):
         self._recording.release()       # to handle already unlocked ecxeption
         self._cancelled.clear()
         self._paused.clear()
+        self._stop_device()
 
         if file_path is not None:        # to check if file path exist
             self._save_to_file(file_path, self._record)
@@ -111,7 +113,7 @@ class GenericMicrophone(Sensor):
     def _save_to_file(self, file_path, recordings):
         try:
             # Open the wav file
-            f = wave.open(file_path, 'wb')
+            f = wave.open(file_path, 'w')
 
             f.setnchannels(self._channels)
             f.setframerate(self._framerate)
@@ -128,6 +130,12 @@ class GenericMicrophone(Sensor):
     '''
         Implementors
     '''
+    def _init_device(self):
+        pass
+
+    def _de_init_device(self):
+        pass
+
     def _start_device(self):
         pass
 
@@ -158,21 +166,26 @@ class PyAudioMic(GenericMicrophone):
 
         super(PyAudioMic, self).__init__(channels, framerate, sample_width, name, max_data_length)
 
-    def _start_device(self):
+    def _init_device(self):
         self._device = self._audio.open(format=PyAudioMic.FORMAT,
                                         channels=self._channels,
                                         rate=self._framerate,
                                         input=True,
                                         frames_per_buffer=PyAudioMic.CHUNK)
+        self._device.stop_stream()
 
-        self._device.start_stream()
-
-    def _stop_device(self):
+    def _de_init_device(self):
         if self._device is not None:
             self._device.stop_stream()
             self._device.close()
 
         self._audio.terminate()
+
+    def _start_device(self):
+        self._device.start_stream()
+
+    def _stop_device(self):
+        self._device.stop_stream()
 
     def _read_device(self):
         data = None
