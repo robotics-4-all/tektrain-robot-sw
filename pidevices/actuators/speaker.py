@@ -6,6 +6,7 @@ import threading
 import base64
 import warnings
 from pidevices.devices import Actuator
+from pidevices.hardware_interfaces.gpio_implementations import PiGPIO
 import alsaaudio
 import time
 
@@ -29,7 +30,7 @@ class Speaker(Actuator):
     """
 
     def __init__(self, dev_name='pulse', volume=50,
-                 channels=1, framerate = 44100, name="", max_data_length=0,
+                 channels=1, framerate=44100, shutdown_pin=4, name="", max_data_length=0,
                  mixer_ctrl='Master'):
         """Constructor"""
 
@@ -43,6 +44,10 @@ class Speaker(Actuator):
         self._device = None
         self._mixer = None
         
+        self._sd_pin = self.init_interface(interface='gpio', 
+                                                 impl="RPiGPIO",
+                                                 shutdown=shutdown_pin)
+
         # extra state variables
         self._duration = None
         self._curr_step = 0
@@ -105,6 +110,9 @@ class Speaker(Actuator):
         """Initialize hardware and os resources."""
         try:
             print("Initializing driver")
+            
+            self.hardware_interfaces[self._sd_pin].set_pin_function('shutdown', 'output')
+
             pcms = alsaaudio.pcms()
             mixers = alsaaudio.mixers()
             print(f'Available PCMs: {pcms}')
@@ -150,6 +158,9 @@ class Speaker(Actuator):
         self._duration = None
         self._paused = False
         self._canceled = False
+
+        self.hardware_interfaces[self._sd_pin].write('shutdown', 1)
+
 
         try:
             periodsize = Speaker.PERIOD_SIZE
@@ -209,11 +220,15 @@ class Speaker(Actuator):
             self._play(data, times, rs_times, rs_step)                                      # add error checking here
         except alsaaudio.ALSAAudioError as e:
             print(f"Caugh is write: {e}")
+            self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
             raise SpeakerError
 
         except Exception as e:
             print(f"Caugh is write: {e}")
+            self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
             raise SpeakerError
+
+        self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
 
         
     def _play(self, data, times, rs_times=None, rs_step=None):
@@ -247,10 +262,12 @@ class Speaker(Actuator):
                 while self._paused:
                     time.sleep(0.1)
 
+                if self._canceled:
+                    self._canceled = False
+                    break
+
                 rs_step = 0
 
-        # terminate and reset after finishes playing the track or canceling
-        # self.restart()
         # Clear the playing flag
         self._playing = False
 
@@ -298,6 +315,11 @@ class Speaker(Actuator):
         #self._device.pause(enabled) that statement throws an exception
         self._paused = enabled
 
+        if self._paused:
+            self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
+        else:
+            self.hardware_interfaces[self._sd_pin].write('shutdown', 1)
+
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
 
@@ -315,6 +337,8 @@ class Speaker(Actuator):
         
         if self._mixer is not None:
             self._mixer.close()
+
+        self.hardware_interfaces[self._sd_pin].remove_pins('shutdown')
 
 
 if __name__ == '__main__':
