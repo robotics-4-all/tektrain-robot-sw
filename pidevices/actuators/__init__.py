@@ -10,3 +10,5 @@ from .servo_driver import *
 from .speaker import *
 from .touch_screen import *
 from .safe_speaker import *
+from .max98306 import *
+from .system_speaker import *

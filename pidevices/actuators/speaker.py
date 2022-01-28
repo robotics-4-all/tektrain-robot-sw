@@ -1,14 +1,17 @@
 """speaker.py"""
 
-import wave
 import os
+import wave
+import time
 import threading
 import base64
 import warnings
+import alsaaudio
+
 from pidevices.devices import Actuator
 from pidevices.hardware_interfaces.gpio_implementations import PiGPIO
-import alsaaudio
-import time
+from enum import IntEnum
+import subprocess
 
 
 # to add cases etc ...
@@ -16,12 +19,17 @@ class SpeakerError(Exception):
     """ Speaker custom exception class """
     pass
 
+class AmpState(IntEnum):
+    ENABLED = 0
+    DISSABLED = 1
 
 class Speaker(Actuator):
     RETRY = 5
     SAMPLE_WIDTH = 2
     PERIOD_SIZE = 256
     FRAMERATES = [8000, 16000, 44100, 48000, 96000]
+    MIN_VOLUME = 0
+    MAX_VOLUME = 100
     """Class representing a usb speaker extends :class:`Actuator`
 
     Args:
@@ -30,8 +38,8 @@ class Speaker(Actuator):
     """
 
     def __init__(self, dev_name='pulse', volume=50,
-                 channels=1, framerate=44100, shutdown_pin=4, name="", max_data_length=0,
-                 mixer_ctrl='Master'):
+                 channels=1, framerate=44100, shutdown_pin=None, mixer_ctrl='Master', 
+                 name="", max_data_length=0):
         """Constructor"""
 
         super(Speaker, self).__init__(name, max_data_length)
@@ -44,9 +52,12 @@ class Speaker(Actuator):
         self._device = None
         self._mixer = None
         
-        self._sd_pin = self.init_interface(interface='gpio', 
-                                                 impl="RPiGPIO",
-                                                 shutdown=shutdown_pin)
+        self._amp_iface = None
+        if shutdown_pin is not None:
+            if isinstance(shutdown_pin, int):
+                self._amp_iface = self.init_interface(interface='gpio', 
+                                                      impl="RPiGPIO",
+                                                      shutdown=shutdown_pin)
 
         # extra state variables
         self._duration = None
@@ -92,8 +103,12 @@ class Speaker(Actuator):
     @volume.setter
     def volume(self, value):
         if self._mixer:
-            volume = int(min(max(0, 0.8 * value), 80))
+            volume = int(min(max(Speaker.MIN_VOLUME, value), Speaker.MAX_VOLUME))
             self._mixer.setvolume(volume)
+
+    def set_amplifier(self, state):
+        if self._amp_iface is not None:
+            self.hardware_interfaces[self._amp_iface].write('shutdown', state)
 
     @property
     def framerate(self):
@@ -108,15 +123,13 @@ class Speaker(Actuator):
 
     def start(self):
         """Initialize hardware and os resources."""
-        try:
-            print("Initializing driver")
-            
-            self.hardware_interfaces[self._sd_pin].set_pin_function('shutdown', 'output')
+        try:            
+            self.hardware_interfaces[self._amp_iface].set_pin_function('shutdown', 'output')
 
             pcms = alsaaudio.pcms()
             mixers = alsaaudio.mixers()
-            print(f'Available PCMs: {pcms}')
-            print(f'Available Mixers: {mixers}')
+            #print(f'Available PCMs: {pcms}')
+            #print(f'Available Mixers: {mixers}')
             self._device = alsaaudio.PCM(device=self._dev_name)
             self._mixer = alsaaudio.Mixer(device=self._dev_name, control=self._mixer_ctrl)
 
@@ -159,8 +172,7 @@ class Speaker(Actuator):
         self._paused = False
         self._canceled = False
 
-        self.hardware_interfaces[self._sd_pin].write('shutdown', 1)
-
+        self.set_amplifier(AmpState.ENABLED)
 
         try:
             periodsize = Speaker.PERIOD_SIZE
@@ -218,18 +230,18 @@ class Speaker(Actuator):
             # Play n times the data
             
             self._play(data, times, rs_times, rs_step)                                      # add error checking here
+            self.set_amplifier(AmpState.DISSABLED)
         except alsaaudio.ALSAAudioError as e:
+            self.set_amplifier(AmpState.DISSABLED)
+
             print(f"Caugh is write: {e}")
-            self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
             raise SpeakerError
 
         except Exception as e:
+            self.set_amplifier(AmpState.DISSABLED)
+
             print(f"Caugh is write: {e}")
-            self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
             raise SpeakerError
-
-        self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
-
         
     def _play(self, data, times, rs_times=None, rs_step=None):
         """Plays the data n times, by invoking the speaker pyalsapy library.
@@ -316,9 +328,9 @@ class Speaker(Actuator):
         self._paused = enabled
 
         if self._paused:
-            self.hardware_interfaces[self._sd_pin].write('shutdown', 0)
+            self.set_amplifier(AmpState.DISSABLED)
         else:
-            self.hardware_interfaces[self._sd_pin].write('shutdown', 1)
+            self.set_amplifier(AmpState.ENABLED)
 
     def _fix_path(self, fil_path):
         """Make the path proper for reading the file."""
@@ -337,8 +349,8 @@ class Speaker(Actuator):
         
         if self._mixer is not None:
             self._mixer.close()
-
-        self.hardware_interfaces[self._sd_pin].remove_pins('shutdown')
+        
+        self.set_amplifier(AmpState.DISSABLED)
 
 
 if __name__ == '__main__':
