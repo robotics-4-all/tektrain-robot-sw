@@ -112,10 +112,10 @@ class SystemSpeaker(Actuator):
 
             if self._subprocess is not None:
                 self._subprocess.terminate()
-            
+
             if self._amp is not None:
                 self._amp.disable()
-
+    
     def pause(self, enabled=True):
         if enabled:
             if self._amp is not None:
@@ -131,7 +131,6 @@ class SystemSpeaker(Actuator):
             if self._is_playing:
                 if self._ps_process is not None:
                     self._ps_process.resume()
-
 
 
 if __name__ == "__main__":
