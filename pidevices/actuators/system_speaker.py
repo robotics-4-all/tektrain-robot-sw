@@ -56,12 +56,18 @@ class SystemSpeaker(Actuator):
         sample_width = source['sample_width'] if "sample_width" in source else self._sample_width
         data = source['data'] if "data" in source else bytearray()
 
+        if channels <= 0 or framerate <= 0 or sample_width <= 0:
+            f.close()
+            return 
+
         f.setnchannels(channels)
         f.setframerate(framerate)
         f.setsampwidth(sample_width)
         f.setnframes(SystemSpeaker.SAMPLE_PERIOD)
         f.writeframes(data)
         f.close()
+
+        return True
 
     def _write(self, source, file_flag=False):
         self._is_playing = True
@@ -70,20 +76,18 @@ class SystemSpeaker(Actuator):
             if self._amp is not None:
                 self._amp.enable()
 
-            if file_flag:
-                if os.path.isfile(source):
-                    self._subprocess = subprocess.Popen(args=["aplay", source], stdout=subprocess.PIPE)
-            else:
-                self._save_to_wav(source)
-                self._subprocess = subprocess.Popen(args=["aplay", SystemSpeaker.TMP_WAV_PATH], stdout=subprocess.PIPE)
-            
-            if self._subprocess is not None:
-                self._ps_process = psutil.Process(pid=self._subprocess.pid)
-                
-                time.sleep(0.1)
+            status = self._save_to_wav(source)
 
-                while self._subprocess.poll() is None:
+            if status:
+                self._subprocess = subprocess.Popen(args=["aplay", SystemSpeaker.TMP_WAV_PATH], stdout=subprocess.PIPE)
+                
+                if self._subprocess is not None:
+                    self._ps_process = psutil.Process(pid=self._subprocess.pid)
+                    
                     time.sleep(0.1)
+
+                    while self._subprocess.poll() is None:
+                        time.sleep(0.1)
             
             if self._amp is not None:
                 self._amp.disable()
